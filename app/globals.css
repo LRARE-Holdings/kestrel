@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-ink: #0C1311;
+  --color-kestrel: #2B5C4F;
+  --color-kestrel-hover: #234A40;
+  --color-sage: #7FA691;
+  --color-warm: #C4B5A0;
+  --color-stone: #E8E2D8;
+  --color-cream: #F6F3EE;
+  --color-error: #B54444;
+  --color-warning: #C4943A;
+  --color-text-secondary: #4A5553;
+  --color-text-muted: #7A8583;
+  --color-border: #D4CEC6;
+  --color-border-subtle: #E8E2D8;
+
+  --font-display: var(--font-instrument-serif);
+  --font-body: var(--font-dm-sans);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+:root {
+  /* Spacing tokens */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  /* Radius tokens */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* Shadow tokens */
+  --shadow-sm: 0 1px 2px rgba(12, 19, 17, 0.05);
+  --shadow-md: 0 4px 12px rgba(12, 19, 17, 0.08);
+  --shadow-lg: 0 8px 24px rgba(12, 19, 17, 0.12);
+}
+
+body {
+  background-color: #F6F3EE;
+  color: #0C1311;
+  font-family: var(--font-body), sans-serif;
+}

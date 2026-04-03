@@ -199,3 +199,38 @@ Dashboard conditionally renders based on data:
 
 ## [2026-04-03] Architecture — Shared Constants
 Extracted dropdown option arrays into `lib/constants.ts` (BUSINESS_TYPES, COMPANY_SIZES, INDUSTRIES, USE_CASES, DISPUTE_ESTIMATES, REFERRAL_SOURCES). Used by both onboarding and settings pages. Eliminates duplication.
+
+## [2026-04-03] Architecture — Email Notification System
+Built complete transactional email system using Resend:
+- `lib/email/client.ts` — Resend client singleton
+- `lib/email/types.ts` — EmailPayload, DisputeEmailContext, EmailResult types
+- `lib/email/send.ts` — Main send wrapper: sends via Resend, creates notification record in DB, marks email_sent with timestamp. Errors logged but never thrown.
+- `lib/email/templates/layout.ts` — Shared HTML email layout (table-based, inline CSS, Kestrel branding: #2B5C4F header, white content, cream background, rounded cards)
+- 8 email templates: dispute-filed, submission-received, evidence-uploaded, status-changed, proposal-received, proposal-response, deadline-reminder, dispute-resolved
+- `app/api/cron/deadline-reminders/route.ts` — Cron endpoint (CRON_SECRET auth) queries disputes with approaching/overdue deadlines, deduplicates by notification type (deadline_reminder_7d, deadline_reminder_3d, deadline_reminder_1d, deadline_overdue), sends emails to responding parties
+- From address: "Kestrel <notifications@kestrel.law>"
+- All links use NEXT_PUBLIC_SITE_URL
+- All templates use EmailResult return type ({ subject, html })
+- Brand voice: professional, calm, not accusatory. Urgency escalates appropriately for deadline reminders.
+
+## [2026-04-03] Architecture — Disputes v1 Full Implementation
+Built complete dispute resolution system (Phase 5 of build sequence). Decisions confirmed with founder:
+- **Respondent auth:** Account required to view/respond (not token-based)
+- **Communication model:** Structured submissions only (no freeform chat). 8 submission types: initial_claim, response, reply, evidence_summary, proposal, acceptance, rejection, withdrawal
+- **Escalation:** Full mediator marketplace scaffold hidden behind `mediator_marketplace` feature flag in `feature_flags` table
+- **Email notifications:** Comprehensive — every action triggers email via Resend. 8 templates + deadline reminder cron (daily 08:00 UTC)
+- **File storage:** Supabase Storage `dispute-evidence` bucket (25MB/file, 100MB/dispute, whitelist: PDF/DOCX/XLSX/PNG/JPG)
+- **Filing UX:** 4-step wizard (Type & Details → Respondent → Evidence → Review & File)
+- **Real-time:** Supabase Realtime subscriptions on dispute detail page (submissions, evidence, dispute updates)
+- **Reference numbers:** KST-YYYY-NNNNN format via PostgreSQL sequence (collision-safe)
+- **Content integrity:** SHA-256 hash on every submission (Web Crypto API)
+
+Database changes:
+- Added `description` and `includes_dispute_clause` columns to disputes
+- Created `dispute_reference_seq` sequence + `generate_dispute_reference()` function
+- Created `mediators`, `mediator_specialisations`, `dispute_mediator_requests` tables (RLS: locked to service role for now)
+- Created `feature_flags` table with `mediator_marketplace` = false
+- Enabled Supabase Realtime on dispute_submissions, evidence_files, disputes
+- Created `dispute-evidence` storage bucket with party-scoped RLS policies
+
+Files created: 45 new files across lib/disputes/, lib/email/, lib/feature-flags/, lib/mediators/, components/app/disputes/, app/(app)/disputes/, app/api/cron/deadline-reminders/

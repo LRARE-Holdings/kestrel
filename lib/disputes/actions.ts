@@ -1,0 +1,646 @@
+"use server";
+
+import { createClient } from "@/lib/supabase/server";
+import { hashContent } from "@/lib/disputes/hash";
+import { disputeFilingSchema, submissionSchema } from "@/lib/disputes/schemas";
+import { RESPONSE_DEADLINE_DAYS, STATUS_TRANSITIONS } from "@/lib/disputes/constants";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database, Json } from "@/lib/supabase/types";
+import type {
+  DisputeWithParties,
+  SubmissionWithAuthor,
+  EvidenceFileWithMeta,
+  UserRole,
+  DisputeFilingData,
+} from "@/lib/disputes/types";
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+async function getAuthenticatedUser(supabase: SupabaseClient<Database>) {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  if (error || !user) return null;
+  return user;
+}
+
+function getUserRole(
+  dispute: { initiating_party_id: string; responding_party_id: string | null },
+  userId: string,
+): UserRole {
+  if (dispute.initiating_party_id === userId) return "initiating";
+  if (dispute.responding_party_id === userId) return "responding";
+  return null;
+}
+
+async function logAudit(
+  supabase: SupabaseClient<Database>,
+  userId: string,
+  action: string,
+  resourceType: string,
+  resourceId: string,
+  metadata?: Record<string, Json | undefined>,
+) {
+  await supabase.from("audit_log").insert({
+    actor_id: userId,
+    action,
+    resource_type: resourceType,
+    resource_id: resourceId,
+    metadata: (metadata as Json) ?? null,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Queries
+// ---------------------------------------------------------------------------
+
+/**
+ * Get all disputes where the current user is either the initiating or
+ * responding party, ordered by most recently updated.
+ */
+export async function getDisputes() {
+  const supabase = await createClient();
+  const user = await getAuthenticatedUser(supabase);
+  if (!user) return { data: null, error: "Not authenticated" };
+
+  const { data, error } = await supabase
+    .from("disputes")
+    .select("*")
+    .is("deleted_at", null)
+    .or(
+      `initiating_party_id.eq.${user.id},responding_party_id.eq.${user.id}`,
+    )
+    .order("updated_at", { ascending: false });
+
+  if (error) return { data: null, error: error.message };
+  return { data, error: null };
+}
+
+/**
+ * Get a single dispute by ID with joined profile data for both parties.
+ * Returns null if the dispute does not exist or the user is not a party.
+ */
+export async function getDispute(id: string) {
+  const supabase = await createClient();
+  const user = await getAuthenticatedUser(supabase);
+  if (!user) return { data: null, error: "Not authenticated" };
+
+  const { data: dispute, error } = await supabase
+    .from("disputes")
+    .select(
+      `
+      *,
+      initiating_party:profiles!disputes_initiating_party_id_fkey(
+        display_name,
+        business_name,
+        email
+      )
+    `,
+    )
+    .eq("id", id)
+    .is("deleted_at", null)
+    .single();
+
+  if (error || !dispute) {
+    return { data: null, error: error?.message ?? "Dispute not found" };
+  }
+
+  // Verify the current user is a party
+  const role = getUserRole(dispute, user.id);
+  if (!role) {
+    return { data: null, error: "Not authorised to view this dispute" };
+  }
+
+  // Fetch the responding party profile separately (may be null if they
+  // haven't signed up yet)
+  let respondingParty: DisputeWithParties["responding_party"] = null;
+  if (dispute.responding_party_id) {
+    const { data: respProfile } = await supabase
+      .from("profiles")
+      .select("display_name, business_name, email")
+      .eq("id", dispute.responding_party_id)
+      .single();
+    respondingParty = respProfile ?? null;
+  }
+
+  const enriched: DisputeWithParties = {
+    ...dispute,
+    initiating_party: dispute.initiating_party as DisputeWithParties["initiating_party"],
+    responding_party: respondingParty,
+  };
+
+  return { data: enriched, role, error: null };
+}
+
+/**
+ * Get all submissions for a dispute, ordered chronologically.
+ * Verifies the current user is a party before returning data.
+ */
+export async function getSubmissions(disputeId: string) {
+  const supabase = await createClient();
+  const user = await getAuthenticatedUser(supabase);
+  if (!user) return { data: null, error: "Not authenticated" };
+
+  // Verify user is a party
+  const { data: dispute } = await supabase
+    .from("disputes")
+    .select("initiating_party_id, responding_party_id")
+    .eq("id", disputeId)
+    .is("deleted_at", null)
+    .single();
+
+  if (!dispute || !getUserRole(dispute, user.id)) {
+    return { data: null, error: "Not authorised" };
+  }
+
+  const { data, error } = await supabase
+    .from("dispute_submissions")
+    .select(
+      `
+      *,
+      author:profiles!dispute_submissions_submitted_by_fkey(
+        display_name,
+        business_name
+      )
+    `,
+    )
+    .eq("dispute_id", disputeId)
+    .order("created_at", { ascending: true });
+
+  if (error) return { data: null, error: error.message };
+
+  const submissions = (data ?? []).map((row) => ({
+    ...row,
+    author: row.author as SubmissionWithAuthor["author"],
+  }));
+
+  return { data: submissions, error: null };
+}
+
+/**
+ * Get all evidence files for a dispute, ordered chronologically.
+ * Verifies the current user is a party before returning data.
+ */
+export async function getEvidenceFiles(disputeId: string) {
+  const supabase = await createClient();
+  const user = await getAuthenticatedUser(supabase);
+  if (!user) return { data: null, error: "Not authenticated" };
+
+  // Verify user is a party
+  const { data: dispute } = await supabase
+    .from("disputes")
+    .select("initiating_party_id, responding_party_id")
+    .eq("id", disputeId)
+    .is("deleted_at", null)
+    .single();
+
+  if (!dispute || !getUserRole(dispute, user.id)) {
+    return { data: null, error: "Not authorised" };
+  }
+
+  const { data, error } = await supabase
+    .from("evidence_files")
+    .select(
+      `
+      *,
+      uploader:profiles!evidence_files_uploaded_by_fkey(
+        display_name
+      )
+    `,
+    )
+    .eq("dispute_id", disputeId)
+    .order("created_at", { ascending: true });
+
+  if (error) return { data: null, error: error.message };
+
+  const files = (data ?? []).map((row) => ({
+    ...row,
+    uploader: row.uploader as EvidenceFileWithMeta["uploader"],
+  }));
+
+  return { data: files, error: null };
+}
+
+// ---------------------------------------------------------------------------
+// Mutations
+// ---------------------------------------------------------------------------
+
+/**
+ * File a new dispute. Creates the dispute row, the initial claim submission,
+ * a notification record, and an audit log entry.
+ */
+export async function fileDispute(
+  input: DisputeFilingData,
+): Promise<{ disputeId: string } | { error: string }> {
+  const supabase = await createClient();
+  const user = await getAuthenticatedUser(supabase);
+  if (!user) return { error: "Not authenticated" };
+
+  // Server-side validation
+  const parsed = disputeFilingSchema.safeParse(input);
+  if (!parsed.success) {
+    const firstIssue = parsed.error.issues[0];
+    return { error: firstIssue?.message ?? "Validation failed" };
+  }
+
+  const data = parsed.data;
+
+  // Calculate the response deadline
+  const deadline = new Date();
+  deadline.setDate(deadline.getDate() + RESPONSE_DEADLINE_DAYS);
+
+  // Insert the dispute
+  const { data: dispute, error: disputeError } = await supabase
+    .from("disputes")
+    .insert({
+      dispute_type: data.dispute_type,
+      subject: data.subject,
+      description: data.description,
+      amount_disputed: data.amount_disputed ?? null,
+      responding_party_email: data.responding_party_email,
+      initiating_party_id: user.id,
+      created_by: user.id,
+      status: "filed",
+      includes_dispute_clause: data.includes_dispute_clause,
+      response_deadline: deadline.toISOString(),
+    })
+    .select("id")
+    .single();
+
+  if (disputeError || !dispute) {
+    return { error: disputeError?.message ?? "Failed to create dispute" };
+  }
+
+  // Hash the description for integrity verification
+  const contentHash = await hashContent(data.description);
+
+  // Insert the initial claim submission
+  const { error: submissionError } = await supabase
+    .from("dispute_submissions")
+    .insert({
+      dispute_id: dispute.id,
+      submission_type: "initial_claim",
+      submitted_by: user.id,
+      content: data.description,
+      content_hash: contentHash,
+    });
+
+  if (submissionError) {
+    // The dispute was created but the submission failed -- log it
+    await logAudit(supabase, user.id, "dispute.submission_failed", "dispute", dispute.id, {
+      reason: submissionError.message,
+    });
+    return { error: "Dispute created but initial submission failed. Please contact support." };
+  }
+
+  // Create a notification record (will be delivered when responding party signs up)
+  await supabase.from("notifications").insert({
+    user_id: user.id, // placeholder -- will be re-targeted on respondent sign-up
+    dispute_id: dispute.id,
+    type: "dispute_filed",
+    title: "New dispute filed",
+    body: `A dispute has been filed regarding: ${data.subject}`,
+  });
+
+  // Audit log
+  await logAudit(supabase, user.id, "dispute.filed", "dispute", dispute.id, {
+    dispute_type: data.dispute_type,
+    responding_party_email: data.responding_party_email,
+  });
+
+  return { disputeId: dispute.id };
+}
+
+/**
+ * Add a submission to an existing dispute. Validates the submission type
+ * is allowed given the current dispute status and the user's role, applies
+ * status transitions, and creates an audit trail.
+ */
+export async function addSubmission(input: {
+  dispute_id: string;
+  submission_type: string;
+  content: string;
+  metadata?: Record<string, unknown>;
+}): Promise<{ submissionId: string } | { error: string }> {
+  const supabase = await createClient();
+  const user = await getAuthenticatedUser(supabase);
+  if (!user) return { error: "Not authenticated" };
+
+  // Validate input shape
+  const parsed = submissionSchema.safeParse(input);
+  if (!parsed.success) {
+    const firstIssue = parsed.error.issues[0];
+    return { error: firstIssue?.message ?? "Validation failed" };
+  }
+
+  const { dispute_id, submission_type, content, metadata } = parsed.data;
+
+  // Fetch the dispute
+  const { data: dispute, error: disputeError } = await supabase
+    .from("disputes")
+    .select("*")
+    .eq("id", dispute_id)
+    .is("deleted_at", null)
+    .single();
+
+  if (disputeError || !dispute) {
+    return { error: "Dispute not found" };
+  }
+
+  const role = getUserRole(dispute, user.id);
+  if (!role) {
+    return { error: "Not authorised to submit to this dispute" };
+  }
+
+  // ----- Submission type validation -----
+  const validationError = validateSubmissionType(
+    submission_type,
+    dispute.status,
+    role,
+    dispute,
+    user.id,
+    metadata,
+  );
+  if (validationError) return { error: validationError };
+
+  // For acceptance/rejection, verify the referenced proposal exists and
+  // belongs to the OTHER party
+  if (submission_type === "acceptance" || submission_type === "rejection") {
+    const proposalId = metadata?.proposal_submission_id as string | undefined;
+    if (!proposalId) {
+      return { error: "A proposal_submission_id is required in metadata" };
+    }
+
+    const { data: proposal } = await supabase
+      .from("dispute_submissions")
+      .select("submitted_by, submission_type")
+      .eq("id", proposalId)
+      .eq("dispute_id", dispute_id)
+      .single();
+
+    if (!proposal || proposal.submission_type !== "proposal") {
+      return { error: "Referenced proposal not found" };
+    }
+    if (proposal.submitted_by === user.id) {
+      return { error: "You cannot accept or reject your own proposal" };
+    }
+  }
+
+  // Hash the content
+  const contentHash = await hashContent(content);
+
+  // Insert the submission
+  const { data: submission, error: insertError } = await supabase
+    .from("dispute_submissions")
+    .insert({
+      dispute_id,
+      submission_type: submission_type as Database["public"]["Enums"]["submission_type"],
+      submitted_by: user.id,
+      content,
+      content_hash: contentHash,
+      metadata: metadata ?? null,
+    })
+    .select("id")
+    .single();
+
+  if (insertError || !submission) {
+    return { error: insertError?.message ?? "Failed to create submission" };
+  }
+
+  // If this is a 'response' and the responding_party_id is not yet set,
+  // claim this dispute as the responding party
+  if (submission_type === "response" && !dispute.responding_party_id) {
+    await supabase
+      .from("disputes")
+      .update({ responding_party_id: user.id })
+      .eq("id", dispute_id);
+  }
+
+  // Apply status transition if applicable
+  const newStatus = STATUS_TRANSITIONS[submission_type];
+  if (newStatus) {
+    const updatePayload: Record<string, unknown> = {
+      status: newStatus,
+    };
+    if (newStatus === "resolved") {
+      updatePayload.resolved_at = new Date().toISOString();
+    }
+    await supabase.from("disputes").update(updatePayload).eq("id", dispute_id);
+  }
+
+  // Audit log
+  await logAudit(supabase, user.id, "dispute.submission_added", "dispute_submission", submission.id, {
+    dispute_id,
+    submission_type,
+  });
+
+  return { submissionId: submission.id };
+}
+
+/**
+ * Generate a time-limited signed download URL for an evidence file.
+ * Validates the requesting user is a party to the dispute.
+ */
+export async function getSignedUrl(
+  fileId: string,
+): Promise<{ url: string } | { error: string }> {
+  const supabase = await createClient();
+  const user = await getAuthenticatedUser(supabase);
+  if (!user) return { error: "Not authenticated" };
+
+  // Fetch the evidence file record
+  const { data: file, error: fileError } = await supabase
+    .from("evidence_files")
+    .select("storage_path, dispute_id")
+    .eq("id", fileId)
+    .single();
+
+  if (fileError || !file) {
+    return { error: "File not found" };
+  }
+
+  // Verify user is a party to the dispute
+  const { data: dispute } = await supabase
+    .from("disputes")
+    .select("initiating_party_id, responding_party_id")
+    .eq("id", file.dispute_id)
+    .is("deleted_at", null)
+    .single();
+
+  if (!dispute || !getUserRole(dispute, user.id)) {
+    return { error: "Not authorised to access this file" };
+  }
+
+  // Generate a signed URL (1 hour expiry)
+  const { data: signedData, error: signError } = await supabase.storage
+    .from("evidence")
+    .createSignedUrl(file.storage_path, 3600);
+
+  if (signError || !signedData) {
+    return { error: signError?.message ?? "Failed to generate download URL" };
+  }
+
+  return { url: signedData.signedUrl };
+}
+
+/**
+ * Withdraw a dispute. Only the initiating party can withdraw, and only
+ * while the dispute is in an active status.
+ */
+export async function withdrawDispute(
+  disputeId: string,
+  reason: string,
+): Promise<{ success: true } | { error: string }> {
+  const supabase = await createClient();
+  const user = await getAuthenticatedUser(supabase);
+  if (!user) return { error: "Not authenticated" };
+
+  if (!reason || reason.trim().length === 0) {
+    return { error: "A reason for withdrawal is required" };
+  }
+
+  const { data: dispute, error: fetchError } = await supabase
+    .from("disputes")
+    .select("*")
+    .eq("id", disputeId)
+    .is("deleted_at", null)
+    .single();
+
+  if (fetchError || !dispute) {
+    return { error: "Dispute not found" };
+  }
+
+  // Only the initiating party can withdraw
+  if (dispute.initiating_party_id !== user.id) {
+    return { error: "Only the initiating party can withdraw a dispute" };
+  }
+
+  // Only active statuses can be withdrawn
+  const withdrawableStatuses = ["filed", "awaiting_response", "in_progress"];
+  if (!withdrawableStatuses.includes(dispute.status)) {
+    return { error: `Cannot withdraw a dispute with status "${dispute.status}"` };
+  }
+
+  // Create the withdrawal submission
+  const contentHash = await hashContent(reason);
+
+  const { error: submissionError } = await supabase
+    .from("dispute_submissions")
+    .insert({
+      dispute_id: disputeId,
+      submission_type: "withdrawal",
+      submitted_by: user.id,
+      content: reason,
+      content_hash: contentHash,
+    });
+
+  if (submissionError) {
+    return { error: submissionError.message };
+  }
+
+  // Update dispute status
+  const { error: updateError } = await supabase
+    .from("disputes")
+    .update({ status: "withdrawn" })
+    .eq("id", disputeId);
+
+  if (updateError) {
+    return { error: updateError.message };
+  }
+
+  // Audit log
+  await logAudit(supabase, user.id, "dispute.withdrawn", "dispute", disputeId, {
+    reason,
+  });
+
+  return { success: true };
+}
+
+// ---------------------------------------------------------------------------
+// Submission type validation logic
+// ---------------------------------------------------------------------------
+
+/**
+ * Validates whether a submission type is allowed given the current dispute
+ * state and user role. Returns an error message string if invalid, or null
+ * if the submission is permitted.
+ */
+function validateSubmissionType(
+  submissionType: string,
+  status: string,
+  role: UserRole,
+  dispute: { initiating_party_id: string; responding_party_id: string | null },
+  userId: string,
+  metadata?: Record<string, unknown>,
+): string | null {
+  switch (submissionType) {
+    case "initial_claim":
+      // Only allowed during filing (handled by fileDispute, not addSubmission)
+      return "Initial claims can only be created during dispute filing";
+
+    case "response":
+      if (role !== "responding" && dispute.responding_party_id !== null) {
+        return "Only the responding party can submit a response";
+      }
+      // If responding_party_id is null, this user is claiming the respondent role,
+      // which is allowed if they match the responding party email (checked by RLS).
+      // We allow it here; RLS handles the authorisation.
+      if (status !== "filed" && status !== "awaiting_response") {
+        return "A response can only be submitted when the dispute is filed or awaiting response";
+      }
+      return null;
+
+    case "reply":
+      if (status !== "in_progress") {
+        return "Replies can only be submitted when the dispute is in progress";
+      }
+      return null;
+
+    case "proposal":
+      if (status !== "in_progress") {
+        return "Proposals can only be submitted when the dispute is in progress";
+      }
+      return null;
+
+    case "acceptance": {
+      if (status !== "in_progress") {
+        return "Acceptance can only be submitted when the dispute is in progress";
+      }
+      if (!metadata?.proposal_submission_id) {
+        return "A proposal_submission_id is required to accept a proposal";
+      }
+      return null;
+    }
+
+    case "rejection": {
+      if (status !== "in_progress") {
+        return "Rejection can only be submitted when the dispute is in progress";
+      }
+      if (!metadata?.proposal_submission_id) {
+        return "A proposal_submission_id is required to reject a proposal";
+      }
+      return null;
+    }
+
+    case "evidence_summary":
+      if (status !== "in_progress") {
+        return "Evidence summaries can only be submitted when the dispute is in progress";
+      }
+      return null;
+
+    case "withdrawal":
+      if (role !== "initiating") {
+        return "Only the initiating party can withdraw a dispute";
+      }
+      if (!["filed", "awaiting_response", "in_progress"].includes(status)) {
+        return "Cannot withdraw a dispute in its current status";
+      }
+      return null;
+
+    default:
+      return `Unknown submission type: ${submissionType}`;
+  }
+}

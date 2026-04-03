@@ -83,6 +83,67 @@ export type Database = {
         }
         Relationships: []
       }
+      dispute_mediator_requests: {
+        Row: {
+          created_at: string
+          dispute_id: string
+          id: string
+          mediator_id: string | null
+          request_message: string | null
+          requested_by: string
+          responded_at: string | null
+          response_message: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          dispute_id: string
+          id?: string
+          mediator_id?: string | null
+          request_message?: string | null
+          requested_by: string
+          responded_at?: string | null
+          response_message?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          dispute_id?: string
+          id?: string
+          mediator_id?: string | null
+          request_message?: string | null
+          requested_by?: string
+          responded_at?: string | null
+          response_message?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispute_mediator_requests_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispute_mediator_requests_mediator_id_fkey"
+            columns: ["mediator_id"]
+            isOneToOne: false
+            referencedRelation: "mediators"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispute_mediator_requests_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dispute_submissions: {
         Row: {
           content: string
@@ -138,9 +199,11 @@ export type Database = {
           created_by: string | null
           currency: string | null
           deleted_at: string | null
+          description: string | null
           dispute_type: Database["public"]["Enums"]["dispute_type"]
           escalated_at: string | null
           id: string
+          includes_dispute_clause: boolean
           initiating_party_id: string
           reference_number: string
           resolution_summary: string | null
@@ -158,11 +221,13 @@ export type Database = {
           created_by?: string | null
           currency?: string | null
           deleted_at?: string | null
+          description?: string | null
           dispute_type: Database["public"]["Enums"]["dispute_type"]
           escalated_at?: string | null
           id?: string
+          includes_dispute_clause?: boolean
           initiating_party_id: string
-          reference_number: string
+          reference_number?: string
           resolution_summary?: string | null
           resolved_at?: string | null
           responding_party_email: string
@@ -178,9 +243,11 @@ export type Database = {
           created_by?: string | null
           currency?: string | null
           deleted_at?: string | null
+          description?: string | null
           dispute_type?: Database["public"]["Enums"]["dispute_type"]
           escalated_at?: string | null
           id?: string
+          includes_dispute_clause?: boolean
           initiating_party_id?: string
           reference_number?: string
           resolution_summary?: string | null
@@ -272,6 +339,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      feature_flags: {
+        Row: {
+          created_at: string
+          description: string | null
+          enabled: boolean
+          flag_key: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          flag_key: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          flag_key?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       handshake_responses: {
         Row: {
@@ -440,6 +534,91 @@ export type Database = {
           {
             foreignKeyName: "handshakes_party_b_user_id_fkey"
             columns: ["party_b_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mediator_specialisations: {
+        Row: {
+          created_at: string
+          id: string
+          mediator_id: string
+          specialisation: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mediator_id: string
+          specialisation: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mediator_id?: string
+          specialisation?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mediator_specialisations_mediator_id_fkey"
+            columns: ["mediator_id"]
+            isOneToOne: false
+            referencedRelation: "mediators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mediators: {
+        Row: {
+          accreditation: string | null
+          approved_at: string | null
+          bio: string | null
+          created_at: string
+          display_name: string
+          email: string
+          hourly_rate_pence: number | null
+          id: string
+          is_active: boolean
+          jurisdiction: string
+          updated_at: string
+          user_id: string | null
+          years_experience: number | null
+        }
+        Insert: {
+          accreditation?: string | null
+          approved_at?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name: string
+          email: string
+          hourly_rate_pence?: number | null
+          id?: string
+          is_active?: boolean
+          jurisdiction?: string
+          updated_at?: string
+          user_id?: string | null
+          years_experience?: number | null
+        }
+        Update: {
+          accreditation?: string | null
+          approved_at?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string
+          email?: string
+          hourly_rate_pence?: number | null
+          id?: string
+          is_active?: boolean
+          jurisdiction?: string
+          updated_at?: string
+          user_id?: string | null
+          years_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mediators_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -914,7 +1093,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_dispute_reference: { Args: never; Returns: string }
     }
     Enums: {
       dispute_status:

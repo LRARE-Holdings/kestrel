@@ -172,7 +172,7 @@ RLS policy is blocking access. Check that the test user is a named party on the 
 **Clause assembly returns empty document:**
 Run `pnpm clauses:validate` to check for broken dependencies. Check that the condition logic matches the test inputs.
 
-**Magic link emails not arriving locally:**
+**Auth emails not arriving locally (confirmation, password reset):**
 Supabase local auth captures emails in Inbucket: `http://localhost:54324`. Check there instead of your real inbox.
 
 ---

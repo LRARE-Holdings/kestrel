@@ -141,3 +141,18 @@ Final auth lineup:
 4. **Enterprise SSO (SAML/OIDC)** — for companies with own IdP, via Supabase SSO (Pro plan feature) or WorkOS
 5. **Passkeys** — deferred until Supabase ships native support or founder decides on custom implementation
 No magic link. SECURITY.md and auth code to be updated accordingly.
+
+## [2026-04-03] Correction — Next.js 16 Proxy Convention
+Next.js 16 replaced `middleware.ts` with `proxy.ts`. Root `proxy.ts` already exists and calls `updateSession()` from `lib/supabase/middleware.ts`. Do not create `middleware.ts` — use `proxy.ts` instead.
+
+## [2026-04-03] Architecture — Cookie Consent Banner + Analytics
+Added GDPR-compliant cookie consent banner with Google Analytics 4 and Vercel Analytics.
+- `lib/consent.ts` — reads/writes `kestrel_consent` cookie ("granted" | "denied"), updates GA consent mode
+- `components/ui/cookie-banner.tsx` — client component, slides up from bottom, on-brand (cream/white, kestrel green accept button, border styling). Links to /privacy. Decline + Accept buttons.
+- `components/analytics.tsx` — client component, conditionally renders GA4 `<Script>` tags and `<VercelAnalytics />` only when consent === "granted". GA configured with `anonymize_ip: true`.
+- Root `app/layout.tsx` updated to include both components.
+- Env var needed: `NEXT_PUBLIC_GA_MEASUREMENT_ID` (GA4 measurement ID, e.g. G-XXXXXXXXXX).
+- Installed `@vercel/analytics` package.
+- Banner does not block page usage — appears as floating bottom overlay.
+- On accept, page reloads to initialise analytics scripts. On decline, scripts never load.
+- Consent cookie lasts 1 year, SameSite=Lax, Secure.

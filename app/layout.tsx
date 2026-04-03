@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { CookieBanner } from "@/components/ui/cookie-banner";
+import { Analytics } from "@/components/analytics";
 
 const satoshi = localFont({
   src: [
@@ -44,6 +46,8 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-cream text-ink font-body">
         {children}
+        <CookieBanner />
+        <Analytics />
       </body>
     </html>
   );

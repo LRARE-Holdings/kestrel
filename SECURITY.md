@@ -117,10 +117,16 @@ Kestrel processes personal data of UK residents under the UK GDPR (retained EU l
 ## Authentication & Authorisation
 
 ### Authentication
-- **Method:** Magic link (email-based, passwordless)
 - **Provider:** Supabase Auth
+- **Methods:**
+  - Email + password (with email confirmation)
+  - Google OAuth (social login)
+  - Microsoft / Azure AD OAuth (social login)
+  - Enterprise SSO via SAML/OIDC (future — Supabase Team/Enterprise plan, dashboard-configured)
+  - Passkeys / WebAuthn (deferred — pending native Supabase support)
 - **Session:** JWT stored in httpOnly cookie, refreshed automatically
 - **Expiry:** 7 days idle, 30 days absolute
+- **Password requirements:** Minimum 8 characters (enforced client-side and by Supabase)
 - **MFA:** Not required at launch, but the architecture should support adding it
 
 ### Authorisation Model

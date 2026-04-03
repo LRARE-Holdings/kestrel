@@ -1,9 +1,8 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { signInWithPassword } from "@/lib/auth/actions";
+import { signUpWithPassword } from "@/lib/auth/actions";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -61,10 +60,8 @@ function OAuthButtons() {
   );
 }
 
-function SignInForm() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const redirectTo = searchParams.get("redirect");
+function SignUpForm() {
+  const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -72,25 +69,66 @@ function SignInForm() {
     setLoading(true);
     setError(null);
 
-    if (redirectTo) {
-      formData.set("redirect", redirectTo);
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirm_password") as string;
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      setLoading(false);
+      return;
     }
 
-    const result = await signInWithPassword(formData);
+    const result = await signUpWithPassword(formData);
 
-    if (result?.error) {
+    if (result.error) {
       setError(result.error);
       setLoading(false);
+    } else {
+      setSent(true);
+      setLoading(false);
     }
-    // On success, signInWithPassword calls redirect() — no client handling needed
+  }
+
+  if (sent) {
+    return (
+      <div className="text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-kestrel/8">
+          <svg
+            className="h-7 w-7 text-kestrel"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+            />
+          </svg>
+        </div>
+        <h1 className="mt-5 font-display text-xl font-bold text-ink">
+          Check your email
+        </h1>
+        <p className="mt-2 text-sm leading-relaxed text-text-secondary">
+          We&apos;ve sent a confirmation link to your email address. Click the link to activate your account.
+        </p>
+        <Link
+          href="/sign-in"
+          className="mt-6 inline-block text-sm font-medium text-kestrel transition-colors hover:text-kestrel-hover"
+        >
+          Back to sign in
+        </Link>
+      </div>
+    );
   }
 
   return (
     <div>
       <div className="text-center">
-        <h1 className="font-display text-xl font-bold text-ink">Sign in to Kestrel</h1>
+        <h1 className="font-display text-xl font-bold text-ink">Create your account</h1>
         <p className="mt-1.5 text-sm text-text-secondary">
-          Welcome back. Choose how you&apos;d like to sign in.
+          Get started with Kestrel for free.
         </p>
       </div>
 
@@ -122,43 +160,57 @@ function SignInForm() {
           name="password"
           type="password"
           label="Password"
-          placeholder="Enter your password"
+          placeholder="At least 8 characters"
           required
-          autoComplete="current-password"
+          minLength={8}
+          autoComplete="new-password"
+        />
+
+        <Input
+          name="confirm_password"
+          type="password"
+          label="Confirm password"
+          placeholder="Repeat your password"
+          required
+          minLength={8}
+          autoComplete="new-password"
           error={error ?? undefined}
         />
 
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Signing in..." : "Sign in"}
+          {loading ? "Creating account..." : "Create account"}
         </Button>
       </form>
 
-      <div className="mt-4 text-center">
-        <Link
-          href="/reset-password"
-          className="text-sm text-text-muted transition-colors hover:text-kestrel"
-        >
-          Forgot your password?
+      <p className="mt-4 text-center text-xs leading-relaxed text-text-muted">
+        By creating an account, you agree to our{" "}
+        <Link href="/terms" className="underline transition-colors hover:text-ink">
+          Terms
+        </Link>{" "}
+        and{" "}
+        <Link href="/privacy" className="underline transition-colors hover:text-ink">
+          Privacy Policy
         </Link>
-      </div>
+        .
+      </p>
 
       <div className="mt-6 text-center text-sm text-text-secondary">
-        Don&apos;t have an account?{" "}
+        Already have an account?{" "}
         <Link
-          href="/sign-up"
+          href="/sign-in"
           className="font-medium text-kestrel transition-colors hover:text-kestrel-hover"
         >
-          Sign up
+          Sign in
         </Link>
       </div>
     </div>
   );
 }
 
-export default function SignInPage() {
+export default function SignUpPage() {
   return (
     <Suspense>
-      <SignInForm />
+      <SignUpForm />
     </Suspense>
   );
 }

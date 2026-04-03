@@ -34,7 +34,7 @@ Kestrel is a **Next.js application** backed by **Supabase** (PostgreSQL + Auth +
          │  │  PostgreSQL   │  │  ← RLS on every table
          │  └──────────────┘  │
          │  ┌──────────────┐  │
-         │  │     Auth      │  │  ← Email + magic link
+         │  │     Auth      │  │  ← Email/password + Google + Microsoft OAuth
          │  └──────────────┘  │
          │  ┌──────────────┐  │
          │  │   Storage     │  │  ← Generated documents (authenticated only)

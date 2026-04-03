@@ -48,8 +48,12 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // If signed in and visiting sign-in, redirect to dashboard
-  if (request.nextUrl.pathname === "/sign-in" && user) {
+  // If signed in and visiting auth pages, redirect to dashboard
+  const isAuthPage = request.nextUrl.pathname === "/sign-in" ||
+    request.nextUrl.pathname === "/sign-up" ||
+    request.nextUrl.pathname === "/reset-password";
+
+  if (isAuthPage && user) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);

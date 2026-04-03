@@ -52,7 +52,7 @@ export function Header({ user }: HeaderProps) {
                 <Link href="/sign-in">
                   <Button variant="ghost" size="sm">Sign in</Button>
                 </Link>
-                <Link href="/sign-in">
+                <Link href="/sign-up">
                   <Button size="sm">Get started</Button>
                 </Link>
               </>
@@ -118,7 +118,7 @@ export function Header({ user }: HeaderProps) {
                   </>
                 ) : (
                   <div className="flex flex-col gap-2">
-                    <Link href="/sign-in" onClick={() => setMobileMenuOpen(false)}>
+                    <Link href="/sign-up" onClick={() => setMobileMenuOpen(false)}>
                       <Button className="w-full" size="sm">Get started</Button>
                     </Link>
                   </div>

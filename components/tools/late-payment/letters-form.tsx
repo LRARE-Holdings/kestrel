@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
+import { SaveDocumentButton } from "@/components/tools/save-document-button";
 
 const STAGES = [
   {
@@ -329,10 +330,25 @@ export function LettersForm({ baseRate }: { baseRate: number }) {
                 <pre className="max-h-[600px] overflow-auto whitespace-pre-wrap font-body text-sm leading-relaxed text-ink">
                   {letter.body}
                 </pre>
-                <div className="mt-6 flex gap-3">
+                <div className="mt-6 flex flex-wrap gap-3">
                   <Button onClick={copyToClipboard} size="md">
                     {copied ? "Copied!" : "Copy to clipboard"}
                   </Button>
+                  <SaveDocumentButton
+                    documentType="late_payment_letter"
+                    title={`${letter.stageName} — ${watch("debtor.businessName") || "Unknown"}`}
+                    configuration={{
+                      creditor: watch("creditor"),
+                      debtor: watch("debtor"),
+                      invoiceNumber: watch("invoiceNumber"),
+                      invoiceDate: watch("invoiceDate"),
+                      amountOwed: watch("amountOwed"),
+                      paymentTermsDays: watch("paymentTermsDays"),
+                      letterStage: watch("letterStage"),
+                      includeKestrelClause: watch("includeKestrelClause"),
+                    }}
+                    includesDisputeClause={includeKestrelClause}
+                  />
                 </div>
               </CardContent>
             </Card>

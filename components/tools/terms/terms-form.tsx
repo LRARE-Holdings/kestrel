@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
+import { SaveDocumentButton } from "@/components/tools/save-document-button";
 
 const SCHEMAS = {
   ecommerce: ecommerceSchema,
@@ -258,6 +259,12 @@ export function TermsForm({
                   <Button onClick={copyHtml} size="sm" variant="secondary">
                     {copied === "html" ? "Copied!" : "Copy HTML"}
                   </Button>
+                  <SaveDocumentButton
+                    documentType="terms_and_conditions"
+                    title={`Terms & Conditions — ${watch("business.businessName") || "Unknown"}`}
+                    configuration={watch() as Record<string, unknown>}
+                    includesDisputeClause={includeDisputeClause as boolean}
+                  />
                 </div>
               </CardContent>
             </Card>

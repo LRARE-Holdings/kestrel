@@ -1,91 +1,22 @@
-"use client";
-
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import {
-  ScrollFade,
-  ScrollStagger,
-  StaggerItem,
-  ScrollBlur,
-  ScrollScale,
-  ScrollSection,
-} from "@/components/ui/scroll-animations";
+import { getUser } from "@/lib/auth/actions";
+import { ToolsGrid } from "@/components/tools/tools-grid";
+import { ToolsCta } from "@/components/tools/tools-cta";
 
-const tools = [
-  {
-    title: "Late Payment Toolkit",
-    description:
-      "Calculate statutory interest on overdue invoices and generate chaser letters under the Late Payment Act.",
-    href: "/tools/late-payment",
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-      </svg>
-    ),
-  },
-  {
-    title: "Contract Templates",
-    description:
-      "Freelancer agreements, service contracts, and more. Assembled from vetted clauses with optional dispute resolution built in.",
-    href: "/tools/contracts",
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-      </svg>
-    ),
-  },
-  {
-    title: "Handshake",
-    description:
-      "Create a shareable agreement between two parties. Neither side needs to sign up. Confirm terms with a link.",
-    href: "/tools/handshake",
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-      </svg>
-    ),
-  },
-  {
-    title: "Terms & Conditions",
-    description:
-      "Terms and conditions for your website or service. Customised to your business type, compliant with UK consumer law.",
-    href: "/tools/terms",
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
-      </svg>
-    ),
-  },
-  {
-    title: "Notice Log",
-    description:
-      "Keep a timestamped record of formal notices sent to clients or suppliers. Track delivery, content, and responses in one place.",
-    href: "/tools/notice-log",
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-      </svg>
-    ),
-  },
-  {
-    title: "Milestone Tracker",
-    description:
-      "Track milestones and deliverables against agreed timelines. Automatic breach flagging when deadlines pass.",
-    href: "/tools/milestones",
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-      </svg>
-    ),
-  },
-] as const;
+export const metadata = {
+  title: "Free Business Tools — Kestrel",
+  description:
+    "Free tools for businesses in England and Wales. Contract templates, late payment calculators, and more. No sign-up required.",
+};
 
-export default function ToolsPage() {
+export default async function ToolsPage() {
+  const user = await getUser();
+
   return (
     <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 2xl:px-12">
-      {/* ═══ HERO ═══ */}
-      <section className="pb-6 pt-16 sm:pt-24">
-        <ScrollBlur className="mx-auto max-w-2xl text-center">
+      {/* Hero */}
+      <section className="pb-6 pt-8 sm:pt-12">
+        <div className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kestrel">
             Free tools
           </p>
@@ -95,73 +26,14 @@ export default function ToolsPage() {
           <p className="mt-6 text-lg leading-relaxed text-text-secondary">
             Tools for businesses in England and Wales. No sign-up required.
           </p>
-        </ScrollBlur>
+        </div>
       </section>
 
-      {/* ═══ TOOLS GRID ═══ */}
-      <ScrollSection className="pb-6">
-        <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
-          <ScrollStagger stagger={0.08} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {tools.map((tool) => (
-              <StaggerItem key={tool.href}>
-                <Link href={tool.href} className="group block h-full">
-                  <div className="relative flex h-full flex-col rounded-xl border border-border-subtle/60 bg-cream/50 p-6 transition-all duration-300 hover:border-kestrel/20 hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-kestrel/8 text-kestrel">
-                      {tool.icon}
-                    </span>
-                    <h2 className="mt-5 text-base font-semibold text-ink transition-colors group-hover:text-kestrel">
-                      {tool.title}
-                    </h2>
-                    <p className="mt-2 flex-1 text-sm leading-relaxed text-text-secondary">
-                      {tool.description}
-                    </p>
-                    <div className="mt-4 flex items-center text-xs font-medium text-kestrel opacity-0 transition-opacity group-hover:opacity-100">
-                      <span>Open tool</span>
-                      <svg className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                      </svg>
-                    </div>
-                  </div>
-                </Link>
-              </StaggerItem>
-            ))}
-          </ScrollStagger>
-        </div>
-      </ScrollSection>
+      {/* Tools grid */}
+      <ToolsGrid />
 
-      {/* ═══ CTA ═══ */}
-      <ScrollScale className="pb-6" from={0.96}>
-        <div className="relative overflow-hidden rounded-2xl bg-ink p-12 text-center shadow-sm sm:p-16">
-          <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-kestrel/20 blur-[80px]" />
-          <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-sage/15 blur-[60px]" />
-          <div className="relative z-10">
-            <ScrollFade direction="none" delay={0.1}>
-              <h2 className="font-display text-3xl font-bold tracking-tight text-cream sm:text-4xl">
-                Protect your contracts
-              </h2>
-            </ScrollFade>
-            <ScrollFade direction="up" delay={0.2} distance={20}>
-              <p className="mt-4 text-base text-cream/70">
-                Every tool includes a Kestrel dispute clause by default. One-click removable, always transparent.
-              </p>
-            </ScrollFade>
-            <ScrollFade direction="up" delay={0.3} distance={20}>
-              <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-                <Link href="/tools/late-payment">
-                  <Button size="lg" className="min-w-[200px] bg-cream text-ink hover:bg-white">
-                    Try the Late Payment Toolkit
-                  </Button>
-                </Link>
-                <Link href="/pricing">
-                  <Button variant="ghost" size="lg" className="min-w-[180px] border border-cream/30 !text-cream hover:bg-cream/10">
-                    View pricing
-                  </Button>
-                </Link>
-              </div>
-            </ScrollFade>
-          </div>
-        </div>
-      </ScrollScale>
+      {/* CTA — only show for anonymous users */}
+      {!user && <ToolsCta />}
     </div>
   );
 }

@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { SaveDocumentButton } from "@/components/tools/save-document-button";
 
 const PAYMENT_TERMS_OPTIONS = [
   { value: 14, label: "14 days" },
@@ -249,6 +250,24 @@ export function CalculatorForm({
               </div>
             </CardContent>
           </Card>
+
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-start">
+            <SaveDocumentButton
+              documentType="late_payment_letter"
+              title={`Late payment calculation — £${result.totalOwed.toFixed(2)}`}
+              configuration={{
+                invoiceAmount,
+                invoiceDate: watch("invoiceDate"),
+                paymentTermsDays: watch("paymentTermsDays"),
+                calculationDate: watch("calculationDate"),
+                daysOverdue: result.daysOverdue,
+                interestAccrued: result.interestAccrued,
+                compensationAmount: result.compensationAmount,
+                totalOwed: result.totalOwed,
+              }}
+              includesDisputeClause={false}
+            />
+          </div>
 
           {result.daysOverdue > 0 && (
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">

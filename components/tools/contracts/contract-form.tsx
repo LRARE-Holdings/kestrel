@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
+import { SaveDocumentButton } from "@/components/tools/save-document-button";
 
 type AnyContractData =
   | FreelancerInput
@@ -437,10 +438,16 @@ export function ContractForm({ contractType }: ContractFormProps) {
                   </div>
                 </div>
 
-                <div className="mt-6 flex gap-3">
+                <div className="mt-6 flex flex-wrap gap-3">
                   <Button onClick={copyToClipboard} size="md">
                     {copied ? "Copied!" : "Copy to clipboard"}
                   </Button>
+                  <SaveDocumentButton
+                    documentType="contract"
+                    title={document.title}
+                    configuration={watch() as Record<string, unknown>}
+                    includesDisputeClause={document.includesDisputeClause}
+                  />
                 </div>
               </CardContent>
             </Card>

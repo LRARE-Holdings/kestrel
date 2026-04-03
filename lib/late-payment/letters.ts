@@ -1,7 +1,6 @@
 import type { LetterInput } from "./schemas";
 import {
   calculateStatutoryInterest,
-  CURRENT_BASE_RATE,
   STATUTORY_RATE,
 } from "./calculator";
 
@@ -10,6 +9,10 @@ export interface LetterOutput {
   body: string;
   stage: number;
   stageName: string;
+}
+
+export interface LetterGeneratorOptions {
+  baseRate: number;
 }
 
 const STAGE_NAMES: Record<number, string> = {
@@ -23,16 +26,19 @@ const STAGE_NAMES: Record<number, string> = {
  * Generate a late-payment letter for the given stage.
  * All legal text is deterministic — no AI generation.
  */
-export function generateLetter(data: LetterInput): LetterOutput {
+export function generateLetter(
+  data: LetterInput,
+  options: LetterGeneratorOptions,
+): LetterOutput {
   switch (data.letterStage) {
     case 1:
       return generateStage1(data);
     case 2:
       return generateStage2(data);
     case 3:
-      return generateStage3(data);
+      return generateStage3(data, options.baseRate);
     case 4:
-      return generateStage4(data);
+      return generateStage4(data, options.baseRate);
     default:
       throw new Error(`Invalid letter stage: ${data.letterStage}`);
   }
@@ -167,9 +173,9 @@ function generateStage2(data: LetterInput): LetterOutput {
 
 // ── Stage 3: Formal Demand / Letter Before Action ───────────────────────────
 
-function generateStage3(data: LetterInput): LetterOutput {
+function generateStage3(data: LetterInput, baseRate: number): LetterOutput {
   const dueDate = getDueDate(data.invoiceDate, data.paymentTermsDays);
-  const interest = calculateStatutoryInterest(data.amountOwed, dueDate);
+  const interest = calculateStatutoryInterest(data.amountOwed, dueDate, new Date(), baseRate);
 
   const subject = `Formal Demand for Payment — Invoice ${data.invoiceNumber} — Letter Before Action`;
 
@@ -187,7 +193,7 @@ function generateStage3(data: LetterInput): LetterOutput {
     "We hereby give you formal notice that we are exercising our rights under the Late Payment of Commercial Debts (Interest) Act 1998 to claim:",
     "",
     `1. The outstanding principal: ${formatCurrency(data.amountOwed)}`,
-    `2. Statutory interest at ${interest.annualRate}% per annum (Bank of England base rate of ${CURRENT_BASE_RATE}% + ${STATUTORY_RATE}%): ${formatCurrency(interest.interestAccrued)} (${interest.daysOverdue} days at ${formatCurrency(interest.dailyRate)} per day, continuing to accrue)`,
+    `2. Statutory interest at ${interest.annualRate}% per annum (Bank of England base rate of ${baseRate}% + ${STATUTORY_RATE}%): ${formatCurrency(interest.interestAccrued)} (${interest.daysOverdue} days at ${formatCurrency(interest.dailyRate)} per day, continuing to accrue)`,
     `3. Fixed-sum compensation: ${formatCurrency(interest.compensationAmount)}`,
     "",
     `Total currently owed: ${formatCurrency(interest.totalOwed)}`,
@@ -209,9 +215,9 @@ function generateStage3(data: LetterInput): LetterOutput {
 
 // ── Stage 4: Notice of Intent to Commence Proceedings ───────────────────────
 
-function generateStage4(data: LetterInput): LetterOutput {
+function generateStage4(data: LetterInput, baseRate: number): LetterOutput {
   const dueDate = getDueDate(data.invoiceDate, data.paymentTermsDays);
-  const interest = calculateStatutoryInterest(data.amountOwed, dueDate);
+  const interest = calculateStatutoryInterest(data.amountOwed, dueDate, new Date(), baseRate);
 
   const subject = `Final Notice — Invoice ${data.invoiceNumber} — Proceedings Will Be Commenced`;
 

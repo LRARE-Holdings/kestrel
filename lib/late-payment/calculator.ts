@@ -6,12 +6,6 @@
  * Interest is calculated on a simple daily basis.
  */
 
-/** Current BoE base rate as a percentage. */
-export const CURRENT_BASE_RATE = 4.50;
-
-/** ISO date string of when CURRENT_BASE_RATE was last verified. */
-export const BASE_RATE_LAST_UPDATED = "2026-03-20";
-
 /** The statutory supplement added to the base rate under the 1998 Act. */
 export const STATUTORY_RATE = 8;
 
@@ -63,13 +57,13 @@ export interface StatutoryInterestResult {
  * @param amount       Original debt in GBP
  * @param dueDate      Date payment was due
  * @param calcDate     Date to calculate to (defaults to today)
- * @param baseRate     BoE base rate as a percentage (defaults to CURRENT_BASE_RATE)
+ * @param baseRate     BoE base rate as a percentage (fetched from base_rates table)
  */
 export function calculateStatutoryInterest(
   amount: number,
   dueDate: Date,
   calcDate: Date = new Date(),
-  baseRate: number = CURRENT_BASE_RATE,
+  baseRate: number,
 ): StatutoryInterestResult {
   const annualRate = baseRate + STATUTORY_RATE;
   const dailyRate = round((amount * (annualRate / 100)) / 365);

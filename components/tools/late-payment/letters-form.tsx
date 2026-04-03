@@ -94,6 +94,7 @@ export function LettersForm({ baseRate }: { baseRate: number }) {
         &larr; Late Payment Toolkit
       </Link>
 
+      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
       <h1 className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
         Letter Generator
       </h1>
@@ -373,6 +374,7 @@ export function LettersForm({ baseRate }: { baseRate: number }) {
         (Interest) Act 1998 applies to commercial debts in England and Wales
         only.
       </p>
+      </div>
     </div>
   );
 }

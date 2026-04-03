@@ -115,6 +115,7 @@ export function CalculatorForm({
         &larr; Late Payment Toolkit
       </Link>
 
+      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
       <h1 className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
         Statutory Interest Calculator
       </h1>
@@ -283,6 +284,7 @@ export function CalculatorForm({
         . Verify the current rate before relying on these figures in formal
         correspondence.
       </p>
+      </div>
     </div>
   );
 }

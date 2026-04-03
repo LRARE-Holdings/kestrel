@@ -94,6 +94,7 @@ export function TermsForm({
         &larr; Terms & Conditions Generator
       </Link>
 
+      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
       <h1 className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
         {businessTypeLabel} Terms
       </h1>
@@ -284,6 +285,7 @@ export function TermsForm({
         Consumer Rights Act 2015, the Consumer Contracts Regulations 2013, and
         the UK GDPR.
       </p>
+      </div>
     </div>
   );
 }

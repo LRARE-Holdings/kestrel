@@ -70,48 +70,50 @@ export default function ContractsPage() {
         &larr; All tools
       </Link>
 
-      <h1 className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
-        Contract Templates
-      </h1>
-      <p className="mt-3 max-w-2xl text-text-secondary leading-relaxed">
-        Professional contracts assembled from a pre-written clause library with
-        conditional logic. Every template includes an optional Kestrel dispute
-        resolution clause. No sign-up required.
-      </p>
+      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+        <h1 className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
+          Contract Templates
+        </h1>
+        <p className="mt-3 max-w-2xl text-text-secondary leading-relaxed">
+          Professional contracts assembled from a pre-written clause library with
+          conditional logic. Every template includes an optional Kestrel dispute
+          resolution clause. No sign-up required.
+        </p>
 
-      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {CONTRACT_CARDS.map((contract) => (
-          <Link
-            key={contract.slug}
-            href={`/tools/contracts/${contract.slug}`}
-            className="group"
-          >
-            <Card className="h-full transition-shadow hover:shadow-[var(--shadow-md)] group-hover:border-kestrel/30">
-              <CardContent className="flex flex-col gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] bg-sage/15 text-kestrel">
-                  {contract.icon}
-                </div>
-                <div>
-                  <h2 className="text-base font-semibold text-ink group-hover:text-kestrel transition-colors">
-                    {contract.title}
-                  </h2>
-                  <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">
-                    {contract.description}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {CONTRACT_CARDS.map((contract) => (
+            <Link
+              key={contract.slug}
+              href={`/tools/contracts/${contract.slug}`}
+              className="group"
+            >
+              <Card className="h-full transition-shadow hover:shadow-[var(--shadow-md)] group-hover:border-kestrel/30">
+                <CardContent className="flex flex-col gap-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] bg-sage/15 text-kestrel">
+                    {contract.icon}
+                  </div>
+                  <div>
+                    <h2 className="text-base font-semibold text-ink group-hover:text-kestrel transition-colors">
+                      {contract.title}
+                    </h2>
+                    <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">
+                      {contract.description}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+
+        <p className="mt-12 text-xs leading-relaxed text-text-muted">
+          These contract templates are provided for informational purposes only and
+          do not constitute legal advice. They are intended as a starting point for
+          businesses in England and Wales and should be reviewed by a qualified
+          legal professional before execution. Kestrel does not accept liability for
+          any loss arising from the use of these templates.
+        </p>
       </div>
-
-      <p className="mt-12 text-xs leading-relaxed text-text-muted">
-        These contract templates are provided for informational purposes only and
-        do not constitute legal advice. They are intended as a starting point for
-        businesses in England and Wales and should be reviewed by a qualified
-        legal professional before execution. Kestrel does not accept liability for
-        any loss arising from the use of these templates.
-      </p>
     </div>
   );
 }

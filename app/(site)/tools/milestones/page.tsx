@@ -18,29 +18,31 @@ export default function MilestonesPage() {
         &larr; All tools
       </Link>
 
-      <h1 className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
-        Milestone Tracker
-      </h1>
-      <p className="mt-3 max-w-2xl text-text-secondary leading-relaxed">
-        Set up milestones for a project between two parties. Share the tracker
-        via a unique link so both sides can see the same deadlines, status, and
-        deliverables.
-      </p>
-      <p className="mt-2 text-sm text-text-muted">
-        No sign-up required. Free.
-      </p>
+      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+        <h1 className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
+          Milestone Tracker
+        </h1>
+        <p className="mt-3 max-w-2xl text-text-secondary leading-relaxed">
+          Set up milestones for a project between two parties. Share the tracker
+          via a unique link so both sides can see the same deadlines, status, and
+          deliverables.
+        </p>
+        <p className="mt-2 text-sm text-text-muted">
+          No sign-up required. Free.
+        </p>
 
-      <div className="mt-8">
-        <ProjectForm />
+        <div className="mt-8">
+          <ProjectForm />
+        </div>
+
+        <p className="mt-12 text-xs leading-relaxed text-text-muted">
+          This milestone tracker is for project management and communication
+          purposes. It does not constitute a binding agreement unless incorporated
+          into a contract between the parties. If a dispute arises, seek
+          independent legal advice. This tool is designed for use by businesses in
+          England and Wales.
+        </p>
       </div>
-
-      <p className="mt-12 text-xs leading-relaxed text-text-muted">
-        This milestone tracker is for project management and communication
-        purposes. It does not constitute a binding agreement unless incorporated
-        into a contract between the parties. If a dispute arises, seek
-        independent legal advice. This tool is designed for use by businesses in
-        England and Wales.
-      </p>
     </div>
   );
 }

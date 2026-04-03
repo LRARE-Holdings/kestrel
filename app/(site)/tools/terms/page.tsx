@@ -37,53 +37,55 @@ export default function TermsGeneratorPage() {
         &larr; All tools
       </Link>
 
-      <h1 className="font-display text-4xl text-ink sm:text-5xl">
-        Terms & Conditions Generator
-      </h1>
-      <p className="mt-4 max-w-2xl text-lg text-text-secondary leading-relaxed">
-        Generate UK-compliant terms and conditions customised to your business
-        type. Includes Consumer Rights Act 2015 compliance, GDPR sections, and
-        optional dispute resolution.
-      </p>
+      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+        <h1 className="font-display text-4xl text-ink sm:text-5xl">
+          Terms & Conditions Generator
+        </h1>
+        <p className="mt-4 max-w-2xl text-lg text-text-secondary leading-relaxed">
+          Generate UK-compliant terms and conditions customised to your business
+          type. Includes Consumer Rights Act 2015 compliance, GDPR sections, and
+          optional dispute resolution.
+        </p>
 
-      <div className="mt-12 grid gap-6 sm:grid-cols-3">
-        {BUSINESS_TYPES.map((type) => (
-          <Link key={type.value} href={`/tools/terms/${type.value}`} className="group">
-            <Card className="h-full transition-shadow hover:shadow-[var(--shadow-md)] group-hover:border-kestrel/30">
-              <CardContent className="flex flex-col gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] bg-kestrel/10 text-kestrel">
-                  {TYPE_ICONS[type.value]}
-                </div>
-                <div>
-                  <h2 className="text-base font-semibold text-ink group-hover:text-kestrel transition-colors">
-                    {type.label}
-                  </h2>
-                  <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">
-                    {type.description}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
-      </div>
+        <div className="mt-12 grid gap-6 sm:grid-cols-3">
+          {BUSINESS_TYPES.map((type) => (
+            <Link key={type.value} href={`/tools/terms/${type.value}`} className="group">
+              <Card className="h-full transition-shadow hover:shadow-[var(--shadow-md)] group-hover:border-kestrel/30">
+                <CardContent className="flex flex-col gap-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] bg-kestrel/10 text-kestrel">
+                    {TYPE_ICONS[type.value]}
+                  </div>
+                  <div>
+                    <h2 className="text-base font-semibold text-ink group-hover:text-kestrel transition-colors">
+                      {type.label}
+                    </h2>
+                    <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">
+                      {type.description}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
 
-      <div className="mt-12 rounded-[var(--radius-lg)] border border-border-subtle bg-white p-6">
-        <h3 className="text-sm font-semibold text-ink">How it works</h3>
-        <ul className="mt-3 space-y-2 text-sm text-text-secondary">
-          <li className="flex items-start gap-2">
-            <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-kestrel/10 text-xs font-medium text-kestrel">1</span>
-            Select your business type above
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-kestrel/10 text-xs font-medium text-kestrel">2</span>
-            Answer a short questionnaire about your business
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-kestrel/10 text-xs font-medium text-kestrel">3</span>
-            Preview your terms, then download as PDF, DOCX, Markdown, or HTML
-          </li>
-        </ul>
+        <div className="mt-12 rounded-[var(--radius-lg)] border border-border-subtle bg-white p-6">
+          <h3 className="text-sm font-semibold text-ink">How it works</h3>
+          <ul className="mt-3 space-y-2 text-sm text-text-secondary">
+            <li className="flex items-start gap-2">
+              <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-kestrel/10 text-xs font-medium text-kestrel">1</span>
+              Select your business type above
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-kestrel/10 text-xs font-medium text-kestrel">2</span>
+              Answer a short questionnaire about your business
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-kestrel/10 text-xs font-medium text-kestrel">3</span>
+              Preview your terms, then download as PDF, DOCX, Markdown, or HTML
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   );

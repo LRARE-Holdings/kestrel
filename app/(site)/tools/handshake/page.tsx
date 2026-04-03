@@ -18,19 +18,21 @@ export default function HandshakePage() {
         &larr; All tools
       </Link>
 
-      <h1 className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
-        Create a Handshake
-      </h1>
-      <p className="mt-3 text-text-secondary leading-relaxed">
-        Record what was agreed between two parties. Share a link so the other
-        side can review and confirm, suggest changes, or decline. Neither party
-        needs to sign up.
-      </p>
-      <p className="mt-2 text-sm text-text-muted">
-        No sign-up required. Free.
-      </p>
+      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+        <h1 className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
+          Create a Handshake
+        </h1>
+        <p className="mt-3 text-text-secondary leading-relaxed">
+          Record what was agreed between two parties. Share a link so the other
+          side can review and confirm, suggest changes, or decline. Neither party
+          needs to sign up.
+        </p>
+        <p className="mt-2 text-sm text-text-muted">
+          No sign-up required. Free.
+        </p>
 
-      <HandshakeCreatorForm />
+        <HandshakeCreatorForm />
+      </div>
     </div>
   );
 }

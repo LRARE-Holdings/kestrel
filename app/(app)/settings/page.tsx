@@ -6,16 +6,7 @@ import { updateProfile } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-
-const businessTypes = [
-  { value: "", label: "Select type..." },
-  { value: "sole_trader", label: "Sole trader" },
-  { value: "limited_company", label: "Limited company" },
-  { value: "partnership", label: "Partnership" },
-  { value: "llp", label: "LLP" },
-  { value: "charity", label: "Charity" },
-  { value: "other", label: "Other" },
-];
+import { BUSINESS_TYPES, COMPANY_SIZES, INDUSTRIES } from "@/lib/constants";
 
 export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
@@ -84,9 +75,25 @@ export default function SettingsPage() {
               />
 
               <Select name="business_type" label="Business type">
-                {businessTypes.map((bt) => (
+                {BUSINESS_TYPES.map((bt) => (
                   <option key={bt.value} value={bt.value}>
                     {bt.label}
+                  </option>
+                ))}
+              </Select>
+
+              <Select name="company_size" label="Company size">
+                {COMPANY_SIZES.map((cs) => (
+                  <option key={cs.value} value={cs.value}>
+                    {cs.label}
+                  </option>
+                ))}
+              </Select>
+
+              <Select name="industry" label="Industry">
+                {INDUSTRIES.map((ind) => (
+                  <option key={ind.value} value={ind.value}>
+                    {ind.label}
                   </option>
                 ))}
               </Select>

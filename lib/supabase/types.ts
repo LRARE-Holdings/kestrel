@@ -648,15 +648,55 @@ export type Database = {
           },
         ]
       }
+      onboarding_responses: {
+        Row: {
+          created_at: string
+          estimated_disputes_per_year: string | null
+          id: string
+          primary_use_case: string | null
+          profile_id: string
+          referral_code: string | null
+          referral_source: string | null
+        }
+        Insert: {
+          created_at?: string
+          estimated_disputes_per_year?: string | null
+          id?: string
+          primary_use_case?: string | null
+          profile_id: string
+          referral_code?: string | null
+          referral_source?: string | null
+        }
+        Update: {
+          created_at?: string
+          estimated_disputes_per_year?: string | null
+          id?: string
+          primary_use_case?: string | null
+          profile_id?: string
+          referral_code?: string | null
+          referral_source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_responses_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           business_name: string | null
           business_type: string | null
+          company_size: string | null
           created_at: string | null
           deleted_at: string | null
           display_name: string
           email: string
           id: string
+          industry: string | null
           notification_preferences: Json | null
           onboarding_completed: boolean | null
           phone: string | null
@@ -665,11 +705,13 @@ export type Database = {
         Insert: {
           business_name?: string | null
           business_type?: string | null
+          company_size?: string | null
           created_at?: string | null
           deleted_at?: string | null
           display_name: string
           email: string
           id: string
+          industry?: string | null
           notification_preferences?: Json | null
           onboarding_completed?: boolean | null
           phone?: string | null
@@ -678,11 +720,13 @@ export type Database = {
         Update: {
           business_name?: string | null
           business_type?: string | null
+          company_size?: string | null
           created_at?: string | null
           deleted_at?: string | null
           display_name?: string
           email?: string
           id?: string
+          industry?: string | null
           notification_preferences?: Json | null
           onboarding_completed?: boolean | null
           phone?: string | null
@@ -1031,3 +1075,86 @@ export type Enums<
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      dispute_status: [
+        "draft",
+        "filed",
+        "awaiting_response",
+        "in_progress",
+        "resolved",
+        "escalated",
+        "withdrawn",
+        "expired",
+      ],
+      dispute_type: [
+        "payment",
+        "deliverables",
+        "service_quality",
+        "contract_interpretation",
+        "other",
+      ],
+      document_type: [
+        "contract",
+        "terms_and_conditions",
+        "handshake",
+        "notice",
+        "milestone_tracker",
+        "late_payment_letter",
+      ],
+      handshake_status: [
+        "draft",
+        "pending",
+        "confirmed",
+        "modified",
+        "declined",
+        "expired",
+      ],
+      milestone_status: [
+        "pending",
+        "in_progress",
+        "completed",
+        "disputed",
+        "overdue",
+      ],
+      notice_status: ["draft", "sent", "acknowledged", "disputed"],
+      notice_type: [
+        "breach",
+        "termination",
+        "change_request",
+        "payment_demand",
+        "general",
+      ],
+      project_status: ["active", "completed", "on_hold", "disputed"],
+      submission_type: [
+        "initial_claim",
+        "response",
+        "reply",
+        "evidence_summary",
+        "proposal",
+        "acceptance",
+        "rejection",
+        "withdrawal",
+      ],
+    },
+  },
+} as const

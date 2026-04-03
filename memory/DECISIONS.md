@@ -142,6 +142,9 @@ Final auth lineup:
 5. **Passkeys** — deferred until Supabase ships native support or founder decides on custom implementation
 No magic link. SECURITY.md and auth code to be updated accordingly.
 
+## [2026-04-03] Infrastructure — Temporary Domain
+Temporary domain: `kestrel.pellar.co.uk` for staging/production while Kestrel's own domain is TBD. `NEXT_PUBLIC_SITE_URL` should be set to `https://kestrel.pellar.co.uk`. Supabase Auth redirect URLs configured for this domain.
+
 ## [2026-04-03] Correction — Next.js 16 Proxy Convention
 Next.js 16 replaced `middleware.ts` with `proxy.ts`. Root `proxy.ts` already exists and calls `updateSession()` from `lib/supabase/middleware.ts`. Do not create `middleware.ts` — use `proxy.ts` instead.
 
@@ -156,3 +159,43 @@ Added GDPR-compliant cookie consent banner with Google Analytics 4 and Vercel An
 - Banner does not block page usage — appears as floating bottom overlay.
 - On accept, page reloads to initialise analytics scripts. On decline, scripts never load.
 - Consent cookie lasts 1 year, SameSite=Lax, Secure.
+
+## [2026-04-03] Database — Onboarding Schema Extension
+Added `company_size` (text with CHECK constraint) and `industry` (text with CHECK constraint) columns to `profiles` table. Created `onboarding_responses` table for analytical data (primary_use_case, estimated_disputes_per_year, referral_source, referral_code) with RLS — users can only insert/read/update their own row. Linked to profiles via profile_id FK with UNIQUE constraint (one response per user).
+
+## [2026-04-03] Architecture — Multi-Step Onboarding Flow
+Replaced single-form onboarding with a 4-step animated flow:
+- Step 1 (Identity): display_name, pre-filled from OAuth metadata
+- Step 2 (Business): business_name, business_type, company_size, industry
+- Step 3 (Usage): primary_use_case as selectable cards, estimated_disputes_per_year as pill chips. Skippable.
+- Step 4 (Discovery): referral_source, referral_code. Skippable.
+Moved to own route group `(onboarding)` to avoid rendering sidebar. Data accumulated client-side, single DB write on completion via `completeOnboarding()` server action. Framer Motion AnimatePresence for slide transitions between steps (EASE_OUT_EXPO easing).
+
+## [2026-04-03] Architecture — Collapsible Sidebar Navigation
+Replaced top-bar nav with a collapsible sidebar (`components/app/sidebar.tsx`):
+- Desktop: Framer Motion animated width (64px collapsed ↔ 256px expanded), sticky, full-height
+- Nav items: Dashboard, Documents, Disputes, Tools, Settings
+- Active state via usePathname(), collapse state persisted to localStorage
+- User avatar + email + sign out at bottom
+- Mobile: hidden on <lg, replaced by slide-in drawer with backdrop
+- App layout (`app/(app)/layout.tsx`) now uses `<AppShell>` wrapper
+- Layout also redirects to /onboarding if onboarding not completed
+
+## [2026-04-03] Design — Greeting Splash Animation
+Full-screen splash for returning users on dashboard:
+- KestrelMark scale-in (0.5s), time-aware greeting fade-up with 300ms delay
+- "Good morning/afternoon/evening, [firstName]." in Satoshi display font
+- Overlay lifts and fades out after 1.8s (EASE_OUT_EXPO)
+- sessionStorage flag — shows once per browser session
+- Respects prefers-reduced-motion (skips entirely)
+- Locks body scroll while visible
+
+## [2026-04-03] Architecture — Adaptive Dashboard
+Dashboard conditionally renders based on data:
+- **Empty state** (no disputes/documents): 4 guided first-action cards (create contract, calculate late payment, set up handshake, generate T&Cs) + "What is Kestrel?" context box
+- **Populated state**: Two-column layout — disputes timeline (2/3) grouped by priority (needs attention → active → escalated → resolved) with status badges and deadline urgency + stats panel (1/3) with counts, recent documents, and quick actions
+- Server component fetches data via `getDashboardData()` (parallel Supabase queries)
+- Date formatting utilities in `lib/dates/format.ts`
+
+## [2026-04-03] Architecture — Shared Constants
+Extracted dropdown option arrays into `lib/constants.ts` (BUSINESS_TYPES, COMPANY_SIZES, INDUSTRIES, USE_CASES, DISPUTE_ESTIMATES, REFERRAL_SOURCES). Used by both onboarding and settings pages. Eliminates duplication.

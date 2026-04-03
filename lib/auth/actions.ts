@@ -150,6 +150,8 @@ export async function updateProfile(formData: FormData) {
   const displayName = formData.get("display_name") as string;
   const businessName = formData.get("business_name") as string;
   const businessType = formData.get("business_type") as string;
+  const companySize = formData.get("company_size") as string;
+  const industry = formData.get("industry") as string;
 
   if (!displayName) {
     return { error: "Display name is required" };
@@ -162,12 +164,78 @@ export async function updateProfile(formData: FormData) {
       display_name: displayName,
       business_name: businessName || null,
       business_type: businessType || null,
+      company_size: companySize || null,
+      industry: industry || null,
       email: user.email!,
       onboarding_completed: true,
     });
 
   if (error) {
     return { error: error.message };
+  }
+
+  return { success: true };
+}
+
+export async function completeOnboarding(data: {
+  display_name: string;
+  business_name?: string;
+  business_type?: string;
+  company_size?: string;
+  industry?: string;
+  primary_use_case?: string;
+  estimated_disputes_per_year?: string;
+  referral_source?: string;
+  referral_code?: string;
+}) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  const { error: profileError } = await supabase.from("profiles").upsert({
+    id: user.id,
+    email: user.email!,
+    display_name: data.display_name,
+    business_name: data.business_name || null,
+    business_type: data.business_type || null,
+    company_size: data.company_size || null,
+    industry: data.industry || null,
+    onboarding_completed: true,
+  });
+
+  if (profileError) {
+    return { error: profileError.message };
+  }
+
+  const hasOnboardingResponses =
+    data.primary_use_case ||
+    data.estimated_disputes_per_year ||
+    data.referral_source ||
+    data.referral_code;
+
+  if (hasOnboardingResponses) {
+    const { error: onboardingError } = await supabase
+      .from("onboarding_responses")
+      .upsert(
+        {
+          profile_id: user.id,
+          primary_use_case: data.primary_use_case || null,
+          estimated_disputes_per_year:
+            data.estimated_disputes_per_year || null,
+          referral_source: data.referral_source || null,
+          referral_code: data.referral_code || null,
+        },
+        { onConflict: "profile_id" }
+      );
+
+    if (onboardingError) {
+      return { error: onboardingError.message };
+    }
   }
 
   return { success: true };

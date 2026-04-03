@@ -20,7 +20,7 @@ export default function TermsPage() {
           <h2 className="font-display text-xl text-ink">Overview</h2>
           <p className="mt-3">
             These terms govern your use of the Kestrel platform, operated by
-            Pellar Technologies. By using Kestrel, you agree to these terms.
+            Kestrel Solutions Limited. By using Kestrel, you agree to these terms.
           </p>
         </section>
 

@@ -1,6 +1,6 @@
 # People
 
 ## Alex — Founder
-- Founder of Pellar Technologies
+- Founder of Kestrel Solutions Limited (working name, final name TBD)
 - Law student at Northumbria University
-- Building Kestrel as primary product
+- Building Kestrel as an independent company

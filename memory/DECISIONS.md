@@ -117,3 +117,27 @@ Built all 6 free tools:
 6. **Milestone Tracker** — Project creation with dynamic milestones. Shared tracker view with status updates (in progress, completed, disputed). Visual progress tracking.
 
 All tools: no auth gates, Kestrel clause ON by default + one-click removable, deterministic text generation, England & Wales only.
+
+## [2026-04-03] Architecture — Auth Method Expansion
+Decision to expand auth beyond magic link only. Target methods: Google OAuth, Microsoft OAuth, passkeys (if supported).
+- **Google OAuth**: Supabase native — `signInWithOAuth({ provider: 'google' })`
+- **Microsoft OAuth**: Supabase native — `signInWithOAuth({ provider: 'azure' })`
+- **Passkeys/WebAuthn**: NOT natively supported by Supabase Auth as primary sign-in. Options: skip for now, roll own with SimpleWebAuthn, or use third-party (Corbado/Descope). Awaiting founder decision.
+- **Magic link**: Retained as existing method.
+- SECURITY.md previously stated "Magic link only" — will need updating once auth methods confirmed.
+- Clarification needed: "SSO" = social login buttons (Google/Microsoft) or enterprise SAML/OIDC SSO?
+
+## [2026-04-03] Product — Magic Link Removed
+Founder explicitly rejected magic link auth. Removing it entirely from the sign-in flow.
+
+## [2026-04-03] Correction — Company Structure: Pellar → Kestrel
+Kestrel is its own independent company at launch, NOT a product under Pellar Technologies. Working company name: Kestrel Solutions Limited (final name TBD). All references to Pellar removed from: CONTEXT.md, SECURITY.md, CLAUDE.md, memory files, footer, about page, terms page, privacy page, contact page. LinkedIn updated to linkedin.com/company/onkestrel.
+
+## [2026-04-03] Architecture — Auth Methods Confirmed
+Final auth lineup:
+1. **Google OAuth** — social login via Supabase `signInWithOAuth({ provider: 'google' })`
+2. **Microsoft OAuth** — social login via Supabase `signInWithOAuth({ provider: 'azure' })`
+3. **Email + password** — traditional sign-up/sign-in via Supabase `signUp` / `signInWithPassword`
+4. **Enterprise SSO (SAML/OIDC)** — for companies with own IdP, via Supabase SSO (Pro plan feature) or WorkOS
+5. **Passkeys** — deferred until Supabase ships native support or founder decides on custom implementation
+No magic link. SECURITY.md and auth code to be updated accordingly.

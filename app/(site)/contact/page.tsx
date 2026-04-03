@@ -32,7 +32,7 @@ export default function ContactPage() {
         <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-white p-6">
           <h2 className="text-base font-semibold text-ink">Location</h2>
           <p className="mt-2 text-sm text-text-secondary">
-            Pellar Technologies
+            Kestrel Solutions Limited
           </p>
           <p className="text-sm text-text-muted">Newcastle-upon-Tyne, UK</p>
         </div>

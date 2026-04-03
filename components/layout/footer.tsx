@@ -36,7 +36,7 @@ export function Footer() {
                 <ScrollFade direction="up" delay={0.1} distance={16}>
                   <div className="mt-6 flex items-center gap-3">
                     <a
-                      href="https://www.linkedin.com/company/pellartechnologies"
+                      href="https://www.linkedin.com/company/onkestrel"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group flex h-9 w-9 items-center justify-center rounded-lg border border-border-subtle/60 bg-cream/50 text-text-muted transition-all duration-200 hover:border-kestrel/30 hover:bg-kestrel/5 hover:text-kestrel"
@@ -102,7 +102,7 @@ export function Footer() {
             <ScrollFade direction="none" delay={0.25}>
               <div className="mt-10 flex items-center justify-between border-t border-border-subtle/40 pt-8">
                 <p className="text-xs text-text-muted">
-                  &copy; {new Date().getFullYear()} Pellar Technologies. All rights reserved.
+                  &copy; {new Date().getFullYear()} Kestrel Solutions Limited. All rights reserved.
                 </p>
               </div>
             </ScrollFade>

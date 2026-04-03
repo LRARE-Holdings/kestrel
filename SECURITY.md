@@ -9,7 +9,7 @@ Kestrel handles personal data and commercially sensitive dispute information. Se
 Kestrel must be registered with the Information Commissioner's Office before processing any personal data. This includes beta testing, pilot programmes, and any form of user-facing deployment.
 
 **Registration details:**
-- Data controller: Pellar Technologies (until Kestrel is separately incorporated)
+- Data controller: Kestrel Solutions Limited (working name, final name TBD)
 - Lawful basis for processing: Legitimate interests (dispute resolution services) + Consent (where appropriate)
 - Data protection contact must be named in registration
 

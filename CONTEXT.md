@@ -10,9 +10,9 @@ The tagline is: **"Resolve it on Kestrel."**
 
 ## Who Builds It
 
-Kestrel is built by **Pellar Technologies**, a software company registered in England and based in Newcastle-upon-Tyne. The founder is a law student at Northumbria University studying human rights, tort law, and innovation/technology law.
+Kestrel is built by **Kestrel Solutions Limited** (working name, final name TBD), a software company registered in England and based in Newcastle-upon-Tyne. The founder is a law student at Northumbria University studying human rights, tort law, and innovation/technology law.
 
-Kestrel is currently built under the Pellar Technologies corporate umbrella. It will be incorporated as a standalone limited company with a formal IP assignment when a VC raise is 3–6 months away.
+Kestrel is its own company from launch — an independent, VC-backable limited company.
 
 ## The Core Problem
 

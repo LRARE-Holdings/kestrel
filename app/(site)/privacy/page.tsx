@@ -19,9 +19,9 @@ export default function PrivacyPage() {
         <section>
           <h2 className="font-display text-xl text-ink">Who we are</h2>
           <p className="mt-3">
-            Kestrel is operated by Pellar Technologies, registered in England
-            and based in Newcastle-upon-Tyne. We are the data controller for
-            personal data processed through the Kestrel platform.
+            Kestrel is operated by Kestrel Solutions Limited, registered in
+            England and based in Newcastle-upon-Tyne. We are the data controller
+            for personal data processed through the Kestrel platform.
           </p>
         </section>
 

@@ -278,7 +278,7 @@ export default function AboutPage() {
         </div>
       </ScrollSection>
 
-      {/* ═══ PELLAR — Card ═══ */}
+      {/* ═══ COMPANY — Card ═══ */}
       <ScrollSection className="pb-6">
         <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
           <div className="grid gap-16 lg:grid-cols-5 lg:gap-24">
@@ -287,16 +287,15 @@ export default function AboutPage() {
                 Company
               </p>
               <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-                Built by Pellar Technologies
+                Built in Newcastle
               </h2>
             </ScrollFade>
             <ScrollFade direction="right" delay={0.15} distance={30} className="lg:col-span-3">
               <div className="flex flex-col justify-center space-y-6">
                 <p className="text-base leading-relaxed text-text-secondary">
-                  Kestrel is built by Pellar Technologies, based in
-                  Newcastle-upon-Tyne. We believe that access to fair dispute
-                  resolution shouldn&apos;t require deep pockets or legal
-                  expertise.
+                  Kestrel is based in Newcastle-upon-Tyne. We believe that
+                  access to fair dispute resolution shouldn&apos;t require deep
+                  pockets or legal expertise.
                 </p>
                 <p className="text-base leading-relaxed text-text-secondary">
                   We&apos;re building the infrastructure that sits between the

@@ -17,7 +17,7 @@ export default async function HandshakeSuccessPage({
 
   if (!token) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:px-8 2xl:px-12">
         <h1 className="font-display text-3xl tracking-tight text-ink">
           Something went wrong
         </h1>
@@ -37,7 +37,7 @@ export default async function HandshakeSuccessPage({
   const shareUrl = `${process.env.NEXT_PUBLIC_SITE_URL || ""}/tools/handshake/${token}`;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:px-8 2xl:px-12">
       <Link
         href="/tools"
         className="mb-6 inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-kestrel transition-colors"

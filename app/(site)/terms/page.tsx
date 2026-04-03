@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-24 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-screen-2xl px-4 py-24 sm:px-6 lg:px-8 2xl:px-12">
       <h1 className="font-display text-4xl text-ink sm:text-5xl">
         Terms of Service
       </h1>

@@ -78,7 +78,7 @@ export default async function HandshakeTokenPage({
     responses && responses.length > 0 ? responses[0] : null;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:px-8 2xl:px-12">
       <HandshakeView
         handshake={handshake}
         response={response}

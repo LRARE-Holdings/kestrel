@@ -11,7 +11,7 @@ import {
 
 export default function LatePaymentPage() {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:px-8 2xl:px-12">
       {/* Hero */}
       <section className="mb-12">
         <ScrollFade direction="up" distance={30}>

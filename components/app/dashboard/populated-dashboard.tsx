@@ -46,9 +46,9 @@ interface PopulatedDashboardProps {
 
 function NoDisputesMessage() {
   return (
-    <div className="rounded-xl border border-border-subtle bg-white p-6">
+    <div className="rounded-[var(--radius-xl)] border border-border-subtle bg-white p-6">
       <div className="flex items-start gap-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sage/15">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-lg)] bg-sage/15">
           <IconScale className="h-5 w-5 text-kestrel" />
         </div>
         <div>

@@ -57,7 +57,7 @@ export default async function DocumentsPage() {
           {documents.map((doc) => (
             <div
               key={doc.id}
-              className="flex items-center justify-between rounded-lg border border-border-subtle bg-white p-4 transition-colors hover:border-kestrel/20"
+              className="flex items-center justify-between card-hover rounded-[var(--radius-lg)] border border-border-subtle bg-white p-4"
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">

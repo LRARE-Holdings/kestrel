@@ -36,7 +36,7 @@ export function StatsPanel({
   return (
     <div className="space-y-4">
       {/* Stats card */}
-      <div className="rounded-xl border border-border-subtle bg-white p-5">
+      <div className="rounded-[var(--radius-xl)] border border-border-subtle bg-white p-5">
         <div className="space-y-0 divide-y divide-border-subtle">
           {/* Documents */}
           <div className="pb-4">
@@ -77,7 +77,7 @@ export function StatsPanel({
               <li key={doc.id}>
                 <Link
                   href={`/documents/${doc.id}`}
-                  className="group block rounded-lg px-2 py-1.5 transition-colors hover:bg-stone/40"
+                  className="group block rounded-[var(--radius-lg)] px-2 py-1.5 transition-colors hover:bg-stone/40"
                 >
                   <p className="truncate text-sm text-ink transition-colors group-hover:text-kestrel">
                     {doc.title}
@@ -104,7 +104,7 @@ export function StatsPanel({
             <li key={action.href}>
               <Link
                 href={action.href}
-                className="group flex items-center justify-between rounded-lg px-2 py-1.5 text-sm text-ink transition-colors hover:bg-stone/40 hover:text-kestrel"
+                className="group flex items-center justify-between rounded-[var(--radius-lg)] px-2 py-1.5 text-sm text-ink transition-colors hover:bg-stone/40 hover:text-kestrel"
               >
                 <span>{action.label}</span>
                 <IconArrowRight className="h-3.5 w-3.5 text-text-muted opacity-0 transition-all group-hover:translate-x-0.5 group-hover:text-kestrel group-hover:opacity-100" />

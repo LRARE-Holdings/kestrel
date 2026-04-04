@@ -57,8 +57,8 @@ export function EmptyDashboard() {
               href={action.href}
               className="group"
             >
-              <div className="card-hover flex items-start gap-4 rounded-xl border border-border-subtle bg-white p-5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-kestrel/8">
+              <div className="card-hover flex items-start gap-4 rounded-[var(--radius-xl)] border border-border-subtle bg-white p-5">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-lg)] bg-kestrel/8">
                   <Icon className="h-5 w-5 text-kestrel" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -77,7 +77,7 @@ export function EmptyDashboard() {
       </div>
 
       {/* What is Kestrel context panel */}
-      <div className="mt-8 rounded-xl bg-stone/30 p-6">
+      <div className="mt-8 rounded-[var(--radius-xl)] bg-stone/30 p-6">
         <h3 className="font-display text-lg text-ink">What is Kestrel?</h3>
         <p className="mt-2 text-sm leading-relaxed text-text-secondary">
           Kestrel gives businesses structured tools to prevent and resolve

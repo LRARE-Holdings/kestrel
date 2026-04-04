@@ -23,10 +23,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           <select
             ref={ref}
             id={selectId}
-            className={`w-full appearance-none rounded-[var(--radius-md)] border bg-white px-3 py-2 pr-8 text-sm text-ink transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel disabled:cursor-not-allowed disabled:opacity-50 ${
+            className={`w-full appearance-none rounded-[var(--radius-md)] border bg-white px-3 py-2 pr-8 text-sm text-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-cream focus-visible:border-kestrel disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 ${
               error
-                ? "border-error focus:ring-error/40 focus:border-error"
-                : "border-border"
+                ? "border-error focus-visible:ring-error/40 focus-visible:border-error"
+                : "border-border focus-visible:ring-kestrel/40"
             } ${className}`}
             aria-invalid={error ? "true" : undefined}
             aria-describedby={error ? `${selectId}-error` : undefined}

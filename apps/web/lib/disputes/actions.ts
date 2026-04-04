@@ -684,6 +684,97 @@ export async function withdrawDispute(
 }
 
 // ---------------------------------------------------------------------------
+// Evidence upload
+// ---------------------------------------------------------------------------
+
+/**
+ * Upload one or more evidence files for a dispute. Uploads each file to
+ * Supabase Storage and creates a corresponding `evidence_files` record.
+ * Returns the number of files successfully uploaded.
+ */
+export async function uploadEvidence(
+  disputeId: string,
+  formData: FormData,
+): Promise<{ count: number } | { error: string }> {
+  const supabase = await createClient();
+  const user = await getAuthenticatedUser(supabase);
+  if (!user) return { error: "Not authenticated" };
+
+  // Verify dispute exists and user is a party
+  const { data: dispute } = await supabase
+    .from("disputes")
+    .select("id, initiating_party_id, responding_party_id, responding_party_email, deleted_at")
+    .eq("id", disputeId)
+    .is("deleted_at", null)
+    .single();
+
+  if (!dispute) return { error: "Dispute not found" };
+
+  const role = getUserRole(dispute, user.id, user.email ?? undefined);
+  if (!role) return { error: "Not authorised to upload evidence for this dispute" };
+
+  // Extract files from FormData
+  const entries = formData.getAll("files") as File[];
+  const descriptions = formData.getAll("descriptions") as string[];
+
+  if (!entries.length) return { error: "No files provided" };
+
+  let uploaded = 0;
+
+  for (let i = 0; i < entries.length; i++) {
+    const file = entries[i];
+    if (!(file instanceof File) || file.size === 0) continue;
+
+    // Build a storage path: {disputeId}/{uniqueId}_{sanitisedName}
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const storagePath = `${disputeId}/${crypto.randomUUID()}_${safeName}`;
+
+    // Upload to storage
+    const { error: storageError } = await supabase.storage
+      .from("dispute-evidence")
+      .upload(storagePath, file, {
+        contentType: file.type,
+        upsert: false,
+      });
+
+    if (storageError) {
+      console.error(`Storage upload failed for ${file.name}:`, storageError.message);
+      continue;
+    }
+
+    // Insert evidence_files record
+    const { error: insertError } = await supabase.from("evidence_files").insert({
+      dispute_id: disputeId,
+      uploaded_by: user.id,
+      file_name: file.name,
+      file_type: file.type,
+      file_size_bytes: file.size,
+      storage_path: storagePath,
+      description: descriptions[i] || null,
+    });
+
+    if (insertError) {
+      console.error(`Evidence record insert failed for ${file.name}:`, insertError.message);
+      // Clean up the orphaned storage object
+      await supabase.storage.from("dispute-evidence").remove([storagePath]);
+      continue;
+    }
+
+    uploaded++;
+  }
+
+  if (uploaded === 0) {
+    return { error: "Failed to upload files. Please try again." };
+  }
+
+  await logAudit(supabase, user.id, "evidence.uploaded", "dispute", disputeId, {
+    file_count: uploaded,
+  });
+
+  return { count: uploaded };
+}
+
+// ---------------------------------------------------------------------------
 // Submission type validation logic
 // ---------------------------------------------------------------------------
 

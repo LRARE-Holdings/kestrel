@@ -10,6 +10,7 @@ import { SubmissionTimeline } from "@/components/app/disputes/submission-timelin
 import { SubmissionForm } from "@/components/app/disputes/submission-form";
 import { ActionPanel } from "@/components/app/disputes/action-panel";
 import { EvidencePanel } from "@/components/app/disputes/evidence-panel";
+import { EvidenceUploadModal } from "@/components/app/disputes/evidence-upload-modal";
 import { ProposalResponse } from "@/components/app/disputes/proposal-response";
 import { ProposalForm } from "@/components/app/disputes/proposal-form";
 import { IconChevronLeft } from "@/components/ui/icons";
@@ -61,6 +62,7 @@ export function DisputeDetail({
   const router = useRouter();
   const [showProposalForm, setShowProposalForm] = useState(false);
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
+  const [showEvidenceUpload, setShowEvidenceUpload] = useState(false);
 
   const handleRefresh = useCallback(() => {
     router.refresh();
@@ -79,8 +81,7 @@ export function DisputeDetail({
           setShowSubmissionForm(false);
           break;
         case "upload_evidence":
-          // In a full implementation, this would open a modal or navigate
-          // For now, scroll to evidence panel or show a form
+          setShowEvidenceUpload(true);
           break;
         case "escalate":
           // Would open escalation modal
@@ -217,6 +218,14 @@ export function DisputeDetail({
           </div>
         </div>
       </div>
+
+      {/* Evidence upload modal */}
+      <EvidenceUploadModal
+        open={showEvidenceUpload}
+        onClose={() => setShowEvidenceUpload(false)}
+        disputeId={dispute.id}
+        onUploaded={handleRefresh}
+      />
     </RealtimeProvider>
   );
 }

@@ -6,6 +6,7 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
+  const redirectTo = searchParams.get("redirect");
 
   if (token_hash && type) {
     const supabase = await createClient();
@@ -30,11 +31,16 @@ export async function GET(request: Request) {
           .single();
 
         if (!profile || !profile.onboarding_completed) {
-          return NextResponse.redirect(`${origin}/onboarding`);
+          const onboardingUrl = new URL("/onboarding", origin);
+          if (redirectTo) {
+            onboardingUrl.searchParams.set("redirect", redirectTo);
+          }
+          return NextResponse.redirect(onboardingUrl.toString());
         }
       }
 
-      return NextResponse.redirect(`${origin}/dashboard`);
+      const destination = redirectTo || "/dashboard";
+      return NextResponse.redirect(`${origin}${destination}`);
     }
   }
 

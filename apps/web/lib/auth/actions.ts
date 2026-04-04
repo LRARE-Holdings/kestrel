@@ -35,6 +35,7 @@ export async function signInWithPassword(formData: FormData) {
 export async function signUpWithPassword(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const redirectTo = formData.get("redirect") as string | null;
 
   if (!email || !password) {
     return { error: "Email and password are required" };
@@ -46,11 +47,16 @@ export async function signUpWithPassword(formData: FormData) {
 
   const supabase = await createClient();
 
+  const confirmUrl = new URL("/auth/confirm", process.env.NEXT_PUBLIC_SITE_URL);
+  if (redirectTo) {
+    confirmUrl.searchParams.set("redirect", redirectTo);
+  }
+
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/confirm`,
+      emailRedirectTo: confirmUrl.toString(),
     },
   });
 
@@ -74,7 +80,7 @@ export async function resetPassword(formData: FormData) {
   const supabase = await createClient();
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?redirect=/update-password`,
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/confirm`,
   });
 
   if (error) {

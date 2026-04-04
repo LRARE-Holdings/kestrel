@@ -85,6 +85,10 @@ function SignUpForm() {
       return;
     }
 
+    if (redirectTo) {
+      formData.set("redirect", redirectTo);
+    }
+
     const result = await signUpWithPassword(formData);
 
     if (result.error) {

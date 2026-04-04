@@ -139,7 +139,7 @@ export function disputeFiledEmail(params: DisputeFiledParams): EmailResult {
       preheader: `${initiatorName} of ${initiatorBusiness} has filed a ${typeLabel.toLowerCase()} — reference ${referenceNumber}`,
       content,
       ctaText: "Review and respond",
-      ctaUrl: `${siteUrl}/sign-in?redirect=/disputes/${encodeURIComponent(disputeId)}`,
+      ctaUrl: `${siteUrl}/sign-up?redirect=/disputes/${encodeURIComponent(disputeId)}`,
     }),
   };
 }

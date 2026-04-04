@@ -53,37 +53,31 @@ const tools = [
     title: "Late Payment Toolkit",
     description: "Calculate statutory interest and generate chaser letters under the Late Payment Act.",
     href: "/tools/late-payment",
-    live: true,
   },
   {
     title: "Contract Templates",
     description: "Freelancer, SaaS, consulting, and service agreements. Assembled from vetted clauses.",
     href: "/tools/contracts",
-    live: false,
   },
   {
     title: "Terms & Conditions",
     description: "UK-compliant T&Cs for e-commerce, SaaS, and professional services.",
     href: "/tools/terms",
-    live: false,
   },
   {
     title: "Handshake",
     description: "Lightweight shareable agreements. Create, share a link, get confirmation.",
     href: "/tools/handshake",
-    live: false,
   },
   {
     title: "Notice Log",
     description: "Timestamped, immutable records of formal notices between parties.",
     href: "/tools/notice-log",
-    live: false,
   },
   {
     title: "Milestone Tracker",
     description: "Track deliverables against agreed timelines with shared visibility.",
     href: "/tools/milestones",
-    live: false,
   },
 ] as const;
 
@@ -203,20 +197,10 @@ export default function HomePage() {
               <StaggerItem key={tool.href}>
                 <Link href={tool.href} className="group block">
                   <div className="relative h-full rounded-xl border border-border-subtle/60 bg-cream/50 p-6 transition-all duration-300 hover:border-kestrel/20 hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-base font-semibold text-ink transition-colors group-hover:text-kestrel">{tool.title}</h3>
-                      {tool.live ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-kestrel/8 px-2 py-0.5 text-[10px] font-semibold text-kestrel">
-                          <span className="h-1 w-1 rounded-full bg-kestrel" />
-                          Live
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-medium text-text-muted">Soon</span>
-                      )}
-                    </div>
+                    <h3 className="text-base font-semibold text-ink transition-colors group-hover:text-kestrel">{tool.title}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-text-secondary">{tool.description}</p>
                     <div className="mt-4 flex items-center text-xs font-medium text-kestrel opacity-0 transition-opacity group-hover:opacity-100">
-                      <span>{tool.live ? "Open tool" : "Learn more"}</span>
+                      <span>Open tool</span>
                       <svg className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                       </svg>

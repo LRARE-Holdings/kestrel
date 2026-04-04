@@ -24,7 +24,11 @@ export async function GET(request: Request) {
           .single();
 
         if (!profile || !profile.onboarding_completed) {
-          return NextResponse.redirect(`${origin}/onboarding`);
+          const onboardingUrl = new URL("/onboarding", origin);
+          if (redirectTo) {
+            onboardingUrl.searchParams.set("redirect", redirectTo);
+          }
+          return NextResponse.redirect(onboardingUrl.toString());
         }
       }
 

@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { updatePassword } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function UpdatePasswordPage() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   async function handleSubmit(formData: FormData) {
     setLoading(true);
@@ -30,8 +30,44 @@ export default function UpdatePasswordPage() {
       setError(result.error);
       setLoading(false);
     } else {
-      router.push("/sign-in");
+      setSuccess(true);
+      setLoading(false);
     }
+  }
+
+  if (success) {
+    return (
+      <div className="text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-kestrel/8">
+          <svg
+            className="h-7 w-7 text-kestrel"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </div>
+        <h1 className="mt-5 font-display text-xl font-bold text-ink">
+          Password updated
+        </h1>
+        <p className="mt-2 text-sm leading-relaxed text-text-secondary">
+          Your password has been changed successfully. You can now sign in with
+          your new password.
+        </p>
+        <Link
+          href="/sign-in"
+          className="mt-6 inline-block text-sm font-medium text-kestrel transition-colors hover:text-kestrel-hover"
+        >
+          Sign in
+        </Link>
+      </div>
+    );
   }
 
   return (

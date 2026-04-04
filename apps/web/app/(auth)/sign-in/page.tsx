@@ -8,16 +8,20 @@ import { createClient } from "@kestrel/shared/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-function OAuthButtons() {
+function OAuthButtons({ redirectTo }: { redirectTo?: string | null }) {
   const [loading, setLoading] = useState<string | null>(null);
 
   async function handleOAuth(provider: "google" | "azure") {
     setLoading(provider);
     const supabase = createClient();
+    const callbackUrl = new URL("/auth/callback", window.location.origin);
+    if (redirectTo) {
+      callbackUrl.searchParams.set("redirect", redirectTo);
+    }
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: callbackUrl.toString(),
       },
     });
     if (error) {
@@ -95,7 +99,7 @@ function SignInForm() {
       </div>
 
       <div className="mt-7">
-        <OAuthButtons />
+        <OAuthButtons redirectTo={redirectTo} />
       </div>
 
       <div className="relative mt-6">
@@ -145,7 +149,7 @@ function SignInForm() {
       <div className="mt-6 text-center text-sm text-text-secondary">
         Don&apos;t have an account?{" "}
         <Link
-          href="/sign-up"
+          href={redirectTo ? `/sign-up?redirect=${encodeURIComponent(redirectTo)}` : "/sign-up"}
           className="font-medium text-kestrel transition-colors hover:text-kestrel-hover"
         >
           Sign up

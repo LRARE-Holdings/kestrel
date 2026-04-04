@@ -7,6 +7,7 @@ interface DisputeFiledParams {
   initiatorName: string;
   initiatorBusiness: string;
   referenceNumber: string;
+  disputeId: string;
   subject: string;
   disputeType: string;
   amount?: string;
@@ -35,6 +36,7 @@ export function disputeFiledEmail(params: DisputeFiledParams): EmailResult {
     initiatorName,
     initiatorBusiness,
     referenceNumber,
+    disputeId,
     subject,
     disputeType,
     amount,
@@ -137,7 +139,7 @@ export function disputeFiledEmail(params: DisputeFiledParams): EmailResult {
       preheader: `${initiatorName} of ${initiatorBusiness} has filed a ${typeLabel.toLowerCase()} — reference ${referenceNumber}`,
       content,
       ctaText: "Review and respond",
-      ctaUrl: `${siteUrl}/sign-in`,
+      ctaUrl: `${siteUrl}/sign-in?redirect=/disputes/${encodeURIComponent(disputeId)}`,
     }),
   };
 }

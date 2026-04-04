@@ -1,22 +1,27 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signUpWithPassword } from "@/lib/auth/actions";
 import { createClient } from "@kestrel/shared/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-function OAuthButtons() {
+function OAuthButtons({ redirectTo }: { redirectTo?: string | null }) {
   const [loading, setLoading] = useState<string | null>(null);
 
   async function handleOAuth(provider: "google" | "azure") {
     setLoading(provider);
     const supabase = createClient();
+    const callbackUrl = new URL("/auth/callback", window.location.origin);
+    if (redirectTo) {
+      callbackUrl.searchParams.set("redirect", redirectTo);
+    }
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: callbackUrl.toString(),
       },
     });
     if (error) {
@@ -61,6 +66,8 @@ function OAuthButtons() {
 }
 
 function SignUpForm() {
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -133,7 +140,7 @@ function SignUpForm() {
       </div>
 
       <div className="mt-7">
-        <OAuthButtons />
+        <OAuthButtons redirectTo={redirectTo} />
       </div>
 
       <div className="relative mt-6">
@@ -197,7 +204,7 @@ function SignUpForm() {
       <div className="mt-6 text-center text-sm text-text-secondary">
         Already have an account?{" "}
         <Link
-          href="/sign-in"
+          href={redirectTo ? `/sign-in?redirect=${encodeURIComponent(redirectTo)}` : "/sign-in"}
           className="font-medium text-kestrel transition-colors hover:text-kestrel-hover"
         >
           Sign in

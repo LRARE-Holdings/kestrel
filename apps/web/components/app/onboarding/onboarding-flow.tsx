@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { KestrelMark } from "@/components/ui/logo";
 import { ProgressDots } from "@/components/app/onboarding/progress-dots";
@@ -31,6 +31,8 @@ interface OnboardingFlowProps {
 
 export function OnboardingFlow({ defaultName }: OnboardingFlowProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
   const [data, setData] = useState<OnboardingData>({});
@@ -84,7 +86,7 @@ export function OnboardingFlow({ defaultName }: OnboardingFlowProps) {
         return;
       }
 
-      router.push("/dashboard");
+      router.push(redirectTo || "/dashboard");
     },
     [data, router]
   );

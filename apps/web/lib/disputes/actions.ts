@@ -348,6 +348,7 @@ export async function fileDispute(
     initiatorName,
     initiatorBusiness,
     referenceNumber: dispute.reference_number,
+    disputeId: dispute.id,
     subject: data.subject,
     disputeType: data.dispute_type,
     amount: formattedAmount,

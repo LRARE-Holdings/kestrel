@@ -12,6 +12,11 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.verifyOtp({ type, token_hash });
 
     if (!error) {
+      // Password recovery — redirect to update-password page
+      if (type === "recovery") {
+        return NextResponse.redirect(`${origin}/update-password`);
+      }
+
       // Check if user needs onboarding (same logic as callback route)
       const {
         data: { user },

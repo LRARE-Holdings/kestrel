@@ -11,6 +11,11 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
+      // Password recovery — send straight to update-password, skip everything else
+      if (redirectTo === "/update-password") {
+        return NextResponse.redirect(`${origin}/update-password`);
+      }
+
       // Check if user has a profile (onboarding completed)
       const {
         data: { user },

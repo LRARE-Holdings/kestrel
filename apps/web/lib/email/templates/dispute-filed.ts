@@ -12,6 +12,7 @@ interface DisputeFiledParams {
   disputeType: string;
   amount?: string;
   responseDeadline: string;
+  respondentIsExistingUser?: boolean;
 }
 
 const DISPUTE_TYPE_LABELS: Record<string, string> = {
@@ -41,10 +42,12 @@ export function disputeFiledEmail(params: DisputeFiledParams): EmailResult {
     disputeType,
     amount,
     responseDeadline,
+    respondentIsExistingUser = false,
   } = params;
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
   const typeLabel = DISPUTE_TYPE_LABELS[disputeType] || "Dispute";
+  const authPath = respondentIsExistingUser ? "sign-in" : "sign-up";
 
   const amountRow = amount
     ? `
@@ -109,7 +112,7 @@ export function disputeFiledEmail(params: DisputeFiledParams): EmailResult {
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 0 0 24px 0;">
       <tr>
         <td style="padding: 4px 0; font-size: 14px; color: #4A5553; line-height: 1.6;">
-          1.&nbsp;&nbsp;Sign in or create a Kestrel account using this email address.
+          1.&nbsp;&nbsp;${respondentIsExistingUser ? "Sign in to your Kestrel account." : "Create a free Kestrel account using this email address."}
         </td>
       </tr>
       <tr>
@@ -139,7 +142,7 @@ export function disputeFiledEmail(params: DisputeFiledParams): EmailResult {
       preheader: `${initiatorName} of ${initiatorBusiness} has filed a ${typeLabel.toLowerCase()} — reference ${referenceNumber}`,
       content,
       ctaText: "Review and respond",
-      ctaUrl: `${siteUrl}/sign-up?redirect=/disputes/${encodeURIComponent(disputeId)}`,
+      ctaUrl: `${siteUrl}/${authPath}?redirect=/disputes/${encodeURIComponent(disputeId)}`,
     }),
   };
 }

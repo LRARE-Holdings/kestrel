@@ -341,6 +341,13 @@ export async function fileDispute(
     responseDeadline: formattedDeadline,
   });
 
+  // Check if the respondent already has a Kestrel account
+  const { data: existingRespondent } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("email", data.responding_party_email)
+    .maybeSingle();
+
   // Email to the respondent (notification)
   const respondentEmail = disputeFiledEmail({
     respondentName: data.responding_party_name,
@@ -353,6 +360,7 @@ export async function fileDispute(
     disputeType: data.dispute_type,
     amount: formattedAmount,
     responseDeadline: formattedDeadline,
+    respondentIsExistingUser: !!existingRespondent,
   });
 
   // Send both emails in parallel. Neither should block the filing response.

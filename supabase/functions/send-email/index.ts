@@ -8,6 +8,8 @@ const SITE_URL =
 const FROM_DOMAIN =
   Deno.env.get("RESEND_FROM_DOMAIN") || "kestrel.pellar.co.uk";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const LOGO_URL =
+  "https://zyebrpcjdoyrckxbpicz.supabase.co/storage/v1/object/public/logo/kpm.png";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -89,7 +91,14 @@ function buildEmail(params: {
       <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width:560px;margin:0 auto;">
         <!-- Header -->
         <tr><td style="padding:0 0 20px 0;">
-          <span style="font-family:${FONT};font-size:20px;font-weight:700;color:${COLORS.kestrel};letter-spacing:0.02em;">Kestrel</span>
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0"><tr>
+            <td style="vertical-align:middle;width:40px;">
+              <img src="${LOGO_URL}" alt="Kestrel" width="40" height="40" style="display:block;border:0;" />
+            </td>
+            <td style="padding-left:14px;vertical-align:middle;">
+              <span style="font-family:${FONT};font-size:20px;font-weight:700;color:${COLORS.kestrel};letter-spacing:0.02em;">Kestrel</span>
+            </td>
+          </tr></table>
         </td></tr>
         <!-- Card -->
         <tr><td style="background-color:${COLORS.white};padding:44px 40px 40px 40px;border-radius:12px;border:1px solid ${COLORS.borderSubtle};">

@@ -17,6 +17,10 @@ export const ADMIN_URL =
 export const EMAIL_FROM_DOMAIN =
   process.env.RESEND_FROM_DOMAIN || KESTREL_DOMAIN;
 
+/** Hosted logo for email templates and public assets. */
+export const LOGO_URL =
+  "https://zyebrpcjdoyrckxbpicz.supabase.co/storage/v1/object/public/logo/kpm.png";
+
 /** Standard email addresses — derived from the domain. */
 export const EMAILS = {
   notifications: `notifications@${EMAIL_FROM_DOMAIN}`,

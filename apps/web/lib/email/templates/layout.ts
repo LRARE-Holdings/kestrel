@@ -1,4 +1,4 @@
-import { SITE_URL, EMAILS } from "@kestrel/shared/constants";
+import { SITE_URL, EMAILS, LOGO_URL } from "@kestrel/shared/constants";
 
 const FONT_STACK =
   "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif";
@@ -18,10 +18,6 @@ const COLORS = {
   white: "#FFFFFF",
   error: "#B54444",
 } as const;
-
-/** Green Kestrel bird mark SVG, base64-encoded for light-background header. */
-const LOGO_BASE64 =
-  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiPjxwYXRoIGQ9Ik0yNTYgMzJjLTMwIDAtNjUgMTUtMTAwIDUyLTM1IDM3LTY1IDkwLTg1IDE0Mmw5MC01MGMxNS0xMiAzNS0yOCA1NS00MiAxMC03IDIyLTE0IDQwLTIyIDE4IDggMzAgMTUgNDAgMjIgMjAgMTQgNDAgMzAgNTUgNDJsOTAgNTBjLTIwLTUyLTUwLTEwNS04NS0xNDItMzUtMzctNzAtNTItMTAwLTUyeiIgZmlsbD0iIzJCNUM0RiIvPjxwYXRoIGQ9Ik0xNjEgMTc2bDk1LTcyIDk1IDcyLTMwIDIyYy0xMiAxMC0zMCAyNS00NSA0OC04IDE0LTEzIDI4LTE1IDQwLTItMTItNy0yNi0xNS00MC0xNS0yMy0zMy0zOC00NS00OGwtMzAtMjJ6IiBmaWxsPSIjMkI1QzRGIi8+PHBhdGggZD0iTTI0MSAzMTZjLTQgMjAtOCA1MC0xMCA4MGwtNiA4NGg2MmwtNi04NGMtMi0zMC02LTYwLTEwLTgwIiBmaWxsPSIjMkI1QzRGIiBvcGFjaXR5PSIuMyIvPjwvc3ZnPgo=";
 
 interface EmailLayoutParams {
   title: string;
@@ -182,7 +178,7 @@ export function emailLayout(params: EmailLayoutParams): string {
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                 <tr>
                   <td style="vertical-align: middle; width: 40px;">
-                    <img src="${LOGO_BASE64}" alt="Kestrel" width="40" height="40" style="display: block; border: 0;" />
+                    <img src="${LOGO_URL}" alt="Kestrel" width="40" height="40" style="display: block; border: 0;" />
                   </td>
                   <td style="padding-left: 14px; vertical-align: middle;">
                     <span style="

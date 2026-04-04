@@ -988,6 +988,7 @@ export type Database = {
           notification_preferences: Json | null
           onboarding_completed: boolean | null
           phone: string | null
+          tutorial_completed: boolean
           updated_at: string | null
         }
         Insert: {
@@ -1003,6 +1004,7 @@ export type Database = {
           notification_preferences?: Json | null
           onboarding_completed?: boolean | null
           phone?: string | null
+          tutorial_completed?: boolean
           updated_at?: string | null
         }
         Update: {
@@ -1018,6 +1020,7 @@ export type Database = {
           notification_preferences?: Json | null
           onboarding_completed?: boolean | null
           phone?: string | null
+          tutorial_completed?: boolean
           updated_at?: string | null
         }
         Relationships: []

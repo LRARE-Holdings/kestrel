@@ -650,13 +650,16 @@ export type Database = {
           assigned_to: string | null
           company: string | null
           created_at: string
-          created_by: string
+          created_by: string | null
           email: string | null
           id: string
+          last_scored_at: string | null
           name: string
           next_action_date: string | null
           notes: string | null
           phone: string | null
+          score: number | null
+          score_breakdown: Json | null
           source: string | null
           stage: string
           status: string
@@ -666,13 +669,16 @@ export type Database = {
           assigned_to?: string | null
           company?: string | null
           created_at?: string
-          created_by: string
+          created_by?: string | null
           email?: string | null
           id?: string
+          last_scored_at?: string | null
           name: string
           next_action_date?: string | null
           notes?: string | null
           phone?: string | null
+          score?: number | null
+          score_breakdown?: Json | null
           source?: string | null
           stage?: string
           status?: string
@@ -682,13 +688,16 @@ export type Database = {
           assigned_to?: string | null
           company?: string | null
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           email?: string | null
           id?: string
+          last_scored_at?: string | null
           name?: string
           next_action_date?: string | null
           notes?: string | null
           phone?: string | null
+          score?: number | null
+          score_breakdown?: Json | null
           source?: string | null
           stage?: string
           status?: string
@@ -1197,6 +1206,27 @@ export type Database = {
           },
         ]
       }
+      site_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string | null
@@ -1243,6 +1273,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tool_usage_events: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          session_id: string | null
+          tool_name: string
+          user_id: string | null
+        }
+        Insert: {
+          action?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string | null
+          tool_name: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string | null
+          tool_name?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {

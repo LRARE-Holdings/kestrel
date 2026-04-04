@@ -12,6 +12,8 @@ export interface Lead {
   stage: string;
   status: string;
   next_action_date: string | null;
+  score: number | null;
+  last_scored_at: string | null;
   assigned_to: string | null;
   created_by: string;
   created_at: string;

@@ -66,12 +66,20 @@ export default async function LeadsPage({
             Track prospects through your sales pipeline.
           </p>
         </div>
-        <Link
-          href="/leads/new"
-          className="px-4 py-2 text-sm font-medium text-white bg-kestrel rounded-lg hover:bg-kestrel-hover transition-colors"
-        >
-          Add lead
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/leads/discover"
+            className="px-4 py-2 text-sm font-medium text-kestrel bg-white border border-border rounded-lg hover:bg-stone/30 transition-colors"
+          >
+            Discover leads
+          </Link>
+          <Link
+            href="/leads/new"
+            className="px-4 py-2 text-sm font-medium text-white bg-kestrel rounded-lg hover:bg-kestrel-hover transition-colors"
+          >
+            Add lead
+          </Link>
+        </div>
       </div>
 
       {/* View toggle + filters */}
@@ -275,6 +283,9 @@ async function ListView({
                   Status
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                  Score
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
                   Next action
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
@@ -312,6 +323,9 @@ async function ListView({
                       <StatusBadge status={lead.status} variant="lead" />
                     </td>
                     <td className="px-4 py-3">
+                      <ScoreBadge score={lead.score} />
+                    </td>
+                    <td className="px-4 py-3">
                       {lead.next_action_date ? (
                         <span
                           className={`text-xs ${overdue ? "text-error font-medium" : "text-text-muted"}`}
@@ -342,6 +356,26 @@ async function ListView({
         searchParams={filterParams}
       />
     </>
+  );
+}
+
+function ScoreBadge({ score }: { score: number | null }) {
+  if (score === null || score === 0)
+    return <span className="text-text-muted">-</span>;
+  const color =
+    score >= 91
+      ? "bg-sage/20 text-sage"
+      : score >= 61
+        ? "bg-warning/20 text-warning"
+        : score >= 31
+          ? "bg-kestrel/10 text-kestrel"
+          : "bg-stone text-text-muted";
+  return (
+    <span
+      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${color}`}
+    >
+      {score}
+    </span>
   );
 }
 

@@ -409,3 +409,57 @@ Built the full user-facing escalation flow (previously a dummy no-op):
 - Either party can escalate (not just initiating party) — both have standing
 - Typed verification prevents accidental escalation (irreversible action)
 - Constants updated: `escalation` added to SUBMISSION_TYPE_LABELS and STATUS_TRANSITIONS
+
+## [2026-04-04] Architecture — Admin Portal Speed Optimisation
+Applied 5 performance fixes to the admin panel:
+1. **Loading skeletons**: Added `loading.tsx` files to all 9 admin routes for instant Suspense feedback
+2. **React `cache()` on `getAdminUser`**: Per-request deduplication — layout + page calls only hit Supabase once
+3. **`unstable_cache` on dashboard queries**: 60-second revalidation window for dashboard metrics
+4. **Proxy API route bypass**: `/api/` routes skip auth/MFA checks in proxy (cron jobs handle own auth)
+5. **TypeScript types regenerated** for new tables
+
+## [2026-04-04] Database — Admin Portal Expansion Migrations
+Applied 3 new migrations to Supabase (zyebrpcjdoyrckxbpicz):
+1. `create_site_settings` — key-value settings table (jsonb values). Public read RLS (anonymous visitors), admin-only write RLS. Seeded with announcement + maintenance defaults.
+2. `create_tool_usage_events` — anonymous/authenticated tool usage tracking. Public insert RLS, admin-only read RLS. Indexes on tool_name, user_id, created_at.
+3. `add_score_to_leads` — added `score` (int), `score_breakdown` (jsonb), `last_scored_at` (timestamptz) to leads. Made `created_by` nullable for system-generated leads. Index on score DESC.
+
+## [2026-04-04] Architecture — Announcement Bar
+Admin-controlled announcement bar that renders on the main site:
+- `packages/shared/supabase/site-settings.ts` — shared query helpers (getAnnouncementSettings, getSiteSetting, getAllSiteSettings)
+- `apps/web/components/ui/announcement-bar.tsx` — server component, reads from site_settings, conditional render
+- Integrated into both `(site)/layout.tsx` and `(tools)/layout.tsx` above Header
+- Styles: info (kestrel green), warning (amber), success (sage green)
+- Controlled via admin settings tab
+
+## [2026-04-04] Architecture — Admin Settings Suite
+Replaced placeholder settings page with full tabbed interface:
+- **Announcement tab**: toggle, text (max 200), optional link, style selector, live preview
+- **Feature Flags tab**: list all flags with inline toggles, add new flag form
+- **Site Config tab**: maintenance mode toggle
+- **Admin Team tab**: list admins, invite (super_admin only), change roles, remove
+- Tab state stored in URL params (`?tab=`) for deep-linkability
+- All mutations auth-gated via getAdminUser(), validated with Zod
+- Admin team operations use service client (for auth.admin access)
+
+## [2026-04-04] Architecture — Lead Scoring System
+Automatic lead scoring from platform usage signals:
+- `lib/leads/scoring.ts` — pure function `computeLeadScore()`: signed_up +20, onboarding +10, docs +5/each (cap 30), dispute +25, multi-tool +15, business name +10, recent activity +10. Max 120.
+- Cron endpoint at `/api/cron/lead-scoring` (daily 03:00 UTC via vercel.json)
+- Scores non-subscribed users, creates/updates leads for score > 20 with source "platform"
+- Score displayed in leads table as color-coded badge (grey <30, kestrel 31-60, amber 61-90, sage 91+)
+
+## [2026-04-04] Architecture — Google Places Lead Discovery
+New page at `/leads/discover` for external lead sourcing:
+- Search form: business type query + location + radius (5-50km)
+- Calls Google Places Text Search API v1 server-side
+- Results table: business name, address, phone, website, rating, reviews
+- "Add as lead" button per result with deduplication by company name
+- Added to leads with source "google_places", address/website/place_id in notes
+- Env var: GOOGLE_PLACES_API_KEY required
+
+## [2026-04-04] Architecture — Tool Usage Tracking
+Fire-and-forget tool usage tracking via `apps/web/lib/tracking/tool-usage.ts`:
+- Inserts into `tool_usage_events` table with tool_name, action, user_id (if authenticated), session_id, metadata
+- Non-blocking — errors silently caught, never breaks user flow
+- To be integrated into 7 tool pages for lead scoring data

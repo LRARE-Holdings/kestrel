@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
 
 export interface DashboardMetrics {
@@ -23,7 +24,7 @@ export interface DashboardMetrics {
   }>;
 }
 
-export async function getDashboardMetrics(): Promise<DashboardMetrics> {
+async function getDashboardMetricsInternal(): Promise<DashboardMetrics> {
   const supabase = createServiceClient();
 
   const sevenDaysAgo = new Date(
@@ -155,3 +156,9 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     recentUsers: recentUsersResult.data ?? [],
   };
 }
+
+export const getDashboardMetrics = unstable_cache(
+  getDashboardMetricsInternal,
+  ["admin-dashboard-metrics"],
+  { revalidate: 60 },
+);

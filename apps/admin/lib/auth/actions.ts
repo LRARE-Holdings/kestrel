@@ -1,5 +1,6 @@
 "use server";
 
+import { cache } from "react";
 import { createClient } from "@kestrel/shared/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -70,12 +71,13 @@ export async function signOut(): Promise<void> {
  * - Session is not aal2 (MFA not verified)
  *
  * Used by the (admin) layout to gate access.
+ * Wrapped with React cache() for per-request deduplication.
  */
-export async function getAdminUser(): Promise<{
+export const getAdminUser = cache(async (): Promise<{
   id: string;
   email: string;
   role: string;
-} | null> {
+} | null> => {
   const supabase = await createClient();
 
   const {
@@ -98,4 +100,4 @@ export async function getAdminUser(): Promise<{
     email: user.email ?? "",
     role: (user.app_metadata?.admin_role as string) ?? "admin",
   };
-}
+});

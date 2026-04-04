@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { ScrollProgressBar } from "@/components/ui/scroll-progress-bar";
+import { AnnouncementBar } from "@/components/ui/announcement-bar";
 import { getUser, getProfile } from "@/lib/auth/actions";
 import { AppShell } from "@/components/app/sidebar";
 
@@ -16,9 +17,12 @@ export default async function ToolsLayout({
     const profile = await getProfile();
     if (profile?.onboarding_completed) {
       return (
-        <AppShell userEmail={user.email ?? ""}>
-          {children}
-        </AppShell>
+        <>
+          <AnnouncementBar />
+          <AppShell userEmail={user.email ?? ""}>
+            {children}
+          </AppShell>
+        </>
       );
     }
   }
@@ -32,6 +36,7 @@ export default async function ToolsLayout({
         aria-hidden="true"
       />
       <div className="relative z-10 flex min-h-screen flex-col">
+        <AnnouncementBar />
         <Header user={user ? { email: user.email } : null} />
         <main className="flex-1">{children}</main>
         <Footer />

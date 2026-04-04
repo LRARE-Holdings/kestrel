@@ -20,6 +20,9 @@ export async function proxy(request: NextRequest) {
   const isPublicRoute = pathname === "/sign-in" ||
     pathname.startsWith("/mfa");
 
+  // API routes handle their own auth — skip proxy checks
+  if (pathname.startsWith("/api/")) return response;
+
   // Not signed in → redirect to sign-in
   if (!user && !isPublicRoute) {
     return redirectTo("/sign-in");

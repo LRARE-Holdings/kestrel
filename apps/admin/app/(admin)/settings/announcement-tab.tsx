@@ -96,12 +96,13 @@ export function AnnouncementTab({ settings }: Props) {
       </div>
 
       {/* Feedback + submit */}
-      {state?.error && (
+      {state?.error && !state?.success && (
         <p className="text-sm text-error">{state.error}</p>
       )}
       {state?.success && (
         <p className="text-sm text-kestrel">Announcement settings saved.</p>
       )}
+      {/* Key the form to reset defaults when server data changes */}
 
       <button
         type="submit"

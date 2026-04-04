@@ -1,5 +1,6 @@
 import { createClient } from "@kestrel/shared/supabase/server";
 import type { LeadStage } from "./schemas";
+import type { AiAssessment } from "./types";
 
 export interface Lead {
   id: string;
@@ -18,6 +19,8 @@ export interface Lead {
   created_by: string;
   created_at: string;
   updated_at: string;
+  ai_assessment: AiAssessment | null;
+  ai_assessed_at: string | null;
 }
 
 export interface LeadInteraction {

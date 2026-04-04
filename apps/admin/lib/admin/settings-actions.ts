@@ -43,15 +43,17 @@ export async function updateAnnouncementSettings(
   const entries: Record<string, unknown> = {
     announcement_enabled: parsed.data.enabled,
     announcement_text: parsed.data.text,
-    announcement_link: parsed.data.link || null,
+    announcement_link: parsed.data.link || "",
     announcement_style: parsed.data.style,
   };
 
   for (const [key, val] of Object.entries(entries)) {
+    // Ensure value is never null/undefined — jsonb column is NOT NULL
+    const jsonValue = val === null || val === undefined ? "" : val;
     const { error } = await supabase.from("site_settings").upsert(
       {
         key,
-        value: JSON.parse(JSON.stringify(val)),
+        value: jsonValue as any,
         updated_by: admin.id,
         updated_at: new Date().toISOString(),
       },
@@ -146,7 +148,7 @@ export async function updateSiteConfig(
   const { error } = await supabase.from("site_settings").upsert(
     {
       key: "maintenance_mode",
-      value: JSON.parse(JSON.stringify(maintenanceMode)),
+      value: maintenanceMode as any,
       updated_by: admin.id,
       updated_at: new Date().toISOString(),
     },

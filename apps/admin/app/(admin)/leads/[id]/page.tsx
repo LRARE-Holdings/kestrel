@@ -7,6 +7,8 @@ import { formatRelativeDate } from "@kestrel/shared/dates/format";
 import { EditLeadForm } from "./edit-lead-form";
 import { AddInteractionForm } from "./add-interaction-form";
 import { LeadActions } from "./lead-actions";
+import { AiAssessmentCard } from "./ai-assessment-card";
+import type { AiAssessment } from "@/lib/leads/types";
 
 function formatLongDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-GB", {
@@ -152,6 +154,13 @@ export default async function LeadDetailPage({
               </div>
             </div>
           </div>
+
+          {/* AI plan recommendation */}
+          <AiAssessmentCard
+            leadId={lead.id}
+            assessment={lead.ai_assessment as AiAssessment | null}
+            assessedAt={lead.ai_assessed_at}
+          />
 
           {/* Notes */}
           {lead.notes && (

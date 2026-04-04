@@ -463,3 +463,19 @@ Fire-and-forget tool usage tracking via `apps/web/lib/tracking/tool-usage.ts`:
 - Inserts into `tool_usage_events` table with tool_name, action, user_id (if authenticated), session_id, metadata
 - Non-blocking — errors silently caught, never breaks user flow
 - To be integrated into 7 tool pages for lead scoring data
+
+## [2026-04-04] Architecture — AI Lead Scoring (Plan Fit Recommendation)
+Added AI-powered plan-fit assessment that runs alongside the existing deterministic 120-point scoring system. When a lead is created (manual, cron, or Google Places), a Supabase Edge Function calls Claude Sonnet (pinned: claude-sonnet-4-20250514, temp 0) to recommend Free/Professional/Business plan with confidence level, reasoning, key signals, and sales talking points.
+
+**Database:** Added `ai_assessment` (JSONB) and `ai_assessed_at` (timestamptz) columns to `leads` table.
+
+**Edge Function:** `score-lead` — receives webhook payload on INSERT, enriches with Companies House API (free, no key) + website scrape (from notes URL), calls Anthropic API, writes assessment back. Best-effort enrichment (5s timeout, failures don't block). Returns 200 on all errors to prevent webhook retry storms.
+
+**Admin UI:** `AiAssessmentCard` client component on lead detail page right column. Shows plan badge (colour-coded), confidence, reasoning, key signals, talking points, enrichment data, and "Re-score" button. Empty state with "Score now" button.
+
+**Re-score API:** POST `/api/leads/[id]/score` — admin-auth guarded, calls the same Edge Function directly (single code path).
+
+**Coexistence:** Deterministic score (engagement signals, 0-120) and AI assessment (plan recommendation) are fully independent. Different columns, different triggers, different update cadences.
+
+**Env var needed:** `ANTHROPIC_API_KEY` in Supabase Edge Function secrets.
+**Manual step:** Configure database webhook in Supabase Dashboard (leads INSERT → score-lead Edge Function).

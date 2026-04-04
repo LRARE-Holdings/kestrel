@@ -382,3 +382,30 @@ Founder requirement: both parties MUST be notified by email whenever any dispute
 - `acceptance` (resolves dispute) → `disputeResolvedEmail` to BOTH parties
 
 All emails also create in-app notification records via `sendDisputeEmail()`. Errors are logged but never block the submission flow (fire-and-forget pattern via `Promise.allSettled` / `.catch`).
+
+## [2026-04-04] Architecture — User-Facing Escalation
+Built the full user-facing escalation flow (previously a dummy no-op):
+
+**Database changes:**
+- Added `escalation_reason TEXT` column to disputes table
+- Added `'escalation'` value to `submission_type` enum
+
+**Server action:** `escalateDispute()` in `apps/web/lib/disputes/actions.ts`:
+- Either party can escalate when dispute is `in_progress`
+- Validates via `escalationSchema` (Zod: dispute_id UUID, reason 20-2000 chars)
+- Creates immutable `escalation` submission in dispute_submissions (audit trail + content hash)
+- Updates dispute: status → `escalated`, `escalated_at`, `escalation_reason`
+- Audit log entry with reason and escalator role
+- Notifies BOTH parties via dedicated email template (fire-and-forget)
+
+**Email template:** `dispute-escalated.ts` — sent to both parties. Shows escalator name, reason in a cream card with red left border. Explains: no further submissions, recommends external mediation (Civil Mediation Council) or solicitor. Uses standard Kestrel email layout.
+
+**Modal UX:** Two-step modal with typed verification:
+1. **Reason step:** Warning banner, textarea (20-2000 chars), character counter
+2. **Confirm step:** Consequences listed (permanent status change, both parties notified, no further submissions, seek external advice). Reason displayed for review. **Two separate verification inputs:** user must type "escalate" in one field AND the full dispute reference number (e.g. KST-2026-00001) in a second field. Both must match exactly before the "Confirm escalation" button enables. Input borders turn red on mismatch.
+
+**Design decisions:**
+- No mediator marketplace yet — escalation is terminal. Recommends external professional mediation.
+- Either party can escalate (not just initiating party) — both have standing
+- Typed verification prevents accidental escalation (irreversible action)
+- Constants updated: `escalation` added to SUBMISSION_TYPE_LABELS and STATUS_TRANSITIONS

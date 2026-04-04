@@ -14,6 +14,17 @@ export async function proxy(request: NextRequest) {
 
   const { supabase, response, user } = await createSupabaseProxyClient(request);
 
+  // Helper: create a redirect that preserves the Supabase session cookies.
+  // Without this, cookie updates from session refresh are lost on redirect,
+  // which causes an infinite redirect loop.
+  function redirectTo(url: URL) {
+    const redirectResponse = NextResponse.redirect(url);
+    response.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectResponse;
+  }
+
   // The update-password page requires authentication (you need a recovery session)
   // but must NOT redirect to dashboard — the user needs to set their new password first.
   if (request.nextUrl.pathname === "/update-password") {
@@ -21,7 +32,7 @@ export async function proxy(request: NextRequest) {
       // No session — they can't update a password without a recovery session
       const url = request.nextUrl.clone();
       url.pathname = "/reset-password";
-      return NextResponse.redirect(url);
+      return redirectTo(url);
     }
     // Authenticated via recovery link — let them through to set their password
     return response;
@@ -38,7 +49,7 @@ export async function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/sign-in";
     url.searchParams.set("redirect", request.nextUrl.pathname);
-    return NextResponse.redirect(url);
+    return redirectTo(url);
   }
 
   // SECURITY: If a recovery session is active (cookie set by auth/callback or auth/confirm),
@@ -47,7 +58,7 @@ export async function proxy(request: NextRequest) {
   if (isAppRoute && request.cookies.get("kestrel_password_recovery")?.value === "true") {
     const url = request.nextUrl.clone();
     url.pathname = "/update-password";
-    return NextResponse.redirect(url);
+    return redirectTo(url);
   }
 
   // If signed in and visiting auth pages (sign-in, sign-up, reset-password),
@@ -59,7 +70,7 @@ export async function proxy(request: NextRequest) {
   if (isAuthPage && user) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
+    return redirectTo(url);
   }
 
   return response;

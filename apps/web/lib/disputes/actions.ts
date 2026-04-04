@@ -2,7 +2,7 @@
 
 import { createClient } from "@kestrel/shared/supabase/server";
 import { hashContent } from "@/lib/disputes/hash";
-import { disputeFilingSchema, submissionSchema } from "@/lib/disputes/schemas";
+import { disputeFilingSchema, submissionSchema, escalationSchema } from "@/lib/disputes/schemas";
 import { RESPONSE_DEADLINE_DAYS, STATUS_TRANSITIONS } from "@/lib/disputes/constants";
 import { sendDisputeEmail } from "@kestrel/shared/email/send";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
@@ -12,6 +12,7 @@ import { submissionReceivedEmail } from "@/lib/email/templates/submission-receiv
 import { proposalReceivedEmail } from "@/lib/email/templates/proposal-received";
 import { proposalResponseEmail } from "@/lib/email/templates/proposal-response";
 import { disputeResolvedEmail } from "@/lib/email/templates/dispute-resolved";
+import { disputeEscalatedEmail } from "@/lib/email/templates/dispute-escalated";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "@kestrel/shared/supabase/types";
 import type {
@@ -859,6 +860,179 @@ export async function withdrawDispute(
 }
 
 // ---------------------------------------------------------------------------
+// Escalation
+// ---------------------------------------------------------------------------
+
+/**
+ * Escalate a dispute. Either party can escalate when the dispute is in_progress.
+ * Creates an immutable escalation submission, updates the dispute status to
+ * 'escalated', records the reason, and notifies both parties.
+ *
+ * Since there is no mediator marketplace yet, escalation is a terminal state
+ * that advises both parties to seek external mediation or legal advice.
+ */
+export async function escalateDispute(
+  input: { dispute_id: string; reason: string },
+): Promise<{ success: true } | { error: string }> {
+  const supabase = await createClient();
+  const user = await getAuthenticatedUser(supabase);
+  if (!user) return { error: "Not authenticated" };
+
+  // Server-side validation
+  const parsed = escalationSchema.safeParse(input);
+  if (!parsed.success) {
+    const firstIssue = parsed.error.issues[0];
+    return { error: firstIssue?.message ?? "Validation failed" };
+  }
+
+  const { dispute_id, reason } = parsed.data;
+
+  // Fetch the dispute
+  const { data: dispute, error: fetchError } = await supabase
+    .from("disputes")
+    .select("*")
+    .eq("id", dispute_id)
+    .is("deleted_at", null)
+    .single();
+
+  if (fetchError || !dispute) {
+    return { error: "Dispute not found" };
+  }
+
+  // Verify user is a party
+  const role = getUserRole(dispute, user.id, user.email);
+  if (!role) {
+    return { error: "Not authorised to escalate this dispute" };
+  }
+
+  // Only in_progress disputes can be escalated
+  if (dispute.status !== "in_progress") {
+    return { error: "Only disputes that are in progress can be escalated" };
+  }
+
+  // Create the escalation submission (immutable audit trail)
+  const contentHash = await hashContent(reason);
+
+  const { error: submissionError } = await supabase
+    .from("dispute_submissions")
+    .insert({
+      dispute_id,
+      submission_type: "escalation",
+      submitted_by: user.id,
+      content: reason,
+      content_hash: contentHash,
+    });
+
+  if (submissionError) {
+    return { error: submissionError.message };
+  }
+
+  // Update dispute status to escalated
+  const { error: updateError } = await supabase
+    .from("disputes")
+    .update({
+      status: "escalated",
+      escalated_at: new Date().toISOString(),
+      escalation_reason: reason,
+    })
+    .eq("id", dispute_id);
+
+  if (updateError) {
+    return { error: updateError.message };
+  }
+
+  // Audit log
+  await logAudit(supabase, user.id, "dispute.escalated", "dispute", dispute_id, {
+    reason,
+    escalated_by_role: role,
+  });
+
+  // ----- Notify BOTH parties (fire-and-forget) -----
+  notifyPartiesOfEscalation({
+    dispute,
+    escalatorId: user.id,
+    reason,
+  }).catch((err) => {
+    console.error("[escalateDispute] Notification error (non-blocking):", err);
+  });
+
+  return { success: true };
+}
+
+/**
+ * Send escalation notification emails to both parties.
+ * Uses a service client to bypass RLS for profile lookups.
+ */
+async function notifyPartiesOfEscalation(params: {
+  dispute: Database["public"]["Tables"]["disputes"]["Row"];
+  escalatorId: string;
+  reason: string;
+}) {
+  const { dispute, escalatorId, reason } = params;
+  const serviceClient = createServiceClient();
+
+  const initiatorId = dispute.initiating_party_id;
+  const respondentId = dispute.responding_party_id;
+
+  // Fetch both profiles in parallel
+  const [initiatorProfile, respondentProfile] = await Promise.all([
+    serviceClient
+      .from("profiles")
+      .select("display_name, business_name, email")
+      .eq("id", initiatorId)
+      .single()
+      .then(({ data }) => data),
+    respondentId
+      ? serviceClient
+          .from("profiles")
+          .select("display_name, business_name, email")
+          .eq("id", respondentId)
+          .single()
+          .then(({ data }) => data)
+      : null,
+  ]);
+
+  const escalatorName =
+    escalatorId === initiatorId
+      ? initiatorProfile?.display_name ?? "A Kestrel user"
+      : respondentProfile?.display_name ?? "A Kestrel user";
+
+  const recipients = [
+    { id: initiatorId, profile: initiatorProfile },
+    { id: respondentId, profile: respondentProfile },
+  ];
+
+  const emails: Promise<{ success: boolean; error?: string }>[] = [];
+
+  for (const recipient of recipients) {
+    if (!recipient.id || !recipient.profile?.email) continue;
+
+    const emailResult = disputeEscalatedEmail({
+      recipientName: recipient.profile.display_name ?? "Kestrel user",
+      escalatorName,
+      referenceNumber: dispute.reference_number,
+      disputeId: dispute.id,
+      reason,
+    });
+
+    emails.push(
+      sendDisputeEmail({
+        to: recipient.profile.email,
+        subject: emailResult.subject,
+        html: emailResult.html,
+        userId: recipient.id,
+        disputeId: dispute.id,
+        notificationType: "dispute_escalated",
+        notificationTitle: "Dispute escalated",
+        notificationBody: `Dispute ${dispute.reference_number} has been escalated by ${escalatorName}.`,
+      }),
+    );
+  }
+
+  await Promise.allSettled(emails);
+}
+
+// ---------------------------------------------------------------------------
 // Evidence upload
 // ---------------------------------------------------------------------------
 
@@ -950,6 +1124,89 @@ export async function uploadEvidence(
 }
 
 // ---------------------------------------------------------------------------
+// Bulk evidence download
+// ---------------------------------------------------------------------------
+
+/**
+ * Generate signed download URLs for all evidence files in a dispute, grouped
+ * by which party uploaded them. Used by the "Download All" feature to build
+ * a zip client-side.
+ */
+export async function getAllEvidenceUrls(
+  disputeId: string,
+): Promise<
+  | {
+      files: Array<{
+        url: string;
+        fileName: string;
+        party: "initiating" | "responding" | "unknown";
+      }>;
+    }
+  | { error: string }
+> {
+  const supabase = await createClient();
+  const user = await getAuthenticatedUser(supabase);
+  if (!user) return { error: "Not authenticated" };
+
+  // Fetch dispute to verify access and get party IDs
+  const { data: dispute } = await supabase
+    .from("disputes")
+    .select("initiating_party_id, responding_party_id, responding_party_email")
+    .eq("id", disputeId)
+    .is("deleted_at", null)
+    .single();
+
+  if (!dispute || !getUserRole(dispute, user.id, user.email)) {
+    return { error: "Not authorised" };
+  }
+
+  // Fetch all evidence file records
+  const { data: evidenceFiles, error: fetchError } = await supabase
+    .from("evidence_files")
+    .select("id, storage_path, file_name, uploaded_by")
+    .eq("dispute_id", disputeId)
+    .order("created_at", { ascending: true });
+
+  if (fetchError || !evidenceFiles?.length) {
+    return { error: fetchError?.message ?? "No evidence files found" };
+  }
+
+  // Generate signed URLs for each file and tag by party
+  const files: Array<{
+    url: string;
+    fileName: string;
+    party: "initiating" | "responding" | "unknown";
+  }> = [];
+
+  for (const ef of evidenceFiles) {
+    const { data: signedData, error: signError } = await supabase.storage
+      .from("dispute-evidence")
+      .createSignedUrl(ef.storage_path, 3600);
+
+    if (signError || !signedData) continue;
+
+    let party: "initiating" | "responding" | "unknown" = "unknown";
+    if (ef.uploaded_by === dispute.initiating_party_id) {
+      party = "initiating";
+    } else if (ef.uploaded_by === dispute.responding_party_id) {
+      party = "responding";
+    }
+
+    files.push({
+      url: signedData.signedUrl,
+      fileName: ef.file_name,
+      party,
+    });
+  }
+
+  if (files.length === 0) {
+    return { error: "Failed to generate download URLs" };
+  }
+
+  return { files };
+}
+
+// ---------------------------------------------------------------------------
 // Submission type validation logic
 // ---------------------------------------------------------------------------
 
@@ -1027,6 +1284,12 @@ function validateSubmissionType(
       }
       if (!["filed", "awaiting_response", "in_progress"].includes(status)) {
         return "Cannot withdraw a dispute in its current status";
+      }
+      return null;
+
+    case "escalation":
+      if (status !== "in_progress") {
+        return "Escalation is only available when the dispute is in progress";
       }
       return null;
 

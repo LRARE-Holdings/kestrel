@@ -225,6 +225,7 @@ export type Database = {
           description: string | null
           dispute_type: Database["public"]["Enums"]["dispute_type"]
           escalated_at: string | null
+          escalation_reason: string | null
           id: string
           includes_dispute_clause: boolean
           initiating_party_id: string
@@ -247,6 +248,7 @@ export type Database = {
           description?: string | null
           dispute_type: Database["public"]["Enums"]["dispute_type"]
           escalated_at?: string | null
+          escalation_reason?: string | null
           id?: string
           includes_dispute_clause?: boolean
           initiating_party_id: string
@@ -269,6 +271,7 @@ export type Database = {
           description?: string | null
           dispute_type?: Database["public"]["Enums"]["dispute_type"]
           escalated_at?: string | null
+          escalation_reason?: string | null
           id?: string
           includes_dispute_clause?: boolean
           initiating_party_id?: string
@@ -295,6 +298,50 @@ export type Database = {
             columns: ["initiating_party_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_verifications: {
+        Row: {
+          created_at: string
+          dispute_id: string | null
+          email_type: string
+          id: string
+          recipient_email: string
+          sent_at: string
+          subject: string
+          verification_code: string
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          dispute_id?: string | null
+          email_type: string
+          id?: string
+          recipient_email: string
+          sent_at?: string
+          subject: string
+          verification_code: string
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          dispute_id?: string | null
+          email_type?: string
+          id?: string
+          recipient_email?: string
+          sent_at?: string
+          subject?: string
+          verification_code?: string
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_verifications_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
             referencedColumns: ["id"]
           },
         ]
@@ -1258,6 +1305,7 @@ export type Database = {
         | "acceptance"
         | "rejection"
         | "withdrawal"
+        | "escalation"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1443,6 +1491,7 @@ export const Constants = {
         "acceptance",
         "rejection",
         "withdrawal",
+        "escalation",
       ],
     },
   },

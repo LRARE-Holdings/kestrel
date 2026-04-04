@@ -20,6 +20,7 @@ export const SUBMISSION_TYPE_LABELS: Record<string, string> = {
   acceptance: "Proposal accepted",
   rejection: "Proposal rejected",
   withdrawal: "Withdrawal",
+  escalation: "Escalation",
 };
 
 export const STATUS_LABELS: Record<string, string> = {
@@ -71,4 +72,5 @@ export const STATUS_TRANSITIONS: Record<string, string> = {
   response: "in_progress",
   acceptance: "resolved",
   withdrawal: "withdrawn",
+  escalation: "escalated",
 };

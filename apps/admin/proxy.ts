@@ -5,13 +5,24 @@ export async function proxy(request: NextRequest) {
   const { supabase, response, user } = await createSupabaseProxyClient(request);
   const pathname = request.nextUrl.pathname;
 
+  // Helper: create a redirect that preserves the Supabase session cookies.
+  // Without this, cookie updates from session refresh are lost on redirect,
+  // which causes an infinite redirect loop.
+  function redirectTo(path: string) {
+    const redirectResponse = NextResponse.redirect(new URL(path, request.url));
+    response.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectResponse;
+  }
+
   // Public routes: sign-in page and MFA pages
   const isPublicRoute = pathname === "/sign-in" ||
     pathname.startsWith("/mfa");
 
   // Not signed in → redirect to sign-in
   if (!user && !isPublicRoute) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+    return redirectTo("/sign-in");
   }
 
   // Signed in but on sign-in page
@@ -19,7 +30,7 @@ export async function proxy(request: NextRequest) {
     // Check if fully authenticated (aal2)
     const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
     if (aalData?.currentLevel === "aal2") {
-      return NextResponse.redirect(new URL("/", request.url));
+      return redirectTo("/");
     }
     // Still needs MFA — let them through to complete it
   }
@@ -32,10 +43,10 @@ export async function proxy(request: NextRequest) {
     if (aalData?.currentLevel !== "aal2") {
       if (aalData?.nextLevel === "aal1") {
         // No MFA enrolled — force enrollment
-        return NextResponse.redirect(new URL("/mfa/enroll", request.url));
+        return redirectTo("/mfa/enroll");
       }
       // Has MFA but not verified this session
-      return NextResponse.redirect(new URL("/mfa/verify", request.url));
+      return redirectTo("/mfa/verify");
     }
   }
 

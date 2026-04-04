@@ -76,6 +76,7 @@ export const submissionSchema = z.object({
     "acceptance",
     "rejection",
     "withdrawal",
+    "escalation",
   ]),
   content: z
     .string()
@@ -96,6 +97,15 @@ export const proposalMetadataSchema = z.object({
     .max(2000, "Proposed terms must be 2,000 characters or fewer"),
 });
 
+/** Schema for escalating a dispute */
+export const escalationSchema = z.object({
+  dispute_id: z.string().uuid("Invalid dispute ID"),
+  reason: z
+    .string()
+    .min(20, "Please provide at least 20 characters explaining why you are escalating")
+    .max(2000, "Reason must be 2,000 characters or fewer"),
+});
+
 /** Schema for the evidence upload request (file validation is separate) */
 export const evidenceUploadSchema = z.object({
   dispute_id: z.string().uuid("Invalid dispute ID"),
@@ -111,4 +121,5 @@ export type FilingStep4Data = z.infer<typeof filingStep4Schema>;
 export type DisputeFilingInput = z.infer<typeof disputeFilingSchema>;
 export type SubmissionInput = z.infer<typeof submissionSchema>;
 export type ProposalMetadata = z.infer<typeof proposalMetadataSchema>;
+export type EscalationInput = z.infer<typeof escalationSchema>;
 export type EvidenceUploadInput = z.infer<typeof evidenceUploadSchema>;

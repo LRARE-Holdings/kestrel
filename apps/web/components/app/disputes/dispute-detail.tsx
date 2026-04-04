@@ -11,6 +11,7 @@ import { SubmissionForm } from "@/components/app/disputes/submission-form";
 import { ActionPanel } from "@/components/app/disputes/action-panel";
 import { EvidencePanel } from "@/components/app/disputes/evidence-panel";
 import { EvidenceUploadModal } from "@/components/app/disputes/evidence-upload-modal";
+import { EscalationModal } from "@/components/app/disputes/escalation-modal";
 import { ProposalResponse } from "@/components/app/disputes/proposal-response";
 import { ProposalForm } from "@/components/app/disputes/proposal-form";
 import { IconChevronLeft } from "@/components/ui/icons";
@@ -63,6 +64,7 @@ export function DisputeDetail({
   const [showProposalForm, setShowProposalForm] = useState(false);
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [showEvidenceUpload, setShowEvidenceUpload] = useState(false);
+  const [showEscalation, setShowEscalation] = useState(false);
 
   const handleRefresh = useCallback(() => {
     router.refresh();
@@ -84,7 +86,7 @@ export function DisputeDetail({
           setShowEvidenceUpload(true);
           break;
         case "escalate":
-          // Would open escalation modal
+          setShowEscalation(true);
           break;
         case "withdraw":
           // Would open withdrawal confirmation modal
@@ -214,6 +216,16 @@ export function DisputeDetail({
             <EvidencePanel
               files={evidenceFiles}
               disputeId={dispute.id}
+              initiatingPartyName={
+                dispute.initiating_party?.business_name ??
+                dispute.initiating_party?.display_name ??
+                undefined
+              }
+              respondingPartyName={
+                dispute.responding_party?.business_name ??
+                dispute.responding_party?.display_name ??
+                undefined
+              }
             />
           </div>
         </div>
@@ -225,6 +237,15 @@ export function DisputeDetail({
         onClose={() => setShowEvidenceUpload(false)}
         disputeId={dispute.id}
         onUploaded={handleRefresh}
+      />
+
+      {/* Escalation modal */}
+      <EscalationModal
+        open={showEscalation}
+        onClose={() => setShowEscalation(false)}
+        disputeId={dispute.id}
+        referenceNumber={dispute.reference_number}
+        onEscalated={handleRefresh}
       />
     </RealtimeProvider>
   );

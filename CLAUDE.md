@@ -28,7 +28,7 @@ Before doing anything else, create the `/memory` directory and initialise these 
 # User Profile
 
 ## Founder
-- Founder of Kestrel Solutions Limited (working name, final name TBD), Newcastle-upon-Tyne
+- Founder of OnKestrel Limited, Newcastle-upon-Tyne
 - Law student at Northumbria University (human rights, tort law, innovation/technology law)
 - Member of North East Chamber of Commerce
 - Attends Tech Builders NCL

@@ -81,7 +81,7 @@ export function Footer() {
             <ScrollFade direction="none" delay={0.25}>
               <div className="mt-10 flex items-center justify-between border-t border-border-subtle/40 pt-8">
                 <p className="text-xs text-text-muted">
-                  &copy; {new Date().getFullYear()} Kestrel Solutions Limited. All rights reserved.
+                  &copy; {new Date().getFullYear()} OnKestrel Limited. All rights reserved.
                 </p>
                 <a
                   href="https://www.linkedin.com/company/onkestrel"

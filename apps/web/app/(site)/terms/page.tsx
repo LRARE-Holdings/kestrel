@@ -22,7 +22,7 @@ export default function TermsPage() {
             <h2 className="font-display text-xl text-ink">Overview</h2>
             <p className="mt-3">
               These terms govern your use of the Kestrel platform, operated by
-              Kestrel Solutions Limited. By using Kestrel, you agree to these terms.
+              OnKestrel Limited. By using Kestrel, you agree to these terms.
             </p>
           </section>
 

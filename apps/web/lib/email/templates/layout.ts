@@ -250,7 +250,7 @@ export function emailLayout(params: EmailLayoutParams): string {
                     color: ${COLORS.textMuted};
                     line-height: 1.6;
                   ">
-                    Kestrel Solutions Limited &middot; England &amp; Wales
+                    OnKestrel Limited &middot; England &amp; Wales
                   </td>
                 </tr>
                 <tr>

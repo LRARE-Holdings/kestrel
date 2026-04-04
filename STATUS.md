@@ -20,7 +20,7 @@ Build kicked off 2026-04-01. In three days, the project went from zero code to a
 - **Dead link fix:** Created /about, /pricing, /contact, /privacy, /terms + "coming soon" placeholders for unbuilt tools
 - **Security headers** (HSTS, X-Frame-Options, etc.)
 - **Database:** 11 migrations applied — enums, profiles, disputes, submissions, evidence, saved docs, audit log, notifications, subscriptions, indexes, triggers. All 8 tables with RLS.
-- **Company rebrand:** Pellar Technologies → Kestrel Solutions Limited (independent company)
+- **Company rebrand:** Pellar Technologies → OnKestrel Limited (independent company)
 - **Full visual overhaul:** Premium hero (90vh, gradient orbs, animated bird flight path), glassmorphism header, 4-column footer, 8 CSS animations, card hover effects, dark CTA section
 - **BoE base rate fix:** Hardcoded 4.50% → dynamic from DB (actual rate: 3.75%). Weekly Vercel cron job scrapes BoE website for updates.
 - **All 6 free tools built:**
@@ -46,7 +46,7 @@ Build kicked off 2026-04-01. In three days, the project went from zero code to a
 |---|---|---|
 | **Auth** | Magic link only | Magic link **removed** (founder hates it). Now: Google OAuth, Microsoft OAuth, email+password, enterprise SSO. Passkeys deferred. |
 | **Display font** | Instrument Serif | **Satoshi** (from Fontshare). Corrected April 3. |
-| **Company** | Implied under Pellar Technologies | **Kestrel Solutions Limited** — independent company. All Pellar refs removed. |
+| **Company** | Implied under Pellar Technologies | **OnKestrel Limited** — independent company. All Pellar refs removed. |
 | **BoE base rate** | Hardcoded 4.50% | Dynamic from DB (actual: 3.75%). Auto-updated via weekly cron. |
 | **Next.js version** | 15 (middleware.ts) | **16.2.2** (uses `proxy.ts`, not `middleware.ts`). |
 | **Jurisdiction messaging** | "England & Wales only" | Softened: "built with English law expertise" — tools still E&W-specific, but positioning is expansion-ready. |
@@ -155,7 +155,7 @@ NEXT_PUBLIC_SITE_URL=https://kestrel.pellar.co.uk
 | Apr 3 | Display font was Instrument Serif | Changed to **Satoshi** (user preference) |
 | Apr 3 | Logo was filled geometric shapes | Replaced with user's **line-art SVG** (stroke-only, curved wings) |
 | Apr 3 | BoE rate hardcoded at 4.50% | Corrected to **3.75%**, made dynamic from DB |
-| Apr 3 | Company shown as under Pellar Technologies | Corrected to **Kestrel Solutions Limited** (independent) |
+| Apr 3 | Company shown as under Pellar Technologies | Corrected to **OnKestrel Limited** (independent) |
 | Apr 3 | Auth was magic-link only | Magic link **removed entirely**, replaced with OAuth + email/password |
 | Apr 3 | Middleware convention (middleware.ts) | Next.js 16 uses **proxy.ts** |
 | Apr 3 | E&W positioning was restrictive | **Softened** — expertise marker, not a boundary |

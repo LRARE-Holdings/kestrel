@@ -111,7 +111,7 @@ function buildEmail(params: {
         <!-- Footer -->
         <tr><td style="padding:28px 40px 0 40px;">
           <p style="font-family:${FONT};font-size:12px;color:${COLORS.textMuted};line-height:1.6;margin:0;">
-            Kestrel Solutions Limited &middot; England &amp; Wales
+            OnKestrel Limited &middot; England &amp; Wales
           </p>
           <p style="font-family:${FONT};font-size:11px;color:${COLORS.warm};line-height:1.6;margin:16px 0 0 0;">
             <strong style="color:${COLORS.textMuted};">Protect yourself from scams.</strong>

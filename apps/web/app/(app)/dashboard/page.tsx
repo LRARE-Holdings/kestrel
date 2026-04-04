@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getDashboardData } from "@/lib/dashboard/actions";
 import { GreetingSplash } from "@/components/app/greeting-splash";
+import { GuidedTutorial } from "@/components/app/guided-tutorial";
 import { EmptyDashboard } from "@/components/app/dashboard/empty-state";
 import { PopulatedDashboard } from "@/components/app/dashboard/populated-dashboard";
 
@@ -15,10 +16,12 @@ export default async function DashboardPage() {
 
   const hasData = data.disputes.length > 0 || data.documentCount > 0;
   const firstName = data.profile.display_name?.split(" ")[0] ?? "there";
+  const showTutorial = !data.profile.tutorial_completed;
 
   return (
     <>
       <GreetingSplash firstName={firstName} />
+      {showTutorial && <GuidedTutorial firstName={firstName} />}
 
       <div>
         <h1 className="font-display text-3xl text-ink">Dashboard</h1>

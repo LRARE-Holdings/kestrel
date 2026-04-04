@@ -143,6 +143,9 @@ Founder explicitly rejected magic link auth. Removing it entirely from the sign-
 ## [2026-04-03] Correction — Company Structure: Pellar → Kestrel
 Kestrel is its own independent company at launch, NOT a product under Pellar Technologies. Working company name: Kestrel Solutions Limited (final name TBD). All references to Pellar removed from: CONTEXT.md, SECURITY.md, CLAUDE.md, memory files, footer, about page, terms page, privacy page, contact page. LinkedIn updated to linkedin.com/company/onkestrel.
 
+## [2026-04-05] Correction — Company Name: Kestrel Solutions Limited → OnKestrel Limited
+Final company name confirmed by founder: **OnKestrel Limited**. Replaces the working name "Kestrel Solutions Limited".
+
 ## [2026-04-03] Architecture — Auth Methods Confirmed
 Final auth lineup:
 1. **Google OAuth** — social login via Supabase `signInWithOAuth({ provider: 'google' })`

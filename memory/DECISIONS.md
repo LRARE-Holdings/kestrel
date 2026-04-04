@@ -489,3 +489,54 @@ Added AI-powered plan-fit assessment that runs alongside the existing determinis
 
 **Env var needed:** `ANTHROPIC_API_KEY` in Supabase Edge Function secrets.
 **Manual step:** Configure database webhook in Supabase Dashboard (leads INSERT → score-lead Edge Function).
+
+## [2026-04-05] Architecture — Guided Tutorial for New Users
+Added a 5-step guided tutorial that appears after onboarding for first-time users:
+- **Trigger:** Shows on dashboard when `tutorial_completed` is false. Appears after the greeting splash finishes (2.6s delay).
+- **Steps:** Welcome overview → Free Toolkit (6 tools) → Documents → Dispute Resolution → Profile & Settings
+- **Each step:** Icon, title, subtitle, description, bullet-point details, optional action button that navigates to the relevant section
+- **Skippable:** "Skip tutorial" link in top-right corner at every step
+- **Persistence:** `tutorial_completed` boolean column on `profiles` table (default false). Set to true on skip or completion via `markTutorialComplete()` server action.
+- **Session guard:** SessionStorage key `kestrel-tutorial-shown` prevents re-showing within same session even before DB write completes.
+- **Reduced motion:** Respects `prefers-reduced-motion` — auto-marks as complete and skips entirely.
+- **Dark mode:** Uses semantic tokens (`bg-cream`, `text-ink`, `bg-surface`, `text-text-secondary`, `bg-kestrel/10`, etc.) so it automatically works in both light and dark.
+- **Animations:** Framer Motion AnimatePresence with slide transitions matching onboarding flow (EASE_OUT_EXPO). Step progress bar uses expanding dots.
+- **Component:** `components/app/guided-tutorial.tsx` (client component, ~300 lines)
+- **z-index:** 90 (below greeting splash at 100, above sidebar at 50)
+- **Action buttons:** Each step (except welcome) has a secondary button to navigate directly to that section, which dismisses the tutorial first.
+
+Database: Applied `add_tutorial_completed_to_profiles` migration. TypeScript types updated in both `packages/shared` and `apps/web`.
+
+## [2026-04-05] Security — RLS & Function Security Hardening (5 Migrations)
+
+Applied 5 security and performance migrations to Supabase (zyebrpcjdoyrckxbpicz):
+
+### Migration 1: `add_email_verifications_rls_policies`
+The `email_verifications` table had RLS enabled but zero policies. Added:
+- Service role: full access (FOR ALL, service creates these server-side)
+- Authenticated users: SELECT where `recipient_email` matches JWT email (subselect pattern)
+- Anon users: SELECT by code (for email verification links)
+- No public INSERT/UPDATE/DELETE
+
+### Migration 2: `tighten_update_policies_on_free_tool_tables`
+Replaced overly permissive `USING (true)` UPDATE policies on handshakes, notices, projects, and milestones. New policies enforce:
+- **handshakes**: UPDATE by `x-access-token` header match OR authenticated party (party_a_user_id / party_b_user_id)
+- **notices**: UPDATE by access_token OR authenticated sender (sender_user_id)
+- **projects**: UPDATE by access_token OR authenticated party
+- **milestones**: UPDATE via parent project accessibility (EXISTS subquery)
+Note: API routes use service role client (bypasses RLS), so these are defence-in-depth for any direct PostgREST access.
+
+### Migration 3: `fix_function_search_path`
+Added `SET search_path = ''` to both PL/pgSQL functions:
+- `update_updated_at_column()` (trigger function)
+- `generate_dispute_reference()` (dispute reference sequence)
+Prevents search_path injection attacks per Supabase security advisor.
+
+### Migration 4: `wrap_auth_calls_in_subselect_for_rls_performance`
+Dropped and recreated 17 RLS policies to wrap `auth.uid()` and `auth.jwt()` in `(select ...)` subselects. This ensures auth functions are evaluated once per query instead of once per row -- critical for performance at scale. Affected tables: admin_users, audit_log, dispute_mediator_requests, dispute_submissions, disputes, evidence_files, notifications, onboarding_responses, profiles, saved_documents, site_settings, subscriptions, tool_usage_events.
+Excluded: leads, lead_interactions (already correct), email_verifications (already correct from Migration 1).
+
+### Migration 5: `wrap_auth_calls_in_subselect_insert_policies`
+Follow-up to Migration 4 -- fixed 6 INSERT policies that were missed in the initial pass: disputes (Initiator creates disputes), dispute_submissions (Parties create submissions), evidence_files (Parties upload evidence), dispute_mediator_requests (Parties create mediator requests), onboarding_responses (Users can insert own onboarding response), site_settings (Admins can insert site settings).
+
+**Verification:** Final query against `pg_policies` confirmed zero remaining bare `auth.uid()` or `auth.jwt()` calls across all public schema policies. Supabase security advisor shows no new RLS-related issues (remaining warnings are intentional: permissive INSERT on free tool tables, leaked password protection is a dashboard setting).

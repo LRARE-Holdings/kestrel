@@ -26,6 +26,8 @@ import { Select } from "@/components/ui/select";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
 import { SaveDocumentButton } from "@/components/tools/save-document-button";
+import { generateContractPdf, downloadPdf } from "@/lib/pdf/generate";
+import { DownloadPdfButton } from "@/components/tools/download-pdf-button";
 
 type AnyContractData =
   | FreelancerInput
@@ -164,6 +166,13 @@ export function ContractForm({ contractType }: ContractFormProps) {
       data as AnyContractData,
     );
     setDocument(assembled);
+  }
+
+  function downloadAsPdf() {
+    if (!document) return;
+    const pdf = generateContractPdf(document);
+    const slug = document.title.toLowerCase().replace(/\s+/g, "-");
+    downloadPdf(pdf, `${slug}.pdf`);
   }
 
   async function copyToClipboard() {
@@ -442,6 +451,7 @@ export function ContractForm({ contractType }: ContractFormProps) {
                   <Button onClick={copyToClipboard} size="md">
                     {copied ? "Copied!" : "Copy to clipboard"}
                   </Button>
+                  <DownloadPdfButton onClick={downloadAsPdf} />
                   <SaveDocumentButton
                     documentType="contract"
                     title={document.title}

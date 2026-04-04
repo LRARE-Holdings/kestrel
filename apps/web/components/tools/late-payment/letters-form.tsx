@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
 import { SaveDocumentButton } from "@/components/tools/save-document-button";
+import { generateLetterPdf, downloadPdf } from "@/lib/pdf/generate";
+import { DownloadPdfButton } from "@/components/tools/download-pdf-button";
 
 const STAGES = [
   {
@@ -66,6 +68,12 @@ export function LettersForm({ baseRate }: { baseRate: number }) {
   function onSubmit(data: LetterInput) {
     const output = generateLetter(data, { baseRate });
     setLetter(output);
+  }
+
+  function downloadAsPdf() {
+    if (!letter) return;
+    const pdf = generateLetterPdf(letter);
+    downloadPdf(pdf, `late-payment-stage-${letter.stage}.pdf`);
   }
 
   async function copyToClipboard() {
@@ -334,6 +342,7 @@ export function LettersForm({ baseRate }: { baseRate: number }) {
                   <Button onClick={copyToClipboard} size="md">
                     {copied ? "Copied!" : "Copy to clipboard"}
                   </Button>
+                  <DownloadPdfButton onClick={downloadAsPdf} />
                   <SaveDocumentButton
                     documentType="late_payment_letter"
                     title={`${letter.stageName} — ${watch("debtor.businessName") || "Unknown"}`}

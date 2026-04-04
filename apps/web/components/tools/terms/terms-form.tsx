@@ -19,6 +19,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
 import { SaveDocumentButton } from "@/components/tools/save-document-button";
+import { generateTermsPdf, downloadPdf } from "@/lib/pdf/generate";
+import { DownloadPdfButton } from "@/components/tools/download-pdf-button";
 
 const SCHEMAS = {
   ecommerce: ecommerceSchema,
@@ -64,6 +66,13 @@ export function TermsForm({
     } catch {
       // noop
     }
+  }
+
+  function downloadAsPdf() {
+    if (!terms) return;
+    const pdf = generateTermsPdf(terms);
+    const slug = terms.businessName.toLowerCase().replace(/\s+/g, "-") || "terms";
+    downloadPdf(pdf, `${slug}-terms.pdf`);
   }
 
   function copyFullText() {
@@ -259,6 +268,7 @@ export function TermsForm({
                   <Button onClick={copyHtml} size="sm" variant="secondary">
                     {copied === "html" ? "Copied!" : "Copy HTML"}
                   </Button>
+                  <DownloadPdfButton onClick={downloadAsPdf} />
                   <SaveDocumentButton
                     documentType="terms_and_conditions"
                     title={`Terms & Conditions — ${watch("business.businessName") || "Unknown"}`}

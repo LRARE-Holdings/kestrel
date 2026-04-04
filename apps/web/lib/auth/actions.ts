@@ -78,48 +78,11 @@ export async function resetPassword(formData: FormData) {
     return { error: "Email is required" };
   }
 
-  // Check if this user exists and whether they have a password identity.
-  // OAuth-only users (Google/Microsoft) can't reset a password they never set.
-  // We use the service client because the requesting user is unauthenticated.
-  const { createServiceClient } = await import(
-    "@kestrel/shared/supabase/service"
-  );
-  const serviceClient = createServiceClient();
-
-  const { data: userList } = await serviceClient.auth.admin.listUsers();
-  const matchedUser = userList?.users?.find(
-    (u) => u.email?.toLowerCase() === email.toLowerCase(),
-  );
-
-  if (matchedUser) {
-    const hasPasswordIdentity = matchedUser.identities?.some(
-      (id) => id.provider === "email",
-    );
-
-    if (!hasPasswordIdentity) {
-      // User signed up via OAuth — tell them to use that provider instead.
-      const providers = matchedUser.identities
-        ?.map((id) => {
-          if (id.provider === "google") return "Google";
-          if (id.provider === "azure") return "Microsoft";
-          return id.provider;
-        })
-        .filter(Boolean);
-
-      const providerList = providers?.length
-        ? providers.join(" or ")
-        : "your social login provider";
-
-      return {
-        error: `This account uses ${providerList} to sign in. Please sign in with ${providerList} instead — there is no password to reset.`,
-      };
-    }
-  }
-
-  // For users with a password identity (or unknown emails — we don't reveal
-  // whether an account exists), proceed with the standard reset flow.
   const supabase = await createClient();
 
+  // Works for all users: email+password users reset their password,
+  // OAuth-only users (Google/Microsoft) get to set a password for the
+  // first time, giving them email+password as an additional sign-in method.
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?redirect=/update-password`,
   });

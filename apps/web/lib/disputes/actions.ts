@@ -5,8 +5,13 @@ import { hashContent } from "@/lib/disputes/hash";
 import { disputeFilingSchema, submissionSchema } from "@/lib/disputes/schemas";
 import { RESPONSE_DEADLINE_DAYS, STATUS_TRANSITIONS } from "@/lib/disputes/constants";
 import { sendDisputeEmail } from "@kestrel/shared/email/send";
+import { createServiceClient } from "@kestrel/shared/supabase/service";
 import { disputeInitiatedEmail } from "@/lib/email/templates/dispute-initiated";
 import { disputeFiledEmail } from "@/lib/email/templates/dispute-filed";
+import { submissionReceivedEmail } from "@/lib/email/templates/submission-received";
+import { proposalReceivedEmail } from "@/lib/email/templates/proposal-received";
+import { proposalResponseEmail } from "@/lib/email/templates/proposal-response";
+import { disputeResolvedEmail } from "@/lib/email/templates/dispute-resolved";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "@kestrel/shared/supabase/types";
 import type {
@@ -561,7 +566,177 @@ export async function addSubmission(input: {
     submission_type,
   });
 
+  // ----- Notify both parties (fire-and-forget, never block submission) -----
+  notifyPartiesOfSubmission({
+    dispute,
+    submitterId: user.id,
+    submissionType: submission_type,
+    newStatus: newStatus,
+    metadata,
+  }).catch((err) => {
+    console.error("[addSubmission] Notification error (non-blocking):", err);
+  });
+
   return { submissionId: submission.id };
+}
+
+// ---------------------------------------------------------------------------
+// Submission notification helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Send email notifications when a submission is added to a dispute.
+ * The OTHER party always receives a notification. When a dispute is resolved
+ * (via acceptance), BOTH parties are notified.
+ *
+ * Uses a service client to bypass RLS for profile lookups, since the
+ * submitter's scoped client may not be able to read the other party's profile.
+ *
+ * This function never throws — errors are logged and swallowed so that
+ * submission creation is never blocked by notification failures.
+ */
+async function notifyPartiesOfSubmission(params: {
+  dispute: Database["public"]["Tables"]["disputes"]["Row"];
+  submitterId: string;
+  submissionType: string;
+  newStatus: string | undefined;
+  metadata?: Record<string, unknown>;
+}) {
+  const { dispute, submitterId, submissionType, newStatus, metadata } = params;
+  const serviceClient = createServiceClient();
+
+  // Determine the two party IDs
+  const initiatorId = dispute.initiating_party_id;
+  const respondentId = dispute.responding_party_id;
+  const isSubmitterInitiator = submitterId === initiatorId;
+  const otherPartyId = isSubmitterInitiator ? respondentId : initiatorId;
+
+  // Fetch profiles for both parties in parallel
+  const [submitterProfile, otherProfile] = await Promise.all([
+    serviceClient
+      .from("profiles")
+      .select("display_name, business_name, email")
+      .eq("id", submitterId)
+      .single()
+      .then(({ data }) => data),
+    otherPartyId
+      ? serviceClient
+          .from("profiles")
+          .select("display_name, business_name, email")
+          .eq("id", otherPartyId)
+          .single()
+          .then(({ data }) => data)
+      : null,
+  ]);
+
+  const submitterName = submitterProfile?.display_name ?? "A Kestrel user";
+
+  // If the other party hasn't linked their account yet, use the dispute's
+  // responding_party_email (only possible when they're the respondent)
+  const otherPartyEmail =
+    otherProfile?.email ??
+    (!isSubmitterInitiator ? null : dispute.responding_party_email);
+  const otherPartyName =
+    otherProfile?.display_name ?? "the other party";
+
+  if (!otherPartyEmail && submissionType !== "acceptance") {
+    // Can't notify — other party has no email on file yet
+    console.warn(
+      `[notify] Cannot notify other party for dispute ${dispute.id}: no email`,
+    );
+    return;
+  }
+
+  const emails: Promise<{ success: boolean; error?: string }>[] = [];
+
+  // --- Resolved: notify BOTH parties ---
+  if (newStatus === "resolved") {
+    const recipientList = [
+      { id: initiatorId, profile: isSubmitterInitiator ? submitterProfile : otherProfile, email: isSubmitterInitiator ? submitterProfile?.email : otherPartyEmail },
+      { id: respondentId, profile: isSubmitterInitiator ? otherProfile : submitterProfile, email: isSubmitterInitiator ? otherPartyEmail : submitterProfile?.email },
+    ];
+
+    for (const recipient of recipientList) {
+      if (!recipient.id || !recipient.email) continue;
+      const resolvedEmail = disputeResolvedEmail({
+        recipientName: recipient.profile?.display_name ?? "Kestrel user",
+        referenceNumber: dispute.reference_number,
+        disputeId: dispute.id,
+      });
+
+      emails.push(
+        sendDisputeEmail({
+          to: recipient.email,
+          subject: resolvedEmail.subject,
+          html: resolvedEmail.html,
+          userId: recipient.id,
+          disputeId: dispute.id,
+          notificationType: "dispute_resolved",
+          notificationTitle: "Dispute resolved",
+          notificationBody: `Dispute ${dispute.reference_number} has been resolved.`,
+        }),
+      );
+    }
+
+    await Promise.allSettled(emails);
+    return;
+  }
+
+  // --- All other submissions: notify the OTHER party only ---
+  if (!otherPartyEmail || !otherPartyId) return;
+
+  let emailResult: { subject: string; html: string };
+  let notificationType: string;
+  let notificationTitle: string;
+  let notificationBody: string;
+
+  if (submissionType === "proposal") {
+    // Dedicated proposal template
+    emailResult = proposalReceivedEmail({
+      recipientName: otherPartyName,
+      proposerName: submitterName,
+      referenceNumber: dispute.reference_number,
+      disputeId: dispute.id,
+    });
+    notificationType = "proposal_received";
+    notificationTitle = "Settlement proposal received";
+    notificationBody = `${submitterName} has submitted a settlement proposal on ${dispute.reference_number}.`;
+  } else if (submissionType === "rejection") {
+    // Proposal was rejected — notify the original proposer
+    emailResult = proposalResponseEmail({
+      recipientName: otherPartyName,
+      responderName: submitterName,
+      referenceNumber: dispute.reference_number,
+      disputeId: dispute.id,
+      accepted: false,
+    });
+    notificationType = "proposal_rejected";
+    notificationTitle = "Proposal declined";
+    notificationBody = `${submitterName} has declined your settlement proposal on ${dispute.reference_number}.`;
+  } else {
+    // Generic submission notification (response, reply, evidence_summary, withdrawal)
+    emailResult = submissionReceivedEmail({
+      recipientName: otherPartyName,
+      submitterName,
+      referenceNumber: dispute.reference_number,
+      disputeId: dispute.id,
+      submissionType,
+    });
+    notificationType = "new_submission";
+    notificationTitle = "New submission received";
+    notificationBody = `${submitterName} has submitted a ${submissionType.replace(/_/g, " ")} on ${dispute.reference_number}.`;
+  }
+
+  await sendDisputeEmail({
+    to: otherPartyEmail,
+    subject: emailResult.subject,
+    html: emailResult.html,
+    userId: otherPartyId,
+    disputeId: dispute.id,
+    notificationType,
+    notificationTitle,
+    notificationBody,
+  });
 }
 
 /**
@@ -600,7 +775,7 @@ export async function getSignedUrl(
 
   // Generate a signed URL (1 hour expiry)
   const { data: signedData, error: signError } = await supabase.storage
-    .from("evidence")
+    .from("dispute-evidence")
     .createSignedUrl(file.storage_path, 3600);
 
   if (signError || !signedData) {

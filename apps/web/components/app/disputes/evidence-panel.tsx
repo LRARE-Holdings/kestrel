@@ -35,20 +35,34 @@ function getFileTypeIcon(fileType: string): string {
 
 export function EvidencePanel({ files, disputeId }: EvidencePanelProps) {
   const [downloading, setDownloading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleDownload = useCallback(async (fileId: string) => {
     setDownloading(fileId);
-    const result = await getSignedUrl(fileId);
-
-    if ("url" in result) {
-      window.open(result.url, "_blank", "noopener,noreferrer");
+    setError(null);
+    try {
+      const result = await getSignedUrl(fileId);
+      if ("url" in result) {
+        window.open(result.url, "_blank", "noopener,noreferrer");
+      } else {
+        setError(result.error);
+      }
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setDownloading(null);
     }
-    setDownloading(null);
   }, []);
 
   return (
     <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-white p-5">
       <h3 className="text-sm font-medium text-ink">Evidence</h3>
+
+      {error && (
+        <p className="mt-3 rounded-[var(--radius-sm)] bg-error/5 px-3 py-2 text-xs text-error">
+          {error}
+        </p>
+      )}
 
       {files.length > 0 ? (
         <div className="mt-3 space-y-2.5">

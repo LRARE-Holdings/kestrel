@@ -48,7 +48,8 @@ export default function ResetPasswordPage() {
           Check your email
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-          If an account exists with that email, we&apos;ve sent a password reset link.
+          If an account exists with that email, we&apos;ve sent a link to set a new password.
+          This works whether you signed up with email or a social account.
         </p>
         <Link
           href="/sign-in"
@@ -65,7 +66,7 @@ export default function ResetPasswordPage() {
       <div className="text-center">
         <h1 className="font-display text-xl font-bold text-ink">Reset your password</h1>
         <p className="mt-1.5 text-sm text-text-secondary">
-          Enter your email and we&apos;ll send you a reset link.
+          Enter your email and we&apos;ll send you a link to set a new password.
         </p>
       </div>
 

@@ -369,3 +369,16 @@ Built two major admin features:
 - `components/admin/status-badge.tsx` — Coloured badges for dispute statuses and lead stages
 
 Build verified: `npx turbo build --filter=@kestrel/admin` passes clean (6.7s).
+
+## [2026-04-04] Product — Mandatory Email Notifications on All Dispute Submissions
+Founder requirement: both parties MUST be notified by email whenever any dispute activity occurs. Previously, only the initial filing triggered emails — all subsequent submissions (response, reply, proposal, acceptance, rejection, withdrawal, evidence summary) were silent.
+
+**Implementation:** Added `notifyPartiesOfSubmission()` helper in `apps/web/lib/disputes/actions.ts`, called fire-and-forget from `addSubmission()` after audit log. Uses service client for cross-party profile lookups (bypasses RLS).
+
+**Email routing by submission type:**
+- `response`, `reply`, `evidence_summary`, `withdrawal` → generic `submissionReceivedEmail` to other party
+- `proposal` → dedicated `proposalReceivedEmail` to other party
+- `rejection` → `proposalResponseEmail` to proposer (with accepted=false)
+- `acceptance` (resolves dispute) → `disputeResolvedEmail` to BOTH parties
+
+All emails also create in-app notification records via `sendDisputeEmail()`. Errors are logged but never block the submission flow (fire-and-forget pattern via `Promise.allSettled` / `.catch`).

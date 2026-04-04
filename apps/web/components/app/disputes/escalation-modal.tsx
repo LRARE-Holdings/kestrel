@@ -113,7 +113,7 @@ export function EscalationModal({
               placeholder="Explain why this dispute cannot be resolved through direct communication on the platform..."
               rows={4}
               maxLength={2000}
-              className="w-full resize-none rounded-[var(--radius-md)] border border-border bg-white px-3 py-2 text-sm text-ink placeholder:text-text-muted focus:border-kestrel focus:outline-none focus:ring-2 focus:ring-kestrel/20"
+              className="w-full resize-none rounded-[var(--radius-md)] border border-border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted focus:border-kestrel focus:outline-none focus:ring-2 focus:ring-kestrel/20"
             />
             <p className="mt-1 text-xs text-text-muted">
               {reason.length}/2,000 characters (minimum 20)

@@ -38,7 +38,7 @@ export function Pagination({
         {hasPrev ? (
           <Link
             href={buildUrl(page - 1)}
-            className="px-3 py-1.5 text-xs font-medium text-text-secondary bg-white border border-border rounded-lg hover:bg-stone/30 transition-colors"
+            className="px-3 py-1.5 text-xs font-medium text-text-secondary bg-surface border border-border rounded-lg hover:bg-stone/30 transition-colors"
           >
             Previous
           </Link>
@@ -50,7 +50,7 @@ export function Pagination({
         {hasNext ? (
           <Link
             href={buildUrl(page + 1)}
-            className="px-3 py-1.5 text-xs font-medium text-text-secondary bg-white border border-border rounded-lg hover:bg-stone/30 transition-colors"
+            className="px-3 py-1.5 text-xs font-medium text-text-secondary bg-surface border border-border rounded-lg hover:bg-stone/30 transition-colors"
           >
             Next
           </Link>

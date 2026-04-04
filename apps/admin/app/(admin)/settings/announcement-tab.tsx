@@ -25,7 +25,7 @@ export function AnnouncementTab({ settings }: Props) {
 
   return (
     <form action={formAction} className="space-y-6 max-w-2xl">
-      <div className="bg-white border border-border-subtle rounded-lg p-6 space-y-5">
+      <div className="bg-surface border border-border-subtle rounded-lg p-6 space-y-5">
         <h2 className="text-lg font-display font-semibold text-ink">
           Announcement Banner
         </h2>
@@ -44,7 +44,7 @@ export function AnnouncementTab({ settings }: Props) {
               defaultChecked={enabled}
               className="sr-only peer"
             />
-            <div className="w-10 h-5 bg-border rounded-full peer-checked:bg-kestrel peer-focus:ring-2 peer-focus:ring-kestrel/20 transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5" />
+            <div className="w-10 h-5 bg-border rounded-full peer-checked:bg-kestrel peer-focus:ring-2 peer-focus:ring-kestrel/20 transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-surface after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5" />
           </label>
         </div>
 
@@ -61,7 +61,7 @@ export function AnnouncementTab({ settings }: Props) {
               defaultValue={text}
               maxLength={200}
               placeholder="e.g. We are currently in beta..."
-              className="w-full px-3 py-2.5 text-sm bg-white border border-border rounded-lg placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel transition-colors"
+              className="w-full px-3 py-2.5 text-sm bg-surface border border-border rounded-lg placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel transition-colors"
             />
             <CharCounter maxLength={200} defaultValue={text} />
           </div>
@@ -78,7 +78,7 @@ export function AnnouncementTab({ settings }: Props) {
             name="link"
             defaultValue={link}
             placeholder="https://..."
-            className="w-full px-3 py-2.5 text-sm bg-white border border-border rounded-lg placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel transition-colors"
+            className="w-full px-3 py-2.5 text-sm bg-surface border border-border rounded-lg placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel transition-colors"
           />
         </div>
 

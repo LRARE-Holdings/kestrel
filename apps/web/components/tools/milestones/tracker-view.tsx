@@ -212,7 +212,7 @@ export function TrackerView({
 
         {/* Parties and dates */}
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-[var(--radius-md)] bg-white border border-border-subtle p-3">
+          <div className="rounded-[var(--radius-md)] bg-surface border border-border-subtle p-3">
             <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
               Party A
             </p>
@@ -223,7 +223,7 @@ export function TrackerView({
               {project.party_a_business}
             </p>
           </div>
-          <div className="rounded-[var(--radius-md)] bg-white border border-border-subtle p-3">
+          <div className="rounded-[var(--radius-md)] bg-surface border border-border-subtle p-3">
             <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
               Party B
             </p>
@@ -234,7 +234,7 @@ export function TrackerView({
               {project.party_b_business}
             </p>
           </div>
-          <div className="rounded-[var(--radius-md)] bg-white border border-border-subtle p-3">
+          <div className="rounded-[var(--radius-md)] bg-surface border border-border-subtle p-3">
             <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
               Start Date
             </p>
@@ -242,7 +242,7 @@ export function TrackerView({
               {formatDate(project.start_date)}
             </p>
           </div>
-          <div className="rounded-[var(--radius-md)] bg-white border border-border-subtle p-3">
+          <div className="rounded-[var(--radius-md)] bg-surface border border-border-subtle p-3">
             <p className="text-xs font-medium uppercase tracking-wider text-text-muted">
               Expected End
             </p>

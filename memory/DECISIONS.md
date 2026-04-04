@@ -1,5 +1,15 @@
 # Decisions Log
 
+## [2026-04-04] Design — Full Dark Mode Implementation
+Added dark mode support across both web and admin apps. Key decisions:
+- **Semantic token switching**: Restructured `@theme inline` to use `var(--raw-*)` indirection so all existing Tailwind classes (`bg-cream`, `text-ink`, `bg-stone`, etc.) auto-switch between light/dark — zero `dark:` prefixes needed on components.
+- **New `surface` token**: Replaced all `bg-white` (97 files) with `bg-surface` since Tailwind's built-in `white` can't be redefined. `surface` maps to `#FFFFFF` in light, `#162220` (deep forest green) in dark.
+- **Theme provider**: `@wrksz/themes` (not `next-themes`) — drop-in replacement that fixes React 19/Next.js 16 compatibility bugs. Uses class-based switching.
+- **Dark palette**: Forest-green-tinged charcoals (on-brand "calm luxury"), not generic greys. Page bg `#0F1716`, cards `#162220`, stone `#1C2C27`.
+- **Dark kestrel primary**: `#4A9480` — brightened for dark backgrounds, passes WCAG AA 4.5:1 contrast against white text.
+- **Toggle**: Sun/moon button in web header, web sidebar, and admin sidebar. Three-way selector (Light/Dark/System) on Settings page.
+- **Flash prevention**: `@custom-variant dark (&:where(.dark, .dark *))` + `suppressHydrationWarning` on `<html>`.
+
 ## [2026-04-01] Architecture — Initial Build Kickoff
 Phase 0 foundation + Phase 1 Late Payment Toolkit build started. Following CLAUDE.md build sequence.
 

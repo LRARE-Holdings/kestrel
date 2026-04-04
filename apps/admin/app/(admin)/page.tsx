@@ -61,7 +61,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Recent sign-ups */}
-      <div className="bg-white rounded-xl border border-border overflow-hidden">
+      <div className="bg-surface rounded-xl border border-border overflow-hidden">
         <div className="px-6 py-4 border-b border-border-subtle flex items-center justify-between">
           <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider">
             Recent Sign-ups

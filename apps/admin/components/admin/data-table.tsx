@@ -19,14 +19,14 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   if (data.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-border p-12 text-center">
+      <div className="bg-surface rounded-xl border border-border p-12 text-center">
         <p className="text-text-muted text-sm">{emptyMessage}</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl border border-border overflow-hidden">
+    <div className="bg-surface rounded-xl border border-border overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>

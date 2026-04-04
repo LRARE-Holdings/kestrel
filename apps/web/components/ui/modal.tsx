@@ -42,7 +42,7 @@ export function Modal({
   return (
     <dialog
       ref={dialogRef}
-      className={`mx-auto my-auto rounded-[var(--radius-xl)] border border-border-subtle bg-white p-0 shadow-[var(--shadow-lg)] backdrop:bg-ink/40 backdrop:backdrop-blur-sm max-w-lg w-full ${className}`}
+      className={`mx-auto my-auto rounded-[var(--radius-xl)] border border-border-subtle bg-surface p-0 shadow-[var(--shadow-lg)] backdrop:bg-ink/40 backdrop:backdrop-blur-sm max-w-lg w-full ${className}`}
       onClick={(e) => {
         if (e.target === dialogRef.current) onClose();
       }}

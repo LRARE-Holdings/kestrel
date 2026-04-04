@@ -38,7 +38,7 @@ export function EscalateButton({ disputeId }: { disputeId: string }) {
       <button
         onClick={() => setConfirming(false)}
         disabled={pending}
-        className="px-3 py-1.5 text-xs font-medium text-text-secondary bg-white border border-border rounded-lg hover:bg-stone/30 transition-colors"
+        className="px-3 py-1.5 text-xs font-medium text-text-secondary bg-surface border border-border rounded-lg hover:bg-stone/30 transition-colors"
       >
         Cancel
       </button>

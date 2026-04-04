@@ -69,7 +69,7 @@ export default async function LeadsPage({
         <div className="flex items-center gap-2">
           <Link
             href="/leads/discover"
-            className="px-4 py-2 text-sm font-medium text-kestrel bg-white border border-border rounded-lg hover:bg-stone/30 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-kestrel bg-surface border border-border rounded-lg hover:bg-stone/30 transition-colors"
           >
             Discover leads
           </Link>
@@ -85,7 +85,7 @@ export default async function LeadsPage({
       {/* View toggle + filters */}
       <div className="flex items-center gap-3 flex-wrap">
         {/* View toggle */}
-        <div className="flex items-center bg-white border border-border rounded-lg overflow-hidden">
+        <div className="flex items-center bg-surface border border-border rounded-lg overflow-hidden">
           <Link
             href={buildFilterUrl({ ...filterParams, view: "list" })}
             className={`px-3 py-1.5 text-xs font-medium transition-colors ${
@@ -124,11 +124,11 @@ export default async function LeadsPage({
                 name="search"
                 placeholder="Search leads..."
                 defaultValue={search ?? ""}
-                className="px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel w-48"
+                className="px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel w-48"
               />
               <button
                 type="submit"
-                className="px-3 py-2 text-xs font-medium text-text-secondary bg-white border border-border rounded-lg hover:bg-stone/30 transition-colors"
+                className="px-3 py-2 text-xs font-medium text-text-secondary bg-surface border border-border rounded-lg hover:bg-stone/30 transition-colors"
               >
                 Search
               </button>
@@ -146,7 +146,7 @@ export default async function LeadsPage({
               <select
                 name="stage"
                 defaultValue={stage ?? ""}
-                className="px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+                className="px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
                 onChange="this.form.submit()"
               >
                 <option value="">All stages</option>
@@ -170,7 +170,7 @@ export default async function LeadsPage({
               <select
                 name="status"
                 defaultValue={status ?? ""}
-                className="px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+                className="px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
                 onChange="this.form.submit()"
               >
                 <option value="">Active</option>
@@ -248,7 +248,7 @@ async function ListView({
 
   if (leads.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-border p-12 text-center">
+      <div className="bg-surface rounded-xl border border-border p-12 text-center">
         <p className="text-text-muted text-sm">No leads found.</p>
         <Link
           href="/leads/new"
@@ -262,7 +262,7 @@ async function ListView({
 
   return (
     <>
-      <div className="bg-white rounded-xl border border-border overflow-hidden">
+      <div className="bg-surface rounded-xl border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

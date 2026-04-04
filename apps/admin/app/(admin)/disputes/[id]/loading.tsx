@@ -25,7 +25,7 @@ export default function DisputeDetailLoading() {
         {/* Left column */}
         <div className="lg:col-span-2 space-y-6">
           {/* Overview card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-20 mb-4" />
             <div className="grid grid-cols-2 gap-4">
               {Array.from({ length: 4 }).map((_, i) => (
@@ -43,7 +43,7 @@ export default function DisputeDetailLoading() {
           </div>
 
           {/* Parties card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-16 mb-4" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {Array.from({ length: 2 }).map((_, i) => (
@@ -58,7 +58,7 @@ export default function DisputeDetailLoading() {
           </div>
 
           {/* Audit log card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-20 mb-4" />
             <div className="space-y-4">
               {Array.from({ length: 4 }).map((_, i) => (
@@ -77,7 +77,7 @@ export default function DisputeDetailLoading() {
         {/* Right column */}
         <div className="space-y-6">
           {/* Key dates */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-20 mb-4" />
             <div className="space-y-4">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -93,7 +93,7 @@ export default function DisputeDetailLoading() {
           </div>
 
           {/* Activity card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-16 mb-4" />
             <div className="space-y-3">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -106,7 +106,7 @@ export default function DisputeDetailLoading() {
           </div>
 
           {/* Timestamps card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-24 mb-4" />
             <div className="space-y-2">
               {Array.from({ length: 2 }).map((_, i) => (

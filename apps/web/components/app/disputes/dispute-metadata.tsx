@@ -114,7 +114,7 @@ export function DisputeMetadata({ dispute }: DisputeMetadataProps) {
   const showDeadline = activeStatuses.includes(dispute.status);
 
   return (
-    <div className="space-y-5 rounded-[var(--radius-lg)] border border-border-subtle bg-white p-5">
+    <div className="space-y-5 rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-5">
       {/* Reference number */}
       <div>
         <span className="text-xs text-text-muted">Reference</span>

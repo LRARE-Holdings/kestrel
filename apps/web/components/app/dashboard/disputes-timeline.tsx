@@ -102,7 +102,7 @@ function DisputeRow({ dispute }: { dispute: Dispute }) {
 
   return (
     <div
-      className={`rounded-[var(--radius-lg)] border border-border-subtle bg-white p-4 ${borderClass}`}
+      className={`rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-4 ${borderClass}`}
     >
       {/* Top line: reference + status badge */}
       <div className="flex items-center justify-between gap-2">

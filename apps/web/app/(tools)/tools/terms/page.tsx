@@ -37,7 +37,7 @@ export default function TermsGeneratorPage() {
         &larr; All tools
       </Link>
 
-      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+      <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
         <h1 className="font-display text-4xl text-ink sm:text-5xl">
           Terms & Conditions Generator
         </h1>
@@ -69,7 +69,7 @@ export default function TermsGeneratorPage() {
           ))}
         </div>
 
-        <div className="mt-12 rounded-[var(--radius-lg)] border border-border-subtle bg-white p-6">
+        <div className="mt-12 rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-6">
           <h3 className="text-sm font-semibold text-ink">How it works</h3>
           <ul className="mt-3 space-y-2 text-sm text-text-secondary">
             <li className="flex items-start gap-2">

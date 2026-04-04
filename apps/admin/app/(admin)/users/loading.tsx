@@ -18,7 +18,7 @@ export default function UsersLoading() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-border overflow-hidden">
+      <div className="bg-surface rounded-xl border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>

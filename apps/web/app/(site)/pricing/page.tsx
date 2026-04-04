@@ -106,8 +106,8 @@ export default function PricingPage() {
             <div
               className={`relative flex h-full flex-col rounded-2xl border p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-lg)] ${
                 tier.highlight
-                  ? "border-kestrel bg-white shadow-[var(--shadow-lg)] ring-1 ring-kestrel/10"
-                  : "border-border-subtle/60 bg-white/70 shadow-sm backdrop-blur-xl"
+                  ? "border-kestrel bg-surface shadow-[var(--shadow-lg)] ring-1 ring-kestrel/10"
+                  : "border-border-subtle/60 bg-surface/70 shadow-sm backdrop-blur-xl"
               }`}
             >
               {tier.highlight && (
@@ -147,7 +147,7 @@ export default function PricingPage() {
 
       {/* FAQ-style note */}
       <ScrollFade delay={0.2}>
-        <div className="mt-16 rounded-2xl border border-border-subtle/60 bg-white/70 p-8 text-center shadow-sm backdrop-blur-xl">
+        <div className="mt-16 rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 text-center shadow-sm backdrop-blur-xl">
           <h3 className="font-display text-lg font-bold text-ink">
             Not sure which plan?
           </h3>

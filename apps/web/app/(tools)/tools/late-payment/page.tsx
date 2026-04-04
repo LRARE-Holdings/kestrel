@@ -12,7 +12,7 @@ import {
 export default function LatePaymentPage() {
   return (
     <div className="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:px-8 2xl:px-12">
-      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+      <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
         {/* Hero */}
         <section className="mb-12">
           <ScrollFade direction="up" distance={30}>
@@ -124,7 +124,7 @@ export default function LatePaymentPage() {
 
         {/* Legal context */}
         <ScrollSection className="mt-12">
-          <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-white p-6">
+          <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-6">
             <h2 className="font-display text-xl text-ink">
               Your rights under the Late Payment Act
             </h2>

@@ -24,7 +24,7 @@ export function NewLeadForm() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-border p-6 space-y-5">
+      <div className="bg-surface rounded-xl border border-border p-6 space-y-5">
         {/* Name */}
         <div>
           <label
@@ -38,7 +38,7 @@ export function NewLeadForm() {
             id="name"
             name="name"
             required
-            className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+            className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
             placeholder="Contact name"
           />
         </div>
@@ -56,7 +56,7 @@ export function NewLeadForm() {
               type="email"
               id="email"
               name="email"
-              className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+              className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
               placeholder="email@company.com"
             />
           </div>
@@ -71,7 +71,7 @@ export function NewLeadForm() {
               type="tel"
               id="phone"
               name="phone"
-              className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+              className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
               placeholder="+44 7XXX XXXXXX"
             />
           </div>
@@ -89,7 +89,7 @@ export function NewLeadForm() {
             type="text"
             id="company"
             name="company"
-            className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+            className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
             placeholder="Company name"
           />
         </div>
@@ -107,7 +107,7 @@ export function NewLeadForm() {
               type="text"
               id="source"
               name="source"
-              className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+              className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
               placeholder="e.g. LinkedIn, Referral, Website"
             />
           </div>
@@ -122,7 +122,7 @@ export function NewLeadForm() {
               id="stage"
               name="stage"
               defaultValue="lead"
-              className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+              className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
             >
               {LEAD_STAGES.map((s) => (
                 <option key={s} value={s}>
@@ -145,7 +145,7 @@ export function NewLeadForm() {
             type="date"
             id="next_action_date"
             name="next_action_date"
-            className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+            className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
           />
         </div>
 
@@ -161,7 +161,7 @@ export function NewLeadForm() {
             id="notes"
             name="notes"
             rows={3}
-            className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel resize-y"
+            className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel resize-y"
             placeholder="Initial notes about this lead..."
           />
         </div>
@@ -171,7 +171,7 @@ export function NewLeadForm() {
       <div className="flex items-center gap-3 justify-end">
         <a
           href="/leads"
-          className="px-4 py-2 text-sm font-medium text-text-secondary bg-white border border-border rounded-lg hover:bg-stone/30 transition-colors"
+          className="px-4 py-2 text-sm font-medium text-text-secondary bg-surface border border-border rounded-lg hover:bg-stone/30 transition-colors"
         >
           Cancel
         </a>

@@ -113,7 +113,7 @@ export function SubmissionCard({
       </div>
 
       {/* Card */}
-      <div className="mb-4 min-w-0 flex-1 rounded-[var(--radius-lg)] border border-border-subtle bg-white p-4 shadow-[var(--shadow-sm)]">
+      <div className="mb-4 min-w-0 flex-1 rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-4 shadow-[var(--shadow-sm)]">
         {/* Header */}
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant={badgeVariant} className="shrink-0">

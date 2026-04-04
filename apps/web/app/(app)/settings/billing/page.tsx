@@ -34,7 +34,7 @@ export default function BillingPage() {
 
         {/* Billing content */}
         <div className="lg:col-span-2">
-          <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-white p-6">
+          <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-6">
             <div className="flex items-center gap-3">
               <h2 className="text-lg font-semibold text-ink">Current plan</h2>
               <Badge variant="default">Free</Badge>
@@ -52,7 +52,7 @@ export default function BillingPage() {
           </div>
 
           {/* Stripe portal placeholder */}
-          <div className="mt-6 rounded-[var(--radius-lg)] border border-border-subtle bg-white p-6">
+          <div className="mt-6 rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-6">
             <h2 className="text-lg font-semibold text-ink">
               Payment management
             </h2>

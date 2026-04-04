@@ -36,7 +36,7 @@ export function CookieBanner() {
       aria-label="Cookie consent"
       className="fixed inset-x-0 bottom-0 z-50 animate-[fade-up_0.4s_ease-out_both] p-4 sm:p-6"
     >
-      <div className="mx-auto flex max-w-screen-md flex-col gap-4 rounded-[var(--radius-xl)] border border-border bg-white/95 px-6 py-5 shadow-lg backdrop-blur-sm sm:flex-row sm:items-center sm:gap-6">
+      <div className="mx-auto flex max-w-screen-md flex-col gap-4 rounded-[var(--radius-xl)] border border-border bg-surface/95 px-6 py-5 shadow-lg backdrop-blur-sm sm:flex-row sm:items-center sm:gap-6">
         <p className="flex-1 text-sm leading-relaxed text-text-secondary">
           We use cookies for analytics (Google Analytics and Vercel) to
           understand how you use Kestrel and improve the experience. No personal

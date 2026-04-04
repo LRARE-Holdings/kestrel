@@ -134,7 +134,7 @@ export default async function DisputeDetailPage({
         {/* Left column: overview + parties */}
         <div className="lg:col-span-2 space-y-6">
           {/* Overview card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
               Overview
             </h2>
@@ -180,7 +180,7 @@ export default async function DisputeDetailPage({
           </div>
 
           {/* Parties card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
               Parties
             </h2>
@@ -237,7 +237,7 @@ export default async function DisputeDetailPage({
           </div>
 
           {/* Audit log */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
               Audit log
             </h2>
@@ -248,7 +248,7 @@ export default async function DisputeDetailPage({
         {/* Right column: timeline + stats */}
         <div className="space-y-6">
           {/* Key dates timeline */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
               Key dates
             </h2>
@@ -256,7 +256,7 @@ export default async function DisputeDetailPage({
           </div>
 
           {/* Stats card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
               Activity
             </h2>
@@ -291,7 +291,7 @@ export default async function DisputeDetailPage({
           </div>
 
           {/* Timestamps */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
               Timestamps
             </h2>

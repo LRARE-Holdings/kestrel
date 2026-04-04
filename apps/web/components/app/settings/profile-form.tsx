@@ -38,7 +38,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
   }
 
   return (
-    <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-white p-6">
+    <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-6">
       <h2 className="text-lg font-semibold text-ink">Profile</h2>
       <p className="mt-1 text-sm text-text-secondary">
         Your personal and business details.

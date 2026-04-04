@@ -25,7 +25,7 @@ export function HorizontalBarChart({ title, items }: HorizontalBarChartProps) {
 
   if (items.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-border p-6">
+      <div className="bg-surface rounded-xl border border-border p-6">
         <h3 className="text-sm font-medium text-text-muted mb-4">{title}</h3>
         <p className="text-sm text-text-muted">No data yet.</p>
       </div>
@@ -33,7 +33,7 @@ export function HorizontalBarChart({ title, items }: HorizontalBarChartProps) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-border p-6">
+    <div className="bg-surface rounded-xl border border-border p-6">
       <h3 className="text-sm font-medium text-text-muted mb-4">{title}</h3>
       <div className="space-y-3">
         {items.map((item, index) => (

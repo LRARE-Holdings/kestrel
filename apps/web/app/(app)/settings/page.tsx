@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getProfile } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
 import { ProfileForm } from "@/components/app/settings/profile-form";
+import { ThemeSelector } from "@kestrel/shared/theme/theme-selector";
 
 export const metadata: Metadata = {
   title: "Settings — Kestrel",
@@ -41,8 +42,19 @@ export default async function SettingsPage() {
         <div className="lg:col-span-2">
           <ProfileForm profile={profile} />
 
+          {/* Appearance */}
+          <div className="mt-6 rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-6">
+            <h2 className="text-lg font-semibold text-ink">Appearance</h2>
+            <p className="mt-1 text-sm text-text-secondary">
+              Choose how Kestrel looks for you.
+            </p>
+            <div className="mt-4">
+              <ThemeSelector />
+            </div>
+          </div>
+
           {/* Data export */}
-          <div className="mt-6 rounded-[var(--radius-lg)] border border-border-subtle bg-white p-6">
+          <div className="mt-6 rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-6">
             <h2 className="text-lg font-semibold text-ink">Your data</h2>
             <p className="mt-1 text-sm text-text-secondary">
               Download all data Kestrel holds about you (UK GDPR right of

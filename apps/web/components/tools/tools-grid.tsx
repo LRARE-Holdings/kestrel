@@ -48,7 +48,7 @@ const tools = [
 export function ToolsGrid() {
   return (
     <section className="pb-6">
-      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+      <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {tools.map((tool) => (
             <Link key={tool.href} href={tool.href} className="group block h-full">

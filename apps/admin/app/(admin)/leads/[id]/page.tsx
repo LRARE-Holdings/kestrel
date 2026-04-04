@@ -97,7 +97,7 @@ export default async function LeadDetailPage({
           <EditLeadForm lead={lead} />
 
           {/* Interaction timeline */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
               Interaction history
             </h2>
@@ -105,7 +105,7 @@ export default async function LeadDetailPage({
           </div>
 
           {/* Add interaction form */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
               Add interaction
             </h2>
@@ -116,7 +116,7 @@ export default async function LeadDetailPage({
         {/* Right column */}
         <div className="space-y-6">
           {/* Status card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
               Status
             </h2>
@@ -164,7 +164,7 @@ export default async function LeadDetailPage({
 
           {/* Notes */}
           {lead.notes && (
-            <div className="bg-white rounded-xl border border-border p-6">
+            <div className="bg-surface rounded-xl border border-border p-6">
               <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
                 Notes
               </h2>
@@ -175,7 +175,7 @@ export default async function LeadDetailPage({
           )}
 
           {/* Actions */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
               Actions
             </h2>

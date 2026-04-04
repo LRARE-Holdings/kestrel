@@ -49,14 +49,14 @@ export function HeroBirdAnimation() {
         preserveAspectRatio="xMidYMid slice"
         fill="none"
       >
-        <path key={path} d={path} stroke="#2B5C4F" strokeWidth="1.5" strokeLinecap="round" fill="none" className={cls.trail} />
-        <path key={path + "-glow"} d={path} stroke="#7FA691" strokeWidth="8" strokeLinecap="round" fill="none" className={cls.trailGlow} />
+        <path key={path} d={path} stroke="var(--raw-kestrel)" strokeWidth="1.5" strokeLinecap="round" fill="none" className={cls.trail} />
+        <path key={path + "-glow"} d={path} stroke="var(--raw-sage)" strokeWidth="8" strokeLinecap="round" fill="none" className={cls.trailGlow} />
         <g key={path + "-bird"} className={cls.bird}>
-          <line x1="0" y1="0" x2="-16" y2="-4" stroke="#2B5C4F" strokeWidth="2" strokeLinecap="round" className={cls.wingL} />
-          <line x1="0" y1="0" x2="-16" y2="4" stroke="#2B5C4F" strokeWidth="2" strokeLinecap="round" className={cls.wingR} />
-          <line x1="8" y1="0" x2="-10" y2="0" stroke="#2B5C4F" strokeWidth="2" strokeLinecap="round" />
-          <line x1="-10" y1="0" x2="-14" y2="-3" stroke="#2B5C4F" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
-          <line x1="-10" y1="0" x2="-14" y2="3" stroke="#2B5C4F" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
+          <line x1="0" y1="0" x2="-16" y2="-4" stroke="var(--raw-kestrel)" strokeWidth="2" strokeLinecap="round" className={cls.wingL} />
+          <line x1="0" y1="0" x2="-16" y2="4" stroke="var(--raw-kestrel)" strokeWidth="2" strokeLinecap="round" className={cls.wingR} />
+          <line x1="8" y1="0" x2="-10" y2="0" stroke="var(--raw-kestrel)" strokeWidth="2" strokeLinecap="round" />
+          <line x1="-10" y1="0" x2="-14" y2="-3" stroke="var(--raw-kestrel)" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
+          <line x1="-10" y1="0" x2="-14" y2="3" stroke="var(--raw-kestrel)" strokeWidth="1.5" strokeLinecap="round" opacity="0.7" />
         </g>
       </svg>
 

@@ -79,7 +79,7 @@ export function ProposalForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="rounded-[var(--radius-lg)] border border-border-subtle bg-white p-4 shadow-[var(--shadow-sm)] space-y-4"
+      className="rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-4 shadow-[var(--shadow-sm)] space-y-4"
     >
       <h3 className="text-sm font-medium text-ink">Propose a settlement</h3>
 
@@ -101,7 +101,7 @@ export function ProposalForm({
             step="0.01"
             min="0"
             placeholder="0.00"
-            className={`w-full rounded-[var(--radius-md)] border bg-white py-2 pl-12 pr-3 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel ${
+            className={`w-full rounded-[var(--radius-md)] border bg-surface py-2 pl-12 pr-3 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel ${
               errors.proposed_amount
                 ? "border-error focus:ring-error/40 focus:border-error"
                 : "border-border"

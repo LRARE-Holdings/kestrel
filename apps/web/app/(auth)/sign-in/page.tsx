@@ -107,7 +107,7 @@ function SignInForm() {
           <div className="w-full border-t border-border-subtle" />
         </div>
         <div className="relative flex justify-center">
-          <span className="bg-white px-3 text-xs text-text-muted">or continue with email</span>
+          <span className="bg-surface px-3 text-xs text-text-muted">or continue with email</span>
         </div>
       </div>
 

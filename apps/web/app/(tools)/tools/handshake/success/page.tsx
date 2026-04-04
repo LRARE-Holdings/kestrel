@@ -18,7 +18,7 @@ export default async function HandshakeSuccessPage({
   if (!token) {
     return (
       <div className="mx-auto max-w-screen-2xl px-4 py-12 sm:px-6 lg:px-8 2xl:px-12">
-        <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
           <h1 className="font-display text-3xl tracking-tight text-ink">
             Something went wrong
           </h1>
@@ -47,7 +47,7 @@ export default async function HandshakeSuccessPage({
         &larr; All tools
       </Link>
 
-      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+      <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
         {/* Success indicator */}
         <div className="mb-8 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sage/20">

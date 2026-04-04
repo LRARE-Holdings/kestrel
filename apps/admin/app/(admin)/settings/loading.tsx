@@ -19,7 +19,7 @@ export default function SettingsLoading() {
       </div>
 
       {/* Content area */}
-      <div className="bg-white rounded-xl border border-border p-6 space-y-6">
+      <div className="bg-surface rounded-xl border border-border p-6 space-y-6">
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i}>
             <Skeleton className="h-3 w-24 mb-1.5" />

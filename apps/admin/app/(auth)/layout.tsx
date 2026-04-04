@@ -15,7 +15,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
 
         {/* Auth card */}
-        <div className="bg-white rounded-xl border border-border p-8 shadow-sm">
+        <div className="bg-surface rounded-xl border border-border p-8 shadow-sm">
           {children}
         </div>
       </div>

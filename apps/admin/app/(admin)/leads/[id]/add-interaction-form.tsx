@@ -42,7 +42,7 @@ export function AddInteractionForm({ leadId }: { leadId: string }) {
             id="interaction-type"
             name="type"
             defaultValue="note"
-            className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+            className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
           >
             {INTERACTION_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -63,7 +63,7 @@ export function AddInteractionForm({ leadId }: { leadId: string }) {
             name="content"
             rows={2}
             required
-            className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel resize-y"
+            className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel resize-y"
             placeholder="Describe the interaction..."
           />
         </div>

@@ -29,7 +29,7 @@ export function FeatureFlagsTab({ flags }: Props) {
   return (
     <div className="space-y-6 max-w-3xl">
       {/* Flags table */}
-      <div className="bg-white border border-border-subtle rounded-lg overflow-hidden">
+      <div className="bg-surface border border-border-subtle rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-border-subtle">
           <h2 className="text-lg font-display font-semibold text-ink">
             Feature Flags
@@ -71,7 +71,7 @@ export function FeatureFlagsTab({ flags }: Props) {
       </div>
 
       {/* Add flag form */}
-      <div className="bg-white border border-border-subtle rounded-lg p-6 space-y-4">
+      <div className="bg-surface border border-border-subtle rounded-lg p-6 space-y-4">
         <h3 className="text-sm font-display font-semibold text-ink">
           Add New Flag
         </h3>
@@ -89,7 +89,7 @@ export function FeatureFlagsTab({ flags }: Props) {
               name="flag_key"
               placeholder="e.g. enable_handshake_v2"
               required
-              className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel transition-colors font-mono"
+              className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel transition-colors font-mono"
             />
           </div>
           <div className="flex-1 space-y-1">
@@ -104,7 +104,7 @@ export function FeatureFlagsTab({ flags }: Props) {
               type="text"
               name="description"
               placeholder="What does this flag control?"
-              className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel transition-colors"
+              className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel transition-colors"
             />
           </div>
           <button
@@ -161,7 +161,7 @@ function FlagRow({ flag }: { flag: FeatureFlag }) {
           aria-label={`Toggle ${flag.flag_key}`}
         >
           <div
-            className={`w-10 h-5 rounded-full transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all ${
+            className={`w-10 h-5 rounded-full transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-surface after:rounded-full after:h-4 after:w-4 after:transition-all ${
               flag.enabled
                 ? "bg-kestrel after:translate-x-5"
                 : "bg-border"

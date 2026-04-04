@@ -116,7 +116,7 @@ export function CalculatorForm({
         &larr; Late Payment Toolkit
       </Link>
 
-      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+      <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
       <h1 className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
         Statutory Interest Calculator
       </h1>
@@ -170,7 +170,7 @@ export function CalculatorForm({
                 id="terms-select"
                 value={selectedTerms}
                 onChange={(e) => handleTermsChange(e.target.value)}
-                className="w-full rounded-[var(--radius-md)] border border-border bg-white px-3 py-2 text-sm text-ink transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel"
+                className="w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 py-2 text-sm text-ink transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel"
               >
                 {PAYMENT_TERMS_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>

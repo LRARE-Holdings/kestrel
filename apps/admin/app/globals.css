@@ -1,9 +1,11 @@
 @import "tailwindcss";
 @import "../../../packages/shared/tokens/globals.css";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 body {
-  background-color: #F6F3EE;
-  color: #0C1311;
+  background-color: var(--raw-cream);
+  color: var(--raw-ink);
   font-family: var(--font-body), 'DM Sans', sans-serif;
 }
 
@@ -14,8 +16,8 @@ html {
 
 /* Selection colour */
 ::selection {
-  background: rgba(43, 92, 79, 0.15);
-  color: #0C1311;
+  background: color-mix(in srgb, var(--raw-kestrel) 15%, transparent);
+  color: var(--raw-ink);
 }
 
 /* Reduced motion */

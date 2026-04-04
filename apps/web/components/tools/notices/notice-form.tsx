@@ -138,7 +138,7 @@ export function NoticeForm() {
             <textarea
               rows={3}
               placeholder={"123 High Street\nNewcastle upon Tyne\nNE1 1AA"}
-              className={`w-full rounded-[var(--radius-md)] border bg-white px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel resize-y ${
+              className={`w-full rounded-[var(--radius-md)] border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel resize-y ${
                 errors.sender?.address
                   ? "border-error focus:ring-error/40 focus:border-error"
                   : "border-border"
@@ -186,7 +186,7 @@ export function NoticeForm() {
             <textarea
               rows={3}
               placeholder={"456 Market Street\nLondon\nEC1A 1BB"}
-              className={`w-full rounded-[var(--radius-md)] border bg-white px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel resize-y ${
+              className={`w-full rounded-[var(--radius-md)] border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel resize-y ${
                 errors.recipient?.address
                   ? "border-error focus:ring-error/40 focus:border-error"
                   : "border-border"
@@ -268,7 +268,7 @@ export function NoticeForm() {
             <textarea
               rows={3}
               placeholder="Describe the consequences if the required action is not taken"
-              className={`w-full rounded-[var(--radius-md)] border bg-white px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel resize-y ${
+              className={`w-full rounded-[var(--radius-md)] border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel resize-y ${
                 errors.consequences
                   ? "border-error focus:ring-error/40 focus:border-error"
                   : "border-border"

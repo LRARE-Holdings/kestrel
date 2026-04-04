@@ -16,7 +16,7 @@ export default function NewLeadLoading() {
       </div>
 
       {/* Form skeleton */}
-      <div className="bg-white rounded-xl border border-border p-6 space-y-4">
+      <div className="bg-surface rounded-xl border border-border p-6 space-y-4">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i}>
             <Skeleton className="h-3 w-24 mb-1.5" />

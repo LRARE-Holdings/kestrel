@@ -59,7 +59,7 @@ export function DiscoverForm() {
       {/* Search form */}
       <form
         action={searchAction}
-        className="bg-white rounded-xl border border-border p-6"
+        className="bg-surface rounded-xl border border-border p-6"
       >
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div className="sm:col-span-1">
@@ -75,7 +75,7 @@ export function DiscoverForm() {
               type="text"
               placeholder="e.g. construction company"
               required
-              className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+              className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
             />
           </div>
           <div className="sm:col-span-1">
@@ -91,7 +91,7 @@ export function DiscoverForm() {
               type="text"
               placeholder="e.g. Newcastle upon Tyne"
               required
-              className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+              className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
             />
           </div>
           <div className="sm:col-span-1">
@@ -105,7 +105,7 @@ export function DiscoverForm() {
               id="radius"
               name="radius"
               defaultValue="10000"
-              className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+              className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
             >
               {RADIUS_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -135,7 +135,7 @@ export function DiscoverForm() {
 
       {/* Results */}
       {state?.results && state.results.length === 0 && (
-        <div className="bg-white rounded-xl border border-border p-12 text-center">
+        <div className="bg-surface rounded-xl border border-border p-12 text-center">
           <p className="text-text-muted text-sm">
             No businesses found. Try a different search query or location.
           </p>
@@ -143,7 +143,7 @@ export function DiscoverForm() {
       )}
 
       {state?.results && state.results.length > 0 && (
-        <div className="bg-white rounded-xl border border-border overflow-hidden">
+        <div className="bg-surface rounded-xl border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>

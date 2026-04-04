@@ -18,6 +18,7 @@ import {
   IconLogOut,
 } from "@/components/ui/icons";
 import { signOut } from "@/lib/auth/actions";
+import { ThemeToggle } from "@kestrel/shared/theme/theme-toggle";
 
 const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
 const SIDEBAR_KEY = "kestrel-sidebar";
@@ -70,7 +71,7 @@ function DesktopSidebar({ userEmail }: { userEmail: string }) {
     <motion.aside
       animate={{ width: collapsed ? 64 : 256 }}
       transition={{ duration: 0.3, ease: EASE_OUT_EXPO }}
-      className="sticky top-0 hidden h-screen flex-col border-r border-border-subtle bg-white lg:flex"
+      className="sticky top-0 hidden h-screen flex-col border-r border-border-subtle bg-surface lg:flex"
     >
       {/* Logo */}
       <div className="flex h-14 items-center border-b border-border-subtle px-4">
@@ -134,17 +135,20 @@ function DesktopSidebar({ userEmail }: { userEmail: string }) {
           </form>
         </div>
 
-        {/* Collapse toggle */}
-        <button
-          onClick={toggle}
-          className="flex w-full items-center justify-center rounded-[var(--radius-sm)] py-2 text-text-muted transition-colors hover:text-ink"
-        >
-          {collapsed ? (
-            <IconChevronRight className="h-4 w-4" />
-          ) : (
-            <IconChevronLeft className="h-4 w-4" />
-          )}
-        </button>
+        {/* Theme + Collapse */}
+        <div className="flex items-center justify-center gap-1">
+          <ThemeToggle />
+          <button
+            onClick={toggle}
+            className="inline-flex items-center justify-center rounded-[var(--radius-sm)] p-2 text-text-muted transition-colors hover:text-ink"
+          >
+            {collapsed ? (
+              <IconChevronRight className="h-4 w-4" />
+            ) : (
+              <IconChevronLeft className="h-4 w-4" />
+            )}
+          </button>
+        </div>
       </div>
     </motion.aside>
   );
@@ -192,7 +196,7 @@ function MobileDrawer({
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ duration: 0.3, ease: EASE_OUT_EXPO }}
-            className="fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-white shadow-lg lg:hidden"
+            className="fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-surface shadow-lg lg:hidden"
           >
             {/* Header */}
             <div className="flex h-14 items-center justify-between border-b border-border-subtle px-4">
@@ -236,15 +240,18 @@ function MobileDrawer({
                   {userEmail}
                 </span>
               </div>
-              <form action={signOut}>
-                <button
-                  type="submit"
-                  className="flex w-full items-center gap-2 rounded-[var(--radius-sm)] px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-stone/40 hover:text-ink"
-                >
-                  <IconLogOut className="h-4 w-4" />
-                  <span>Sign out</span>
-                </button>
-              </form>
+              <div className="flex items-center gap-2">
+                <form action={signOut} className="flex-1">
+                  <button
+                    type="submit"
+                    className="flex w-full items-center gap-2 rounded-[var(--radius-sm)] px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-stone/40 hover:text-ink"
+                  >
+                    <IconLogOut className="h-4 w-4" />
+                    <span>Sign out</span>
+                  </button>
+                </form>
+                <ThemeToggle />
+              </div>
             </div>
           </motion.aside>
         </>
@@ -281,7 +288,7 @@ export function AppShell({
       {/* Main content area */}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Mobile header */}
-        <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border-subtle bg-white/95 px-4 backdrop-blur-sm lg:hidden">
+        <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border-subtle bg-surface/95 px-4 backdrop-blur-sm lg:hidden">
           <button
             onClick={() => setMobileOpen(true)}
             className="rounded-[var(--radius-sm)] p-1.5 text-text-secondary transition-colors hover:text-ink"

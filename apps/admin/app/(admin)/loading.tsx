@@ -16,7 +16,7 @@ export default function DashboardLoading() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="bg-white rounded-xl border border-border p-6 space-y-3"
+            className="bg-surface rounded-xl border border-border p-6 space-y-3"
           >
             <Skeleton className="h-3 w-24" />
             <Skeleton className="h-8 w-16" />
@@ -26,7 +26,7 @@ export default function DashboardLoading() {
       </div>
 
       {/* Recent sign-ups table */}
-      <div className="bg-white rounded-xl border border-border overflow-hidden">
+      <div className="bg-surface rounded-xl border border-border overflow-hidden">
         <div className="px-6 py-4 border-b border-border-subtle flex items-center justify-between">
           <Skeleton className="h-3 w-28" />
           <Skeleton className="h-3 w-14" />
@@ -56,7 +56,7 @@ export default function DashboardLoading() {
         {Array.from({ length: 2 }).map((_, i) => (
           <div
             key={i}
-            className="bg-white rounded-xl border border-border p-6 space-y-4"
+            className="bg-surface rounded-xl border border-border p-6 space-y-4"
           >
             <Skeleton className="h-4 w-36" />
             <div className="space-y-3">

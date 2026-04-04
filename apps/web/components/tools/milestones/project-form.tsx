@@ -390,7 +390,7 @@ function MilestoneFieldset({
               }
             }}
             placeholder="Type and press Enter, or use commas to add multiple"
-            className="flex-1 rounded-[var(--radius-md)] border border-border bg-white px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel"
+            className="flex-1 rounded-[var(--radius-md)] border border-border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel"
           />
           <Button type="button" variant="secondary" size="sm" onClick={addDeliverable}>
             Add

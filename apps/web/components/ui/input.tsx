@@ -22,7 +22,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={inputId}
-          className={`w-full rounded-[var(--radius-md)] border bg-white px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-cream focus-visible:border-kestrel disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 ${
+          className={`w-full rounded-[var(--radius-md)] border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-cream focus-visible:border-kestrel disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 ${
             error
               ? "border-error focus-visible:ring-error/40 focus-visible:border-error"
               : "border-border focus-visible:ring-kestrel/40"

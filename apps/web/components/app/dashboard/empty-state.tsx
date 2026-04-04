@@ -57,7 +57,7 @@ export function EmptyDashboard() {
               href={action.href}
               className="group"
             >
-              <div className="card-hover flex items-start gap-4 rounded-[var(--radius-xl)] border border-border-subtle bg-white p-5">
+              <div className="card-hover flex items-start gap-4 rounded-[var(--radius-xl)] border border-border-subtle bg-surface p-5">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-lg)] bg-kestrel/8">
                   <Icon className="h-5 w-5 text-kestrel" />
                 </div>

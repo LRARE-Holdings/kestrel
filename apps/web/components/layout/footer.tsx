@@ -23,7 +23,7 @@ export function Footer() {
   return (
     <footer className="px-4 pb-4 sm:px-6 lg:px-8 2xl:px-12">
       <ScrollSection>
-        <div className="mx-auto max-w-screen-2xl rounded-2xl border border-border-subtle/60 bg-white/70 shadow-sm backdrop-blur-xl">
+        <div className="mx-auto max-w-screen-2xl rounded-2xl border border-border-subtle/60 bg-surface/70 shadow-sm backdrop-blur-xl">
           <div className="px-8 py-12 sm:px-10">
             <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
               {/* Brand + Social */}

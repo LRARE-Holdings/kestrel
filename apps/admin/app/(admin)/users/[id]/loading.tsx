@@ -18,7 +18,7 @@ export default function UserDetailLoading() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile card (left 2/3) */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-border p-6">
+        <div className="lg:col-span-2 bg-surface rounded-xl border border-border p-6">
           <Skeleton className="h-3 w-16 mb-4" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
             {Array.from({ length: 10 }).map((_, i) => (
@@ -33,7 +33,7 @@ export default function UserDetailLoading() {
         {/* Right sidebar (1/3) */}
         <div className="space-y-6">
           {/* Subscription card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-24 mb-4" />
             <div className="space-y-3">
               <div>
@@ -52,7 +52,7 @@ export default function UserDetailLoading() {
           </div>
 
           {/* Activity card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-16 mb-4" />
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -67,7 +67,7 @@ export default function UserDetailLoading() {
           </div>
 
           {/* Actions card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-16 mb-4" />
             <Skeleton className="h-10 w-full rounded-lg" />
           </div>

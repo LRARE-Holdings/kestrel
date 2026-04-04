@@ -19,7 +19,7 @@ export function ToolsCta() {
             <Link href="/tools/late-payment">
               <Button
                 size="lg"
-                className="min-w-[200px] bg-cream text-ink hover:bg-white"
+                className="min-w-[200px] bg-cream text-ink hover:bg-surface"
               >
                 Try the Late Payment Toolkit
               </Button>

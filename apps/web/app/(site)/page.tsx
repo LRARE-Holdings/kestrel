@@ -122,7 +122,7 @@ export default function HomePage() {
         <div className="absolute -bottom-32 left-1/4 h-[400px] w-[400px] rounded-full bg-sage/[0.06] blur-[80px]" />
 
         <div className="relative z-10 mx-auto max-w-3xl text-center">
-          <div className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-kestrel/15 bg-white/80 px-4 py-1.5 text-xs font-medium text-kestrel backdrop-blur-sm">
+          <div className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-kestrel/15 bg-surface/80 px-4 py-1.5 text-xs font-medium text-kestrel backdrop-blur-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-kestrel animate-pulse" />
             Structured dispute resolution for business
           </div>
@@ -156,7 +156,7 @@ export default function HomePage() {
 
       {/* ═══ HOW IT WORKS ═══ */}
       <ScrollSection className="pb-6">
-        <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
           <ScrollFade direction="none" className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kestrel">How it works</p>
             <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">Three steps to resolution</h2>
@@ -182,7 +182,7 @@ export default function HomePage() {
 
       {/* ═══ FREE TOOLS ═══ */}
       <ScrollSection className="pb-6" delay={0.05}>
-        <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
           <ScrollFade direction="none" className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kestrel">Free tools</p>
             <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">Use them now. No sign-up.</h2>
@@ -218,7 +218,7 @@ export default function HomePage() {
 
       {/* ═══ TRUST ═══ */}
       <ScrollSection className="pb-6" delay={0.05}>
-        <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
           <ScrollBlur className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kestrel">Trust</p>
             <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">Grounded in English law</h2>
@@ -254,7 +254,7 @@ export default function HomePage() {
             <ScrollFade direction="up" delay={0.3} distance={20}>
               <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
                 <Link href="/tools">
-                  <Button size="lg" className="min-w-[180px] !bg-cream !text-ink shadow-[0_2px_12px_rgba(246,243,238,0.25)] transition-all duration-300 hover:!bg-white hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(246,243,238,0.35)]">Explore free tools</Button>
+                  <Button size="lg" className="min-w-[180px] !bg-cream !text-ink shadow-[0_2px_12px_rgba(246,243,238,0.25)] transition-all duration-300 hover:!bg-surface hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(246,243,238,0.35)]">Explore free tools</Button>
                 </Link>
                 <Link href="/sign-in">
                   <Button variant="ghost" size="lg" className="min-w-[180px] border border-cream/25 !text-cream transition-all duration-300 hover:border-cream/50 hover:bg-cream/10 hover:-translate-y-0.5">Create account</Button>

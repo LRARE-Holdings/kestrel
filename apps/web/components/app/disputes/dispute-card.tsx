@@ -81,7 +81,7 @@ export function DisputeCard({ dispute, currentUserId }: DisputeCardProps) {
   return (
     <Link
       href={`/disputes/${dispute.id}`}
-      className={`group block rounded-[var(--radius-lg)] border border-border-subtle bg-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-md)] border-l-4 ${borderColor}`}
+      className={`group block rounded-[var(--radius-lg)] border border-border-subtle bg-surface shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-md)] border-l-4 ${borderColor}`}
     >
       <div className="p-5">
         {/* Top row: reference + status */}

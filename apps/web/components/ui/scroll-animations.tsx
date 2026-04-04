@@ -360,7 +360,7 @@ export function ScrollDrawLine({
   className,
   orientation = "vertical",
   length = 200,
-  strokeColor = "#2B5C4F",
+  strokeColor = "var(--raw-kestrel)",
   strokeWidth = 1,
 }: ScrollDrawLineProps) {
   const ref = useRef<SVGSVGElement>(null);

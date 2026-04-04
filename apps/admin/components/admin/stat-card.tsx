@@ -7,7 +7,7 @@ interface StatCardProps {
 
 export function StatCard({ label, value, subtitle, trend }: StatCardProps) {
   return (
-    <div className="bg-white rounded-xl border border-border p-6">
+    <div className="bg-surface rounded-xl border border-border p-6">
       <p className="text-sm text-text-muted font-medium">{label}</p>
       <div className="mt-2 flex items-baseline gap-2">
         <p className="text-3xl font-display font-bold text-ink">{value}</p>

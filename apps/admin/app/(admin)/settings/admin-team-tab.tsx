@@ -25,7 +25,7 @@ export function AdminTeamTab({ adminUsers, adminRole, currentAdminId }: Props) {
   return (
     <div className="space-y-6 max-w-3xl">
       {/* Admin users table */}
-      <div className="bg-white border border-border-subtle rounded-lg overflow-hidden">
+      <div className="bg-surface border border-border-subtle rounded-lg overflow-hidden">
         <div className="px-6 py-4 border-b border-border-subtle">
           <h2 className="text-lg font-display font-semibold text-ink">
             Admin Team
@@ -70,7 +70,7 @@ export function AdminTeamTab({ adminUsers, adminRole, currentAdminId }: Props) {
 
       {/* Invite form (super_admin only) */}
       {isSuperAdmin && (
-        <div className="bg-white border border-border-subtle rounded-lg p-6 space-y-4">
+        <div className="bg-surface border border-border-subtle rounded-lg p-6 space-y-4">
           <h3 className="text-sm font-display font-semibold text-ink">
             Invite Admin
           </h3>
@@ -95,7 +95,7 @@ export function AdminTeamTab({ adminUsers, adminRole, currentAdminId }: Props) {
                 name="email"
                 required
                 placeholder="colleague@example.com"
-                className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel transition-colors"
+                className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel transition-colors"
               />
             </div>
             <div className="w-40 space-y-1">
@@ -109,7 +109,7 @@ export function AdminTeamTab({ adminUsers, adminRole, currentAdminId }: Props) {
                 id="invite-role"
                 name="role"
                 defaultValue="admin"
-                className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel transition-colors"
+                className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel transition-colors"
               >
                 <option value="admin">Admin</option>
                 <option value="super_admin">Super Admin</option>
@@ -189,7 +189,7 @@ function AdminRow({
             value={member.role}
             onChange={handleRoleChange}
             disabled={isPending}
-            className="px-2 py-1 text-xs bg-white border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel transition-colors disabled:opacity-50"
+            className="px-2 py-1 text-xs bg-surface border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel transition-colors disabled:opacity-50"
           >
             <option value="admin">Admin</option>
             <option value="super_admin">Super Admin</option>

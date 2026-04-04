@@ -36,7 +36,7 @@ export default async function NoticeViewPage({
         &larr; Create another notice
       </Link>
 
-      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+      <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
         <NoticeView notice={notice} />
       </div>
     </div>

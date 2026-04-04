@@ -206,7 +206,7 @@ export function ContractForm({ contractType }: ContractFormProps) {
         &larr; Contract Templates
       </Link>
 
-      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+      <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
       <h1 className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
         {config.title}
       </h1>
@@ -245,7 +245,7 @@ export function ContractForm({ contractType }: ContractFormProps) {
                 <textarea
                   rows={3}
                   placeholder={"123 High Street\nNewcastle upon Tyne\nNE1 1AA"}
-                  className={`w-full rounded-[var(--radius-md)] border bg-white px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel ${
+                  className={`w-full rounded-[var(--radius-md)] border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel ${
                     getError("partyA.address")
                       ? "border-error focus:ring-error/40 focus:border-error"
                       : "border-border"
@@ -299,7 +299,7 @@ export function ContractForm({ contractType }: ContractFormProps) {
                 <textarea
                   rows={3}
                   placeholder={"456 Market Street\nLondon\nEC1A 1BB"}
-                  className={`w-full rounded-[var(--radius-md)] border bg-white px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel ${
+                  className={`w-full rounded-[var(--radius-md)] border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel ${
                     getError("partyB.address")
                       ? "border-error focus:ring-error/40 focus:border-error"
                       : "border-border"

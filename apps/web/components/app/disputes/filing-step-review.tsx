@@ -148,7 +148,7 @@ export function FilingStepReview({
       </Card>
 
       {/* Kestrel dispute clause */}
-      <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-white p-4">
+      <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-4">
         <div className="flex items-start gap-3">
           <Toggle
             checked={includesClause}

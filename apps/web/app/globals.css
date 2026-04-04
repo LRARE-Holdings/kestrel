@@ -1,9 +1,11 @@
 @import "tailwindcss";
 @import "../../../packages/shared/tokens/globals.css";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 body {
-  background-color: #F6F3EE;
-  color: #0C1311;
+  background-color: var(--raw-cream);
+  color: var(--raw-ink);
   font-family: var(--font-body), sans-serif;
 }
 
@@ -96,8 +98,8 @@ body {
 /* ─── Decorative grid pattern ─── */
 .bg-grid {
   background-image:
-    linear-gradient(to right, rgba(43, 92, 79, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(43, 92, 79, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, color-mix(in srgb, var(--raw-kestrel) 3%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--raw-kestrel) 3%, transparent) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 
@@ -123,8 +125,8 @@ html {
 
 /* ─── Selection colour ─── */
 ::selection {
-  background: rgba(43, 92, 79, 0.15);
-  color: #0C1311;
+  background: color-mix(in srgb, var(--raw-kestrel) 15%, transparent);
+  color: var(--raw-ink);
 }
 
 /* ─── Reduced motion ─── */

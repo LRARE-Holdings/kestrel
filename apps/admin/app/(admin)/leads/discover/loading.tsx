@@ -16,7 +16,7 @@ export default function DiscoverLeadsLoading() {
       </div>
 
       {/* Search form outline */}
-      <div className="bg-white rounded-xl border border-border p-6">
+      <div className="bg-surface rounded-xl border border-border p-6">
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div>
             <Skeleton className="h-3 w-20 mb-1" />
@@ -37,7 +37,7 @@ export default function DiscoverLeadsLoading() {
       </div>
 
       {/* Empty results area */}
-      <div className="bg-white rounded-xl border border-border p-12">
+      <div className="bg-surface rounded-xl border border-border p-12">
         <div className="flex flex-col items-center gap-3">
           <Skeleton className="h-4 w-64" />
           <Skeleton className="h-3 w-48" />

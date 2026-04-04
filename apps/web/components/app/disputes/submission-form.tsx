@@ -78,7 +78,7 @@ export function SubmissionForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="rounded-[var(--radius-lg)] border border-border-subtle bg-white p-4 shadow-[var(--shadow-sm)]"
+      className="rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-4 shadow-[var(--shadow-sm)]"
     >
       <h3 className="text-sm font-medium text-ink">Add a submission</h3>
 

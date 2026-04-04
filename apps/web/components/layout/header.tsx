@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/auth/actions";
+import { ThemeToggle } from "@kestrel/shared/theme/theme-toggle";
 
 interface HeaderProps {
   user?: { email?: string; displayName?: string } | null;
@@ -15,7 +16,7 @@ export function Header({ user }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full px-4 pt-4 sm:px-6 lg:px-8 2xl:px-12">
-      <div className="mx-auto max-w-screen-2xl rounded-2xl border border-border-subtle/60 bg-white/70 shadow-sm backdrop-blur-xl">
+      <div className="mx-auto max-w-screen-2xl rounded-2xl border border-border-subtle/60 bg-surface/70 shadow-sm backdrop-blur-xl">
         <div className="flex h-14 items-center justify-between px-5">
           <Logo />
 
@@ -38,6 +39,7 @@ export function Header({ user }: HeaderProps) {
 
           {/* Desktop auth */}
           <div className="hidden items-center gap-2 md:flex">
+            <ThemeToggle />
             {user ? (
               <>
                 <Link href="/dashboard">
@@ -97,7 +99,10 @@ export function Header({ user }: HeaderProps) {
                   {link.label}
                 </Link>
               ))}
-              <div className="mt-3 border-t border-border-subtle/40 pt-3">
+              <div className="mt-3 flex items-center justify-between border-t border-border-subtle/40 pt-3">
+                <ThemeToggle />
+              </div>
+              <div className="mt-1">
                 {user ? (
                   <>
                     <Link

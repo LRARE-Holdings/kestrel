@@ -80,7 +80,7 @@ export function PipelineBoard({ stages }: PipelineBoardProps) {
                 <Link
                   key={lead.id}
                   href={`/leads/${lead.id}`}
-                  className={`block bg-white rounded-xl border p-3 hover:shadow-md transition-shadow ${
+                  className={`block bg-surface rounded-xl border p-3 hover:shadow-md transition-shadow ${
                     overdue ? "border-error/40" : "border-border"
                   }`}
                 >

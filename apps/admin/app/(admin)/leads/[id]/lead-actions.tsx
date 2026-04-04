@@ -91,7 +91,7 @@ export function LeadActions({
               <button
                 onClick={() => setConfirmArchive(false)}
                 disabled={pending}
-                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-white border border-border rounded-md hover:bg-stone/30 transition-colors"
+                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface border border-border rounded-md hover:bg-stone/30 transition-colors"
               >
                 Cancel
               </button>

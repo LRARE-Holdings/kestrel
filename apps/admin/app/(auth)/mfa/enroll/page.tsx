@@ -99,7 +99,7 @@ export default function MfaEnrollPage() {
       {/* QR Code */}
       {qrCode && (
         <div className="flex justify-center">
-          <div className="rounded-lg border border-border-subtle bg-white p-3">
+          <div className="rounded-lg border border-border-subtle bg-surface p-3">
             {/* The qr_code from Supabase is an SVG data URI */}
             <img
               src={qrCode}
@@ -144,7 +144,7 @@ export default function MfaEnrollPage() {
             placeholder="000000"
             value={code}
             onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-            className="w-full rounded-lg border border-border bg-white px-3.5 py-2.5 text-center text-lg font-mono tracking-[0.3em] text-ink placeholder:text-text-muted outline-none transition-colors focus:border-kestrel focus:ring-1 focus:ring-kestrel"
+            className="w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-center text-lg font-mono tracking-[0.3em] text-ink placeholder:text-text-muted outline-none transition-colors focus:border-kestrel focus:ring-1 focus:ring-kestrel"
           />
         </div>
 

@@ -105,7 +105,7 @@ export default function AboutPage() {
 
       {/* ═══ THE PROBLEM — Card ═══ */}
       <ScrollSection className="pb-6">
-        <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
           <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
             <ScrollFade direction="left" distance={30}>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kestrel">
@@ -134,7 +134,7 @@ export default function AboutPage() {
 
       {/* ═══ HOW KESTREL WORKS — TIMELINE — Card ═══ */}
       <ScrollSection className="pb-6">
-        <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
           <ScrollBlur className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kestrel">
               How it works
@@ -195,7 +195,7 @@ export default function AboutPage() {
 
       {/* ═══ WHAT KESTREL IS NOT — Card ═══ */}
       <ScrollSection className="pb-6">
-        <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
           <ScrollFade direction="none" className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kestrel">
               Clear boundaries
@@ -248,7 +248,7 @@ export default function AboutPage() {
 
       {/* ═══ VALUES — Card ═══ */}
       <ScrollSection className="pb-6">
-        <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
           <ScrollFade direction="up" className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kestrel">
               Principles
@@ -280,7 +280,7 @@ export default function AboutPage() {
 
       {/* ═══ COMPANY — Card ═══ */}
       <ScrollSection className="pb-6">
-        <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
           <div className="grid gap-16 lg:grid-cols-5 lg:gap-24">
             <ScrollFade direction="left" distance={30} className="lg:col-span-2">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kestrel">
@@ -361,7 +361,7 @@ export default function AboutPage() {
                 <Link href="/tools">
                   <Button
                     size="lg"
-                    className="min-w-[180px] bg-cream text-ink hover:bg-white"
+                    className="min-w-[180px] bg-cream text-ink hover:bg-surface"
                   >
                     Explore free tools
                   </Button>

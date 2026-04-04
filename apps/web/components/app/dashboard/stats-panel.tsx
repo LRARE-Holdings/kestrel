@@ -36,7 +36,7 @@ export function StatsPanel({
   return (
     <div className="space-y-4">
       {/* Stats card */}
-      <div className="rounded-[var(--radius-xl)] border border-border-subtle bg-white p-5">
+      <div className="rounded-[var(--radius-xl)] border border-border-subtle bg-surface p-5">
         <div className="space-y-0 divide-y divide-border-subtle">
           {/* Documents */}
           <div className="pb-4">

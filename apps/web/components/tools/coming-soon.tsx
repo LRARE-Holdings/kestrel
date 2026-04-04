@@ -10,7 +10,7 @@ interface ComingSoonProps {
 export function ComingSoon({ title, description, features }: ComingSoonProps) {
   return (
     <div className="mx-auto max-w-screen-2xl px-4 py-24 text-center sm:px-6 lg:px-8 2xl:px-12">
-      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+      <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
         <div className="inline-flex items-center rounded-full border border-kestrel/20 bg-kestrel/5 px-3 py-1 text-xs font-medium text-kestrel">
           Coming soon
         </div>

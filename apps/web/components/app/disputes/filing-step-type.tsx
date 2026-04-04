@@ -100,7 +100,7 @@ export function FilingStepType({ onNext, initialData }: FilingStepTypeProps) {
                     className={`flex items-start gap-3 rounded-[var(--radius-lg)] border p-4 text-left transition-colors ${
                       isSelected
                         ? "border-kestrel bg-kestrel/5 ring-1 ring-kestrel"
-                        : "border-border-subtle bg-white hover:border-border hover:bg-stone/30"
+                        : "border-border-subtle bg-surface hover:border-border hover:bg-stone/30"
                     }`}
                   >
                     <div
@@ -162,7 +162,7 @@ export function FilingStepType({ onNext, initialData }: FilingStepTypeProps) {
             step="0.01"
             min="0"
             placeholder="0.00"
-            className={`w-full rounded-[var(--radius-md)] border bg-white py-2 pl-12 pr-3 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel ${
+            className={`w-full rounded-[var(--radius-md)] border bg-surface py-2 pl-12 pr-3 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel ${
               errors.amount_disputed
                 ? "border-error focus:ring-error/40 focus:border-error"
                 : "border-border"

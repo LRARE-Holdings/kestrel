@@ -45,7 +45,7 @@ export default async function TrackerViewPage({
         &larr; Create another project
       </Link>
 
-      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+      <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
         <TrackerView project={project} />
       </div>
     </div>

@@ -71,7 +71,7 @@ export default async function DisputesPage({
           <select
             name="status"
             defaultValue={status ?? ""}
-            className="px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+            className="px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
             onChange="this.form.submit()"
           >
             {DISPUTE_STATUSES.map((s) => (
@@ -87,7 +87,7 @@ export default async function DisputesPage({
           <select
             name="type"
             defaultValue={type ?? ""}
-            className="px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+            className="px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
             onChange="this.form.submit()"
           >
             {DISPUTE_TYPES.map((t) => (
@@ -114,11 +114,11 @@ export default async function DisputesPage({
 
       {/* Table */}
       {disputes.length === 0 ? (
-        <div className="bg-white rounded-xl border border-border p-12 text-center">
+        <div className="bg-surface rounded-xl border border-border p-12 text-center">
           <p className="text-text-muted text-sm">No disputes found.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-border overflow-hidden">
+        <div className="bg-surface rounded-xl border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>

@@ -27,7 +27,7 @@ export default async function DocumentsPage() {
       </div>
 
       {documents.length === 0 ? (
-        <div className="mt-16 flex flex-col items-center justify-center rounded-[var(--radius-xl)] border border-dashed border-border bg-white/50 py-16">
+        <div className="mt-16 flex flex-col items-center justify-center rounded-[var(--radius-xl)] border border-dashed border-border bg-surface/50 py-16">
           <svg
             className="h-12 w-12 text-text-muted"
             fill="none"
@@ -57,7 +57,7 @@ export default async function DocumentsPage() {
           {documents.map((doc) => (
             <div
               key={doc.id}
-              className="flex items-center justify-between card-hover rounded-[var(--radius-lg)] border border-border-subtle bg-white p-4"
+              className="flex items-center justify-between card-hover rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-4"
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">

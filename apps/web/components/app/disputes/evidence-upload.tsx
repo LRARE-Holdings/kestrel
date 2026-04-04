@@ -167,7 +167,7 @@ export function EvidenceUpload({
             ? "cursor-not-allowed border-border-subtle bg-stone/30 opacity-60"
             : dragActive
               ? "border-kestrel bg-kestrel/5"
-              : "border-border-subtle bg-white hover:border-border hover:bg-stone/20"
+              : "border-border-subtle bg-surface hover:border-border hover:bg-stone/20"
         }`}
       >
         <div
@@ -210,7 +210,7 @@ export function EvidenceUpload({
             return (
               <div
                 key={f.id}
-                className="flex items-start gap-3 rounded-[var(--radius-md)] border border-border-subtle bg-white p-3"
+                className="flex items-start gap-3 rounded-[var(--radius-md)] border border-border-subtle bg-surface p-3"
               >
                 {/* File type icon */}
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-stone">

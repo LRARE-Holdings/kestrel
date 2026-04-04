@@ -56,13 +56,13 @@ export function DisputeStatusBar({ status }: DisputeStatusBarProps) {
                         ? "bg-sage text-white"
                         : isCurrent
                           ? "bg-kestrel text-white"
-                          : "border-2 border-border bg-white"
+                          : "border-2 border-border bg-surface"
                     }`}
                   >
                     {isCompleted ? (
                       <IconCheck className="h-3.5 w-3.5" />
                     ) : isCurrent ? (
-                      <div className="h-2 w-2 rounded-full bg-white" />
+                      <div className="h-2 w-2 rounded-full bg-surface" />
                     ) : null}
                   </div>
                   {/* Pulse animation for current step */}

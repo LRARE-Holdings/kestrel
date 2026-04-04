@@ -95,7 +95,7 @@ export function TermsForm({
         &larr; Terms & Conditions Generator
       </Link>
 
-      <div className="rounded-2xl border border-border-subtle/60 bg-white/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+      <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
       <h1 className="font-display text-3xl tracking-tight text-ink sm:text-4xl">
         {businessTypeLabel} Terms
       </h1>
@@ -129,7 +129,7 @@ export function TermsForm({
                 <textarea
                   rows={3}
                   placeholder={"123 High Street\nNewcastle upon Tyne\nNE1 1AA"}
-                  className={`w-full rounded-[var(--radius-md)] border bg-white px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel ${be.registeredAddress ? "border-error" : "border-border"}`}
+                  className={`w-full rounded-[var(--radius-md)] border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel ${be.registeredAddress ? "border-error" : "border-border"}`}
                   {...register("business.registeredAddress")}
                 />
                 {be.registeredAddress && <p className="text-xs text-error">{be.registeredAddress.message}</p>}
@@ -142,7 +142,7 @@ export function TermsForm({
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-ink">Business structure</label>
                 <select
-                  className="w-full rounded-[var(--radius-md)] border border-border bg-white px-3 py-2 text-sm text-ink transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel"
+                  className="w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 py-2 text-sm text-ink transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel"
                   {...register("business.businessStructure")}
                 >
                   <option value="limited_company">Limited Company</option>
@@ -305,7 +305,7 @@ function EcommerceFields({ register, errors, watch }: any) {
     <>
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-ink">Products</label>
-        <select className="w-full rounded-[var(--radius-md)] border border-border bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel" {...register("productType")}>
+        <select className="w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel" {...register("productType")}>
           <option value="physical">Physical goods</option>
           <option value="digital">Digital products</option>
           <option value="both">Both physical and digital</option>
@@ -313,14 +313,14 @@ function EcommerceFields({ register, errors, watch }: any) {
       </div>
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-ink">Delivery scope</label>
-        <select className="w-full rounded-[var(--radius-md)] border border-border bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel" {...register("deliveryScope")}>
+        <select className="w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel" {...register("deliveryScope")}>
           <option value="uk_only">UK only</option>
           <option value="uk_international">UK + International</option>
         </select>
       </div>
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-ink">Returns policy</label>
-        <select className="w-full rounded-[var(--radius-md)] border border-border bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel" {...register("returnsPolicy")}>
+        <select className="w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel" {...register("returnsPolicy")}>
           <option value="statutory">Statutory only (14 days)</option>
           <option value="extended">Extended returns window</option>
         </select>
@@ -350,7 +350,7 @@ function SaasFields({ register, errors, watch, setValue }: any) {
       <Input label="Trial period (days, 0 for none)" type="number" min="0" placeholder="14" {...register("trialPeriodDays", { valueAsNumber: true })} />
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-ink">Billing cycle</label>
-        <select className="w-full rounded-[var(--radius-md)] border border-border bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel" {...register("billingCycle")}>
+        <select className="w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel" {...register("billingCycle")}>
           <option value="monthly">Monthly</option>
           <option value="annual">Annual</option>
           <option value="both">Monthly and Annual</option>
@@ -363,7 +363,7 @@ function SaasFields({ register, errors, watch, setValue }: any) {
       <Input label="Data hosting location" placeholder="e.g. United Kingdom" {...register("dataHostingLocation")} />
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-ink">Uptime commitment</label>
-        <select className="w-full rounded-[var(--radius-md)] border border-border bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel" {...register("uptimeCommitment")}>
+        <select className="w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel" {...register("uptimeCommitment")}>
           <option value="none">No commitment</option>
           <option value="99">99%</option>
           <option value="99.9">99.9%</option>
@@ -382,7 +382,7 @@ function ProfessionalFields({ register, errors }: any) {
         <textarea
           rows={3}
           placeholder="Brief description of the services you provide"
-          className="w-full rounded-[var(--radius-md)] border border-border bg-white px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel"
+          className="w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel"
           {...register("serviceDescription")}
         />
       </div>
@@ -394,7 +394,7 @@ function ProfessionalFields({ register, errors }: any) {
       </div>
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-ink">IP ownership</label>
-        <select className="w-full rounded-[var(--radius-md)] border border-border bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel" {...register("ipOwnership")}>
+        <select className="w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel" {...register("ipOwnership")}>
           <option value="client">Client owns all IP</option>
           <option value="provider">Provider retains IP (licence to client)</option>
           <option value="shared">Jointly owned</option>

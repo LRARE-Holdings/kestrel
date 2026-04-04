@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@kestrel/shared/theme/provider";
 
 const satoshi = localFont({
   src: [
@@ -41,9 +42,12 @@ export default function RootLayout({
     <html
       lang="en-GB"
       className={`${satoshi.variable} ${dmSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-cream text-ink font-body">
-        {children}
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

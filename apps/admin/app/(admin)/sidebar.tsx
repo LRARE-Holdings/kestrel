@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "@/lib/auth/actions";
+import { ThemeToggle } from "@kestrel/shared/theme/theme-toggle";
 
 const navItems = [
   { label: "Dashboard", href: "/", icon: GridIcon },
@@ -27,7 +28,7 @@ export function AdminSidebar({
   }
 
   return (
-    <aside className="fixed inset-y-0 left-0 w-64 bg-white border-r border-border flex flex-col z-30">
+    <aside className="fixed inset-y-0 left-0 w-64 bg-surface border-r border-border flex flex-col z-30">
       {/* Brand */}
       <div className="px-6 py-5 border-b border-border-subtle">
         <h1 className="text-lg font-display font-bold text-ink tracking-tight">
@@ -70,15 +71,18 @@ export function AdminSidebar({
             <p className="text-xs text-text-muted capitalize">{role}</p>
           </div>
         </div>
-        <form action={signOut}>
-          <button
-            type="submit"
-            className="flex items-center gap-2 text-sm text-text-muted hover:text-error transition-colors w-full"
-          >
-            <SignOutIcon className="w-4 h-4" />
-            Sign out
-          </button>
-        </form>
+        <div className="flex items-center gap-2">
+          <form action={signOut} className="flex-1">
+            <button
+              type="submit"
+              className="flex items-center gap-2 text-sm text-text-muted hover:text-error transition-colors w-full"
+            >
+              <SignOutIcon className="w-4 h-4" />
+              Sign out
+            </button>
+          </form>
+          <ThemeToggle />
+        </div>
       </div>
     </aside>
   );

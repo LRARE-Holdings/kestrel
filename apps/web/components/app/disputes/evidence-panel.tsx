@@ -157,7 +157,7 @@ export function EvidencePanel({
   }, [disputeId, initiatingPartyName, respondingPartyName]);
 
   return (
-    <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-white p-5">
+    <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-5">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-ink">Evidence</h3>
         {files.length > 0 && (

@@ -14,7 +14,7 @@ export function SiteConfigTab({ settings }: Props) {
 
   return (
     <form action={formAction} className="space-y-6 max-w-2xl">
-      <div className="bg-white border border-border-subtle rounded-lg p-6 space-y-5">
+      <div className="bg-surface border border-border-subtle rounded-lg p-6 space-y-5">
         <h2 className="text-lg font-display font-semibold text-ink">
           Site Configuration
         </h2>
@@ -39,7 +39,7 @@ export function SiteConfigTab({ settings }: Props) {
               defaultChecked={maintenanceMode}
               className="sr-only peer"
             />
-            <div className="w-10 h-5 bg-border rounded-full peer-checked:bg-error peer-focus:ring-2 peer-focus:ring-error/20 transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5" />
+            <div className="w-10 h-5 bg-border rounded-full peer-checked:bg-error peer-focus:ring-2 peer-focus:ring-error/20 transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-surface after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5" />
           </label>
         </div>
 

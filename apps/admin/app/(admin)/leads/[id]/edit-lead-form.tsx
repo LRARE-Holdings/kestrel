@@ -26,7 +26,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
 
   if (!editing) {
     return (
-      <div className="bg-white rounded-xl border border-border p-6">
+      <div className="bg-surface rounded-xl border border-border p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider">
             Contact details
@@ -63,7 +63,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
   return (
     <form
       action={formAction}
-      className="bg-white rounded-xl border border-border p-6 space-y-4"
+      className="bg-surface rounded-xl border border-border p-6 space-y-4"
     >
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider">
@@ -91,7 +91,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
             name="name"
             defaultValue={lead.name}
             required
-            className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+            className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
           />
         </div>
         <div>
@@ -106,7 +106,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
             id="edit-email"
             name="email"
             defaultValue={lead.email ?? ""}
-            className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+            className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
           />
         </div>
         <div>
@@ -121,7 +121,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
             id="edit-phone"
             name="phone"
             defaultValue={lead.phone ?? ""}
-            className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+            className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
           />
         </div>
         <div>
@@ -136,7 +136,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
             id="edit-company"
             name="company"
             defaultValue={lead.company ?? ""}
-            className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+            className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
           />
         </div>
         <div>
@@ -151,7 +151,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
             id="edit-source"
             name="source"
             defaultValue={lead.source ?? ""}
-            className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+            className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
           />
         </div>
         <div>
@@ -165,7 +165,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
             id="edit-stage"
             name="stage"
             defaultValue={lead.stage}
-            className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+            className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
           >
             {LEAD_STAGES.map((s) => (
               <option key={s} value={s}>
@@ -186,7 +186,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
             id="edit-next-action"
             name="next_action_date"
             defaultValue={lead.next_action_date ?? ""}
-            className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
+            className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel"
           />
         </div>
       </div>
@@ -203,7 +203,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
           name="notes"
           rows={3}
           defaultValue={lead.notes ?? ""}
-          className="w-full px-3 py-2 text-sm bg-white border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel resize-y"
+          className="w-full px-3 py-2 text-sm bg-surface border border-border rounded-lg text-ink focus:outline-none focus:ring-2 focus:ring-kestrel/20 focus:border-kestrel resize-y"
         />
       </div>
 
@@ -211,7 +211,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
         <button
           type="button"
           onClick={() => setEditing(false)}
-          className="px-3 py-1.5 text-xs font-medium text-text-secondary bg-white border border-border rounded-lg hover:bg-stone/30 transition-colors"
+          className="px-3 py-1.5 text-xs font-medium text-text-secondary bg-surface border border-border rounded-lg hover:bg-stone/30 transition-colors"
         >
           Cancel
         </button>

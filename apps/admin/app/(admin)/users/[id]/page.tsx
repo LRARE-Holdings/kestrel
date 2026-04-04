@@ -47,7 +47,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile card */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-border p-6">
+        <div className="lg:col-span-2 bg-surface rounded-xl border border-border p-6">
           <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
             Profile
           </h2>
@@ -97,7 +97,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
         {/* Right sidebar */}
         <div className="space-y-6">
           {/* Subscription card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
               Subscription
             </h2>
@@ -144,7 +144,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
           </div>
 
           {/* Stats card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
               Activity
             </h2>
@@ -165,7 +165,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
           </div>
 
           {/* Actions card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider mb-4">
               Actions
             </h2>

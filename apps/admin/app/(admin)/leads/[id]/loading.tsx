@@ -26,7 +26,7 @@ export default function LeadDetailLoading() {
         {/* Left column */}
         <div className="lg:col-span-2 space-y-6">
           {/* Edit form card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-24 mb-4" />
             <div className="space-y-4">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -40,7 +40,7 @@ export default function LeadDetailLoading() {
           </div>
 
           {/* Interaction timeline */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-32 mb-4" />
             <div className="space-y-4">
               {Array.from({ length: 4 }).map((_, i) => (
@@ -56,7 +56,7 @@ export default function LeadDetailLoading() {
           </div>
 
           {/* Add interaction form */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-28 mb-4" />
             <div className="space-y-3">
               <Skeleton className="h-10 w-full rounded-lg" />
@@ -69,7 +69,7 @@ export default function LeadDetailLoading() {
         {/* Right column */}
         <div className="space-y-6">
           {/* Status card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-14 mb-4" />
             <div className="space-y-3">
               {Array.from({ length: 4 }).map((_, i) => (
@@ -82,7 +82,7 @@ export default function LeadDetailLoading() {
           </div>
 
           {/* Notes card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-12 mb-4" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-3/4 mt-1" />
@@ -90,7 +90,7 @@ export default function LeadDetailLoading() {
           </div>
 
           {/* Actions card */}
-          <div className="bg-white rounded-xl border border-border p-6">
+          <div className="bg-surface rounded-xl border border-border p-6">
             <Skeleton className="h-3 w-16 mb-4" />
             <div className="space-y-2">
               <Skeleton className="h-10 w-full rounded-lg" />

@@ -4,6 +4,7 @@ import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { CookieBanner } from "@/components/ui/cookie-banner";
 import { Analytics } from "@/components/analytics";
+import { ThemeProvider } from "@kestrel/shared/theme/provider";
 
 const satoshi = localFont({
   src: [
@@ -43,11 +44,14 @@ export default function RootLayout({
     <html
       lang="en-GB"
       className={`${satoshi.variable} ${dmSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-cream text-ink font-body">
-        {children}
-        <CookieBanner />
-        <Analytics />
+        <ThemeProvider>
+          {children}
+          <CookieBanner />
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   );

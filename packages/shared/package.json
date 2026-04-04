@@ -13,7 +13,10 @@
     "./email/types": "./email/types.ts",
     "./email/templates/layout": "./email/templates/layout.ts",
     "./constants": "./constants/index.ts",
-    "./dates/format": "./dates/format.ts"
+    "./dates/format": "./dates/format.ts",
+    "./theme/provider": "./theme/provider.tsx",
+    "./theme/theme-toggle": "./theme/theme-toggle.tsx",
+    "./theme/theme-selector": "./theme/theme-selector.tsx"
   },
   "peerDependencies": {
     "@supabase/ssr": "^0.10.0",

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
 import { handshakeResponseSchema } from "@/lib/handshake/schemas";
+import { getResend } from "@kestrel/shared/email/client";
+import { handshakeResponseEmail } from "@/lib/email/templates/handshake-response";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -96,10 +98,10 @@ export async function POST(
 
     const supabase = createServiceClient();
 
-    // Fetch the handshake
+    // Fetch the handshake (include Party A details for the notification email)
     const { data: handshake, error: fetchError } = await supabase
       .from("handshakes")
-      .select("id, status")
+      .select("id, status, title, party_a_name, party_a_email, party_a_business, party_b_name, party_b_business, access_token")
       .eq("access_token", token)
       .single();
 
@@ -169,6 +171,32 @@ export async function POST(
         { status: 500 },
       );
     }
+
+    // Send email notification to Party A (fire-and-forget)
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
+    const viewUrl = `${siteUrl}/tools/handshake/${handshake.access_token}`;
+
+    const email = handshakeResponseEmail({
+      partyAName: handshake.party_a_name,
+      partyABusiness: handshake.party_a_business,
+      partyBName: respondentName,
+      partyBBusiness: handshake.party_b_business,
+      title: handshake.title,
+      responseType: responseType as "confirm" | "modify" | "decline",
+      message: message || undefined,
+      viewUrl,
+    });
+
+    getResend()
+      .emails.send({
+        from: `Kestrel <notifications@${process.env.RESEND_FROM_DOMAIN || "kestrel.pellar.co.uk"}>`,
+        to: handshake.party_a_email,
+        subject: email.subject,
+        html: email.html,
+      })
+      .catch((err) => {
+        console.error("[handshake] Failed to send Party A notification:", err);
+      });
 
     return NextResponse.json(updated);
   } catch (error) {

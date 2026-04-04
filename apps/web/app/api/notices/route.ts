@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
 import { noticeSchema } from "@/lib/notices/schemas";
+import { getResend } from "@kestrel/shared/email/client";
+import {
+  noticeSentToRecipientEmail,
+  noticeSentConfirmationEmail,
+} from "@/lib/email/templates/notice-sent";
 
 export async function POST(request: Request) {
   try {
@@ -49,6 +54,62 @@ export async function POST(request: Request) {
         { status: 500 },
       );
     }
+
+    // Send email notifications (fire-and-forget — never block the response)
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
+    const viewUrl = `${siteUrl}/tools/notices/${notice.access_token}`;
+    const fromAddress = `Kestrel <notifications@${process.env.RESEND_FROM_DOMAIN || "kestrel.pellar.co.uk"}>`;
+
+    const formattedDeadline = data.responseDeadline
+      ? new Date(data.responseDeadline).toLocaleDateString("en-GB", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
+      : undefined;
+
+    // Email to the recipient
+    const recipientEmail = noticeSentToRecipientEmail({
+      recipientName: data.recipient.name,
+      recipientBusiness: data.recipient.businessName,
+      senderName: data.sender.name,
+      senderBusiness: data.sender.businessName,
+      noticeType: data.noticeType,
+      subject: data.subject,
+      requiredAction: data.requiredAction || undefined,
+      responseDeadline: formattedDeadline,
+      viewUrl,
+    });
+
+    // Confirmation email to the sender
+    const senderEmail = noticeSentConfirmationEmail({
+      senderName: data.sender.name,
+      recipientName: data.recipient.name,
+      recipientBusiness: data.recipient.businessName,
+      recipientEmail: data.recipient.email,
+      noticeType: data.noticeType,
+      subject: data.subject,
+      viewUrl,
+    });
+
+    // Send both in parallel, swallow errors
+    Promise.allSettled([
+      getResend().emails.send({
+        from: fromAddress,
+        to: data.recipient.email,
+        subject: recipientEmail.subject,
+        html: recipientEmail.html,
+      }),
+      getResend().emails.send({
+        from: fromAddress,
+        to: data.sender.email,
+        subject: senderEmail.subject,
+        html: senderEmail.html,
+      }),
+    ]).catch((err) => {
+      console.error("[notices] Email send error:", err);
+    });
 
     return NextResponse.json({ accessToken: notice.access_token });
   } catch (err) {

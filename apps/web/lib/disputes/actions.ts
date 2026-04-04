@@ -13,6 +13,7 @@ import { proposalReceivedEmail } from "@/lib/email/templates/proposal-received";
 import { proposalResponseEmail } from "@/lib/email/templates/proposal-response";
 import { disputeResolvedEmail } from "@/lib/email/templates/dispute-resolved";
 import { disputeEscalatedEmail } from "@/lib/email/templates/dispute-escalated";
+import { disputeWithdrawnEmail } from "@/lib/email/templates/dispute-withdrawn";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "@kestrel/shared/supabase/types";
 import type {
@@ -856,7 +857,76 @@ export async function withdrawDispute(
     reason,
   });
 
+  // ----- Notify the responding party (fire-and-forget) -----
+  notifyRespondentOfWithdrawal({
+    dispute,
+    initiatorId: user.id,
+  }).catch((err) => {
+    console.error("[withdrawDispute] Notification error (non-blocking):", err);
+  });
+
   return { success: true };
+}
+
+/**
+ * Send withdrawal notification email to the responding party.
+ * Uses a service client to bypass RLS for profile lookups.
+ */
+async function notifyRespondentOfWithdrawal(params: {
+  dispute: Database["public"]["Tables"]["disputes"]["Row"];
+  initiatorId: string;
+}) {
+  const { dispute, initiatorId } = params;
+  const serviceClient = createServiceClient();
+
+  const respondentId = dispute.responding_party_id;
+
+  // Fetch profiles in parallel
+  const [initiatorProfile, respondentProfile] = await Promise.all([
+    serviceClient
+      .from("profiles")
+      .select("display_name, business_name, email")
+      .eq("id", initiatorId)
+      .single()
+      .then(({ data }) => data),
+    respondentId
+      ? serviceClient
+          .from("profiles")
+          .select("display_name, email")
+          .eq("id", respondentId)
+          .single()
+          .then(({ data }) => data)
+      : null,
+  ]);
+
+  const respondentEmail =
+    respondentProfile?.email ?? dispute.responding_party_email;
+
+  if (!respondentEmail) {
+    console.warn(
+      `[notify] Cannot notify respondent of withdrawal for dispute ${dispute.id}: no email`,
+    );
+    return;
+  }
+
+  const email = disputeWithdrawnEmail({
+    recipientName: respondentProfile?.display_name ?? "there",
+    initiatorName: initiatorProfile?.display_name ?? "A Kestrel user",
+    initiatorBusiness: initiatorProfile?.business_name ?? "",
+    referenceNumber: dispute.reference_number,
+    disputeId: dispute.id,
+  });
+
+  await sendDisputeEmail({
+    to: respondentEmail,
+    subject: email.subject,
+    html: email.html,
+    userId: respondentId ?? initiatorId,
+    disputeId: dispute.id,
+    notificationType: "dispute_withdrawn",
+    notificationTitle: "Dispute withdrawn",
+    notificationBody: `Dispute ${dispute.reference_number} has been withdrawn.`,
+  });
 }
 
 // ---------------------------------------------------------------------------

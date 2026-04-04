@@ -234,3 +234,138 @@ Database changes:
 - Created `dispute-evidence` storage bucket with party-scoped RLS policies
 
 Files created: 45 new files across lib/disputes/, lib/email/, lib/feature-flags/, lib/mediators/, components/app/disputes/, app/(app)/disputes/, app/api/cron/deadline-reminders/
+
+## [2026-04-04] Architecture — Admin Panel (Separate App)
+Decision: Build the admin panel as a separate Next.js app, deployed independently at admin.kestrel.pellar.co.uk. Shares the same Supabase project (zyebrpcjdoyrckxbpicz). Admin code never ships to the public site — clean security boundary.
+
+Capabilities at launch:
+- Platform analytics dashboard (sign-ups, tool usage, disputes, subscriptions, revenue)
+- CRM-lite lead tracker (contacts, companies, deal stages, interaction notes, follow-up reminders, pipeline view)
+- User management (search/view users, profile + subscription status, disable accounts)
+- Dispute oversight (all disputes metadata + status, flag/escalate, compliance audit trail)
+
+## [2026-04-04] Security — Admin Access Control
+Decision: Separate `admin_users` table + Supabase Custom Access Token Hook.
+- `admin_users` table stores `user_id`, `role`, `created_at`, `created_by` — locked by RLS (no public read/write)
+- Custom Access Token Hook (PL/pgSQL) checks `admin_users` on every token issuance and injects `app_metadata.admin = true` into the JWT
+- Admin app proxy.ts checks `session.user.app_metadata?.admin === true`
+- RLS policies check `(select auth.jwt() -> 'app_metadata' ->> 'admin')::boolean = true`
+- Defence in depth: DB table (source of truth) + JWT claim (signed, untamperable) + app-level proxy check
+
+Rejected alternatives:
+- Email allowlist: no database-level enforcement, single point of failure at app layer
+- Role column on profiles: dangerous — existing `FOR ALL` RLS policy allows self-update, risk of privilege escalation
+
+## [2026-04-04] Security — Admin Auth: Email+Password + Mandatory MFA
+Decision: Admin panel uses email+password ONLY (no OAuth, no magic link). MFA (TOTP) is mandatory.
+- Supabase Auth supports TOTP MFA natively (free, enabled by default)
+- OAuth restriction is application-level: admin app only calls `signInWithPassword()`, never renders OAuth buttons
+- MFA enforcement at three layers:
+  1. Frontend: proxy.ts checks AAL level, redirects to MFA enrollment/verification if not aal2
+  2. Server: server components check AAL before rendering admin content
+  3. Database: restrictive RLS policies require `(select auth.jwt()->>'aal') = 'aal2'`
+- Custom Access Token Hook and MFA are complementary: hook injects `user_role`/`admin` claim, Supabase Auth manages `aal` claim. Both checked together in RLS.
+- Sign-in flow: email+password → check AAL → if no MFA enrolled, force TOTP enrollment → TOTP challenge → session upgraded to aal2 → access granted
+- JWT contains both `aal: 'aal2'` and `user_role: 'admin'` after full authentication
+- `as restrictive` keyword on admin RLS policies prevents other permissive policies from bypassing MFA requirement
+
+## [2026-04-04] Architecture — Dispute Filing Sends Two Emails
+Filing a dispute now sends two distinct transactional emails via Resend:
+1. **Initiator confirmation** (`dispute-initiated.ts`): Confirms filing, shows reference number, respondent details, deadline, and "what happens next" steps. Tone: composed, reassuring, clear.
+2. **Respondent notification** (`dispute-filed.ts`): Informs the respondent a formal dispute has been raised. Shows reference, subject, type, who filed, deadline. Includes "how to respond" steps. Tone: formal, respectful, neutral — conveys seriousness without being accusatory.
+
+Both emails use the shared `emailLayout` (Kestrel-branded table-based HTML) and are sent via `Promise.allSettled()` so neither blocks the filing response. The old placeholder notification insert was replaced with proper `sendDisputeEmail()` calls that create notification records AND send via Resend.
+
+Key implementation details:
+- `fileDispute()` now selects `id, reference_number` from the dispute insert
+- Fetches initiator profile for name/business/email
+- Amounts formatted as `£X,XXX.XX` (en-GB locale)
+- Deadlines formatted as "Wednesday, 18 April 2026" (en-GB long date)
+- Subject line includes reference number for both (initiator: "Dispute filed: KST-...", respondent: "A dispute has been raised: KST-...")
+
+## [2026-04-04] Architecture — Monorepo Conversion
+Converted from single Next.js app to Turborepo monorepo. Structure:
+- `apps/web/` — existing Kestrel app (all routes, components, lib)
+- `apps/admin/` — new admin panel (to be built)
+- `packages/shared/` — shared code: supabase clients, email infrastructure, constants, date utils, design tokens CSS
+- Root: `turbo.json`, `tsconfig.base.json`, `package.json` (workspaces)
+- Package manager: npm 11.11.0 with workspaces
+- Web app dependency: `"@kestrel/shared": "*"` (npm workspace resolution)
+- Turbopack root set to monorepo root via `path.resolve(__dirname, "../..")`
+- Shared tokens imported in CSS via relative path: `@import "../../../packages/shared/tokens/globals.css"`
+- All 36 files with shared imports updated from `@/lib/supabase/*` etc. to `@kestrel/shared/*`
+- Build verified: `npx turbo build --filter=@kestrel/web` passes clean
+
+## [2026-04-04] Database — Admin Panel Migrations
+Applied 4 migrations to Supabase (zyebrpcjdoyrckxbpicz):
+1. `create_admin_users` — admin access control table, RLS enabled, no public policies, only supabase_auth_admin can SELECT
+2. `create_custom_access_token_hook` — PL/pgSQL function injects admin=true/false + admin_role into JWT on every token issuance. SECURITY DEFINER, search_path set. Handles non-admin case gracefully (admin=false, not error).
+3. `create_leads` — CRM-lite lead tracking. Admin-only RLS (RESTRICTIVE, requires aal2 + admin=true). 4 indexes.
+4. `create_lead_interactions` — Lead interaction history. Admin-only RLS. 2 indexes.
+Seeded both founders (alex@pellar.co.uk, yuvi@yjstrategy.com) as super_admin.
+TypeScript types regenerated (1449 lines, up from 1339). Updated in both packages/shared and apps/web.
+MANUAL STEP REQUIRED: Enable Custom Access Token Hook in Supabase Dashboard → Authentication → Hooks.
+
+## [2026-04-04] Architecture — Admin App Shell
+Built admin app at apps/admin/. Next.js 16.2.2, port 3001.
+Auth flow: email+password only → MFA enrollment/verification → admin dashboard.
+- Sign-in: signInWithPassword server action, checks AAL, redirects to MFA
+- MFA enroll: QR code display via supabase.auth.mfa.enroll(), secret fallback, 6-digit verify
+- MFA verify: TOTP challenge on returning sessions
+- proxy.ts: three security gates (auth required, aal2 required, MFA redirect logic)
+- (admin) layout: server component checks getAdminUser() (admin claim + aal2), sidebar nav
+- Sidebar: Dashboard, Users, Disputes, Leads, Settings. User email + role badge + sign out.
+Build verified: both apps pass `npx turbo build` (7.9s total for web + admin).
+
+## [2026-04-04] Product — AI Contract Analysis for Disputes
+Feature documented in `/DISPUTES.md`. Key decisions:
+- AI extracts key contract terms (parties, dates, amounts, payment terms, deliverables) when a dispute is filed
+- Only available for contracts created through Kestrel that include the Kestrel dispute resolution clause
+- Contracts without the clause can still be disputed, but AI extraction is unavailable (incentivises clause retention)
+- Extraction runs on-demand only (user toggles it on at dispute time, not before)
+- Both parties see the same extracted data and can challenge any field
+- Challenged fields marked as "not agreed" with both versions visible — Kestrel does not adjudicate
+- Extracted data stored with application-level encryption (non-negotiable)
+- Pricing: included on higher subscription tiers, per-document upsell for lower tiers
+- AI constraints: extraction only, no interpretation, no liability assessment, no recommendations
+- GDPR: new processing activity, requires privacy policy update and DPIA consideration
+- Prefer pulling from original structured questionnaire data over re-parsing generated documents where possible
+
+## [2026-04-04] Architecture — Admin Auth Flow Built
+Built complete admin auth flow at `apps/admin/`. 8 files created:
+- `lib/auth/actions.ts` — server actions: `signInWithPassword` (with MFA redirect logic), `signOut`, `getAdminUser` (checks admin claim + aal2)
+- `app/(auth)/layout.tsx` — centered auth card layout, Kestrel branding, no sign-up link
+- `app/(auth)/sign-in/page.tsx` — email+password only form, `useActionState` pattern (React 19), no OAuth buttons
+- `app/(auth)/mfa/enroll/page.tsx` — TOTP enrollment: QR code display, manual secret fallback, 6-digit verification
+- `app/(auth)/mfa/verify/page.tsx` — TOTP challenge on subsequent sign-ins, sign-out link
+- `app/(admin)/layout.tsx` — server component, calls `getAdminUser()`, redirects to `/sign-in` if null
+- `app/(admin)/sidebar.tsx` — client component, 256px fixed sidebar, 5 nav items (Dashboard, Users, Disputes, Leads, Settings), inline SVG icons, user email + role badge, sign out
+- `app/(admin)/page.tsx` + `app/(admin)/settings/page.tsx` — placeholder pages
+
+Auth flow: email+password -> check AAL -> if no TOTP enrolled, redirect /mfa/enroll -> if TOTP enrolled but aal1, redirect /mfa/verify -> aal2 verified -> access granted. Three enforcement layers: proxy.ts (route-level), server component (getAdminUser), database (RLS requires aal2 + admin claim).
+
+## [2026-04-04] Architecture — Admin Dispute Oversight & Lead Tracker
+Built two major admin features:
+
+**Dispute Oversight (metadata only)**:
+- `lib/admin/dispute-queries.ts` — Query functions using service role client (bypasses RLS). Functions: `listDisputes` (paginated, filterable by status/type), `getDisputeOverview` (metadata + party profiles + submission/evidence counts + audit log), `escalateDispute`.
+- `app/(admin)/disputes/page.tsx` — Dispute list with status/type filters via URL search params, data table with reference/type/status/subject/parties/deadline columns, coloured status badges, pagination.
+- `app/(admin)/disputes/[id]/page.tsx` — Dispute detail: overview card, parties card, key dates timeline, activity stats (counts only, no content), audit log timeline, timestamps. Escalate button with confirmation dialog.
+- Key design decision: admins can see dispute metadata but NOT submission content or evidence files. This is intentional for data isolation.
+
+**Lead Tracker (CRM-lite)**:
+- `lib/leads/schemas.ts` — Zod schemas for create/update lead + create interaction. Stages: lead/contacted/qualified/proposal/won/lost.
+- `lib/leads/queries.ts` — Query functions using server client (admin JWT with RLS). Functions: `listLeads` (paginated, searchable, filterable), `getLeadsByStage` (grouped for pipeline), `getLeadDetail` (lead + interactions), `getOverdueFollowUps`.
+- `lib/leads/actions.ts` — Server actions: `createLead`, `updateLead`, `updateLeadStage`, `archiveLead`, `addInteraction`. All use `getAdminUser()` for auth.
+- `app/(admin)/leads/page.tsx` — Dual view: list (data table) and pipeline (kanban board). Toggle via `?view=list|pipeline`. Search, stage filter, status filter.
+- `app/(admin)/leads/new/page.tsx` — New lead form with all fields, Zod validation, redirects to detail on success.
+- `app/(admin)/leads/[id]/page.tsx` — Lead detail: editable contact card, interaction timeline, add interaction form, status/stage sidebar, stage change buttons, archive action.
+
+**Shared admin components created**:
+- `components/admin/data-table.tsx` — Generic HTML table with columns/data/render props
+- `components/admin/timeline.tsx` — Vertical timeline with coloured dots per type
+- `components/admin/pipeline-board.tsx` — Kanban board with stage columns, lead cards, overdue highlighting
+- `components/admin/pagination.tsx` — URL-param-based pagination with prev/next
+- `components/admin/status-badge.tsx` — Coloured badges for dispute statuses and lead stages
+
+Build verified: `npx turbo build --filter=@kestrel/admin` passes clean (6.7s).

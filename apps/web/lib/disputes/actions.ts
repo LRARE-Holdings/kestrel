@@ -31,11 +31,25 @@ async function getAuthenticatedUser(supabase: SupabaseClient<Database>) {
 }
 
 function getUserRole(
-  dispute: { initiating_party_id: string; responding_party_id: string | null },
+  dispute: {
+    initiating_party_id: string;
+    responding_party_id: string | null;
+    responding_party_email?: string;
+  },
   userId: string,
+  userEmail?: string | null,
 ): UserRole {
   if (dispute.initiating_party_id === userId) return "initiating";
   if (dispute.responding_party_id === userId) return "responding";
+  // Fallback: match by email when responding_party_id hasn't been set yet
+  if (
+    !dispute.responding_party_id &&
+    userEmail &&
+    dispute.responding_party_email &&
+    dispute.responding_party_email.toLowerCase() === userEmail.toLowerCase()
+  ) {
+    return "responding";
+  }
   return null;
 }
 
@@ -74,7 +88,7 @@ export async function getDisputes() {
     .select("*")
     .is("deleted_at", null)
     .or(
-      `initiating_party_id.eq.${user.id},responding_party_id.eq.${user.id}`,
+      `initiating_party_id.eq.${user.id},responding_party_id.eq.${user.id},and(responding_party_id.is.null,responding_party_email.ilike.${user.email})`,
     )
     .order("updated_at", { ascending: false });
 
@@ -85,6 +99,10 @@ export async function getDisputes() {
 /**
  * Get a single dispute by ID with joined profile data for both parties.
  * Returns null if the dispute does not exist or the user is not a party.
+ *
+ * If the authenticated user's email matches `responding_party_email` and
+ * `responding_party_id` is not yet set, this function auto-claims the
+ * respondent slot — linking the dispute to their account permanently.
  */
 export async function getDispute(id: string) {
   const supabase = await createClient();
@@ -111,8 +129,38 @@ export async function getDispute(id: string) {
     return { data: null, error: error?.message ?? "Dispute not found" };
   }
 
-  // Verify the current user is a party
-  const role = getUserRole(dispute, user.id);
+  // Determine the user's role. If they're not yet linked by ID, check email.
+  let role = getUserRole(dispute, user.id);
+
+  if (
+    !role &&
+    !dispute.responding_party_id &&
+    user.email &&
+    dispute.responding_party_email.toLowerCase() === user.email.toLowerCase()
+  ) {
+    // Auto-claim: link this user as the responding party
+    const { error: claimError } = await supabase
+      .from("disputes")
+      .update({
+        responding_party_id: user.id,
+        status: dispute.status === "filed" ? "awaiting_response" : dispute.status,
+      })
+      .eq("id", dispute.id)
+      .is("responding_party_id", null); // Guard against race conditions
+
+    if (!claimError) {
+      dispute.responding_party_id = user.id;
+      if (dispute.status === "filed") {
+        dispute.status = "awaiting_response";
+      }
+      role = "responding";
+
+      await logAudit(supabase, user.id, "dispute.respondent_claimed", "dispute", dispute.id, {
+        email: user.email,
+      });
+    }
+  }
+
   if (!role) {
     return { data: null, error: "Not authorised to view this dispute" };
   }
@@ -150,12 +198,12 @@ export async function getSubmissions(disputeId: string) {
   // Verify user is a party
   const { data: dispute } = await supabase
     .from("disputes")
-    .select("initiating_party_id, responding_party_id")
+    .select("initiating_party_id, responding_party_id, responding_party_email")
     .eq("id", disputeId)
     .is("deleted_at", null)
     .single();
 
-  if (!dispute || !getUserRole(dispute, user.id)) {
+  if (!dispute || !getUserRole(dispute, user.id, user.email)) {
     return { data: null, error: "Not authorised" };
   }
 
@@ -195,12 +243,12 @@ export async function getEvidenceFiles(disputeId: string) {
   // Verify user is a party
   const { data: dispute } = await supabase
     .from("disputes")
-    .select("initiating_party_id, responding_party_id")
+    .select("initiating_party_id, responding_party_id, responding_party_email")
     .eq("id", disputeId)
     .is("deleted_at", null)
     .single();
 
-  if (!dispute || !getUserRole(dispute, user.id)) {
+  if (!dispute || !getUserRole(dispute, user.id, user.email)) {
     return { data: null, error: "Not authorised" };
   }
 
@@ -426,7 +474,7 @@ export async function addSubmission(input: {
     return { error: "Dispute not found" };
   }
 
-  const role = getUserRole(dispute, user.id);
+  const role = getUserRole(dispute, user.id, user.email);
   if (!role) {
     return { error: "Not authorised to submit to this dispute" };
   }
@@ -541,12 +589,12 @@ export async function getSignedUrl(
   // Verify user is a party to the dispute
   const { data: dispute } = await supabase
     .from("disputes")
-    .select("initiating_party_id, responding_party_id")
+    .select("initiating_party_id, responding_party_id, responding_party_email")
     .eq("id", file.dispute_id)
     .is("deleted_at", null)
     .single();
 
-  if (!dispute || !getUserRole(dispute, user.id)) {
+  if (!dispute || !getUserRole(dispute, user.id, user.email)) {
     return { error: "Not authorised to access this file" };
   }
 

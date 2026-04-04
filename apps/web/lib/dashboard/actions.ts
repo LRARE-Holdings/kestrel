@@ -34,7 +34,7 @@ export async function getDashboardData() {
         "id, reference_number, subject, status, dispute_type, amount_disputed, currency, responding_party_email, response_deadline, created_at, updated_at"
       )
       .or(
-        `initiating_party_id.eq.${user.id},responding_party_id.eq.${user.id}`
+        `initiating_party_id.eq.${user.id},responding_party_id.eq.${user.id},and(responding_party_id.is.null,responding_party_email.ilike.${user.email})`
       )
       .is("deleted_at", null)
       .order("updated_at", { ascending: false }),

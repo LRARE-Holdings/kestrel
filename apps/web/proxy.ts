@@ -2,15 +2,30 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createSupabaseProxyClient } from "@kestrel/shared/supabase/middleware";
 
 export async function proxy(request: NextRequest) {
-  // Supabase sends auth codes to the Site URL root — forward to the callback handler
+  // Supabase sends auth codes to the Site URL root — forward to the callback handler.
+  // Preserve ALL query params (e.g. redirect=/update-password for recovery flow).
   const code = request.nextUrl.searchParams.get("code");
   if (code && request.nextUrl.pathname === "/") {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/callback";
+    // All existing searchParams (code, redirect, etc.) are already on the cloned URL
     return NextResponse.redirect(url);
   }
 
   const { supabase, response, user } = await createSupabaseProxyClient(request);
+
+  // The update-password page requires authentication (you need a recovery session)
+  // but must NOT redirect to dashboard — the user needs to set their new password first.
+  if (request.nextUrl.pathname === "/update-password") {
+    if (!user) {
+      // No session — they can't update a password without a recovery session
+      const url = request.nextUrl.clone();
+      url.pathname = "/reset-password";
+      return NextResponse.redirect(url);
+    }
+    // Authenticated via recovery link — let them through to set their password
+    return response;
+  }
 
   // Protected routes: redirect to sign-in if not authenticated
   const isAppRoute = request.nextUrl.pathname.startsWith("/dashboard") ||
@@ -26,7 +41,17 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // If signed in and visiting auth pages, redirect to dashboard
+  // SECURITY: If a recovery session is active (cookie set by auth/callback or auth/confirm),
+  // block access to ALL protected routes. The user MUST set a new password first.
+  // This prevents clicking a reset link and navigating straight to /dashboard.
+  if (isAppRoute && request.cookies.get("kestrel_password_recovery")?.value === "true") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/update-password";
+    return NextResponse.redirect(url);
+  }
+
+  // If signed in and visiting auth pages (sign-in, sign-up, reset-password),
+  // redirect to dashboard. Does NOT include /update-password (handled above).
   const isAuthPage = request.nextUrl.pathname === "/sign-in" ||
     request.nextUrl.pathname === "/sign-up" ||
     request.nextUrl.pathname === "/reset-password";

@@ -11,9 +11,19 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // Password recovery — send straight to update-password, skip everything else
+      // Password recovery — set a flag cookie and redirect to update-password.
+      // The cookie prevents the user from navigating to the dashboard (or any
+      // other protected route) until they have actually set a new password.
       if (redirectTo === "/update-password") {
-        return NextResponse.redirect(`${origin}/update-password`);
+        const res = NextResponse.redirect(`${origin}/update-password`);
+        res.cookies.set("kestrel_password_recovery", "true", {
+          path: "/",
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 60 * 15, // 15 minutes — generous limit for setting a new password
+        });
+        return res;
       }
 
       // Check if user has a profile (onboarding completed)

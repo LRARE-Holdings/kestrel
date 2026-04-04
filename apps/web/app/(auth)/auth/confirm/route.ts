@@ -13,9 +13,18 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.verifyOtp({ type, token_hash });
 
     if (!error) {
-      // Password recovery — redirect to update-password page
+      // Password recovery — set a flag cookie and redirect to update-password.
+      // The cookie prevents navigating to protected routes until password is set.
       if (type === "recovery") {
-        return NextResponse.redirect(`${origin}/update-password`);
+        const res = NextResponse.redirect(`${origin}/update-password`);
+        res.cookies.set("kestrel_password_recovery", "true", {
+          path: "/",
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 60 * 15, // 15 minutes
+        });
+        return res;
       }
 
       // Check if user needs onboarding (same logic as callback route)

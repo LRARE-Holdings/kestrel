@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@kestrel/shared/supabase/server";
 
@@ -109,12 +110,22 @@ export async function updatePassword(formData: FormData) {
     return { error: error.message };
   }
 
+  // Clear the recovery flag — the user has set their new password and
+  // is now allowed to access protected routes normally.
+  const cookieStore = await cookies();
+  cookieStore.delete("kestrel_password_recovery");
+
   return { success: true };
 }
 
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
+
+  // Clear any leftover recovery flag
+  const cookieStore = await cookies();
+  cookieStore.delete("kestrel_password_recovery");
+
   redirect("/");
 }
 

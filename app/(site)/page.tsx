@@ -273,10 +273,10 @@ export default function HomePage() {
             <ScrollFade direction="up" delay={0.3} distance={20}>
               <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
                 <Link href="/tools">
-                  <Button size="lg" className="min-w-[180px] bg-cream text-ink hover:bg-white">Explore free tools</Button>
+                  <Button size="lg" className="min-w-[180px] bg-cream text-ink shadow-[0_2px_12px_rgba(246,243,238,0.25)] transition-all duration-300 hover:bg-white hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(246,243,238,0.35)]">Explore free tools</Button>
                 </Link>
                 <Link href="/sign-in">
-                  <Button variant="ghost" size="lg" className="min-w-[180px] border border-cream/30 !text-cream hover:bg-cream/10">Create account</Button>
+                  <Button variant="ghost" size="lg" className="min-w-[180px] border border-cream/25 !text-cream transition-all duration-300 hover:border-cream/50 hover:bg-cream/10 hover:-translate-y-0.5">Create account</Button>
                 </Link>
               </div>
             </ScrollFade>

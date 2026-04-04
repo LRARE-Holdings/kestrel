@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
-import { resend } from "@kestrel/shared/email/client";
+import { getResend } from "@kestrel/shared/email/client";
 import { adminDigestEmail } from "@/lib/email/templates/admin-digest";
 
 /**
@@ -123,7 +123,7 @@ export async function GET(request: NextRequest) {
     // 6. Send to all admins
     const results = await Promise.allSettled(
       adminEmails.map((email) =>
-        resend.emails.send({
+        getResend().emails.send({
           from: `Kestrel <admin@${process.env.RESEND_FROM_DOMAIN || "kestrel.pellar.co.uk"}>`,
           to: email,
           subject,

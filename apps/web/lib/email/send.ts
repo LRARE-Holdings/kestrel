@@ -1,4 +1,4 @@
-import { resend } from "./client";
+import { getResend } from "./client";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
 
 /** Placeholder inserted by emailLayout — replaced with a real code before sending. */
@@ -84,7 +84,7 @@ export async function sendDisputeEmail(
 
   // 3. Send the email via Resend
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: `Kestrel <notifications@${process.env.RESEND_FROM_DOMAIN || "kestrel.pellar.co.uk"}>`,
       to: params.to,
       subject: params.subject,

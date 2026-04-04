@@ -151,9 +151,6 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <p className="animate-fade-in delay-700 mt-12 text-xs tracking-wide text-text-muted">
-            Free forever &middot; No sign-up required &middot; Built on English law
-          </p>
         </div>
       </section>
 

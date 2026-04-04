@@ -2,6 +2,14 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createSupabaseProxyClient } from "@kestrel/shared/supabase/middleware";
 
 export async function proxy(request: NextRequest) {
+  // Supabase sends auth codes to the Site URL root — forward to the callback handler
+  const code = request.nextUrl.searchParams.get("code");
+  if (code && request.nextUrl.pathname === "/") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/callback";
+    return NextResponse.redirect(url);
+  }
+
   const { supabase, response, user } = await createSupabaseProxyClient(request);
 
   // Protected routes: redirect to sign-in if not authenticated

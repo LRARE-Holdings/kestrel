@@ -1,4 +1,5 @@
 import { emailLayout } from "./layout";
+import { SITE_URL } from "@kestrel/shared/constants";
 import type { EmailResult } from "../types";
 
 interface SubmissionReceivedParams {
@@ -34,7 +35,6 @@ export function submissionReceivedEmail(
     submissionType,
   } = params;
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
   const typeLabel =
     SUBMISSION_TYPE_LABELS[submissionType] || submissionType.replace(/_/g, " ");
 
@@ -58,7 +58,7 @@ export function submissionReceivedEmail(
       preheader: `${submitterName} has submitted a ${typeLabel} on dispute ${referenceNumber}`,
       content,
       ctaText: "View dispute",
-      ctaUrl: `${siteUrl}/disputes/${disputeId}`,
+      ctaUrl: `${SITE_URL}/disputes/${disputeId}`,
     }),
   };
 }

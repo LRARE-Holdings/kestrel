@@ -1,3 +1,5 @@
+import { SITE_URL, EMAILS } from "../../constants";
+
 const FONT_STACK =
   "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif";
 
@@ -44,7 +46,7 @@ export function emailLayout(params: EmailLayoutParams): string {
   const { title, preheader, content, ctaText, ctaUrl } = params;
   const verificationCode = params.verificationCode ?? VERIFICATION_CODE_PLACEHOLDER;
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
+  const siteUrl = SITE_URL;
 
   const ctaBlock =
     ctaText && ctaUrl
@@ -277,7 +279,7 @@ export function emailLayout(params: EmailLayoutParams): string {
                   ">
                     <strong style="color: ${COLORS.textMuted};">Protect yourself from scams.</strong>
                     Kestrel will never ask for passwords, bank details, or payment outside our platform. If you receive a suspicious email claiming to be from Kestrel, do not click any links &mdash; forward it to
-                    <a href="mailto:security@kestrel.law" style="color: ${COLORS.kestrel}; text-decoration: underline;">security@kestrel.law</a>
+                    <a href="mailto:${EMAILS.security}" style="color: ${COLORS.kestrel}; text-decoration: underline;">${EMAILS.security}</a>
                     and verify it at
                     <a href="${siteUrl}/verify" style="color: ${COLORS.kestrel}; text-decoration: underline;">${siteUrl.replace("https://", "")}/verify</a>.
                   </td>

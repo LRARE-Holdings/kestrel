@@ -1,4 +1,5 @@
 import { emailLayout } from "./layout";
+import { SITE_URL } from "@kestrel/shared/constants";
 import type { EmailResult } from "../types";
 
 interface ProposalResponseParams {
@@ -18,7 +19,6 @@ export function proposalResponseEmail(
   const { recipientName, responderName, referenceNumber, disputeId, accepted } =
     params;
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
   const outcome = accepted ? "accepted" : "rejected";
 
   const acceptedContent = `
@@ -55,7 +55,7 @@ export function proposalResponseEmail(
       preheader: `${responderName} has ${outcome} your settlement proposal on dispute ${referenceNumber}`,
       content: accepted ? acceptedContent : rejectedContent,
       ctaText: "View dispute",
-      ctaUrl: `${siteUrl}/disputes/${disputeId}`,
+      ctaUrl: `${SITE_URL}/disputes/${disputeId}`,
     }),
   };
 }

@@ -1,3 +1,5 @@
+import { KESTREL_DOMAIN } from "@kestrel/shared/constants";
+
 /**
  * Deterministic consequence text templates per notice type.
  * No AI generation -- all text is human-authored.
@@ -25,4 +27,4 @@ export function getConsequenceTemplate(noticeType: string): string {
  * when the user has opted in.
  */
 export const KESTREL_DISPUTE_CLAUSE =
-  "Before commencing formal legal proceedings, both parties agree to attempt to resolve any dispute arising from this matter through Kestrel's online dispute resolution platform (kestrel.law). This is a voluntary, non-binding process designed to facilitate a fair and efficient resolution without the cost and delay of court proceedings.";
+  `Before commencing formal legal proceedings, both parties agree to attempt to resolve any dispute arising from this matter through Kestrel's online dispute resolution platform (${KESTREL_DOMAIN}). This is a voluntary, non-binding process designed to facilitate a fair and efficient resolution without the cost and delay of court proceedings.`;

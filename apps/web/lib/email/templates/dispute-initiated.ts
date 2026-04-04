@@ -1,4 +1,5 @@
 import { emailLayout } from "./layout";
+import { SITE_URL } from "@kestrel/shared/constants";
 import type { EmailResult } from "../types";
 
 interface DisputeInitiatedParams {
@@ -41,7 +42,6 @@ export function disputeInitiatedEmail(
     responseDeadline,
   } = params;
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
   const typeLabel = DISPUTE_TYPE_LABELS[disputeType] || "Dispute";
 
   const amountRow = amount
@@ -124,7 +124,7 @@ export function disputeInitiatedEmail(
       preheader: `Reference ${referenceNumber} — your ${typeLabel.toLowerCase()} has been submitted and the other party has been notified`,
       content,
       ctaText: "View your dispute",
-      ctaUrl: `${siteUrl}/disputes`,
+      ctaUrl: `${SITE_URL}/disputes`,
     }),
   };
 }

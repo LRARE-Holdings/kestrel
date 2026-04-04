@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { EMAILS } from "@kestrel/shared/constants";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — Kestrel",
@@ -87,10 +88,10 @@ export default function PrivacyPage() {
               port your personal data. You can exercise these rights through your
               account settings or by contacting{" "}
               <a
-                href="mailto:privacy@kestrel.law"
+                href={`mailto:${EMAILS.privacy}`}
                 className="font-medium text-kestrel hover:text-kestrel-hover transition-colors"
               >
-                privacy@kestrel.law
+                {EMAILS.privacy}
               </a>
               .
             </p>
@@ -110,10 +111,10 @@ export default function PrivacyPage() {
             <p className="mt-3">
               For data protection enquiries:{" "}
               <a
-                href="mailto:privacy@kestrel.law"
+                href={`mailto:${EMAILS.privacy}`}
                 className="font-medium text-kestrel hover:text-kestrel-hover transition-colors"
               >
-                privacy@kestrel.law
+                {EMAILS.privacy}
               </a>
             </p>
           </section>

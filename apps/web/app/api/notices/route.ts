@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
 import { noticeSchema } from "@/lib/notices/schemas";
 import { getResend } from "@kestrel/shared/email/client";
+import { SITE_URL, EMAILS } from "@kestrel/shared/constants";
 import {
   noticeSentToRecipientEmail,
   noticeSentConfirmationEmail,
@@ -56,9 +57,8 @@ export async function POST(request: Request) {
     }
 
     // Send email notifications (fire-and-forget — never block the response)
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
-    const viewUrl = `${siteUrl}/tools/notices/${notice.access_token}`;
-    const fromAddress = `Kestrel <notifications@${process.env.RESEND_FROM_DOMAIN || "kestrel.pellar.co.uk"}>`;
+    const viewUrl = `${SITE_URL}/tools/notices/${notice.access_token}`;
+    const fromAddress = `Kestrel <${EMAILS.notifications}>`;
 
     const formattedDeadline = data.responseDeadline
       ? new Date(data.responseDeadline).toLocaleDateString("en-GB", {

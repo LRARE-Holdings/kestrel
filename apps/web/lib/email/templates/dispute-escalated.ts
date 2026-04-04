@@ -1,4 +1,5 @@
 import { emailLayout } from "./layout";
+import { SITE_URL } from "@kestrel/shared/constants";
 import type { EmailResult } from "../types";
 
 interface DisputeEscalatedParams {
@@ -21,8 +22,6 @@ export function disputeEscalatedEmail(
 ): EmailResult {
   const { recipientName, escalatorName, referenceNumber, disputeId, reason } =
     params;
-
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
 
   const content = `
     <p style="margin: 0 0 16px 0;">Dear ${recipientName},</p>
@@ -69,7 +68,7 @@ export function disputeEscalatedEmail(
       preheader: `Dispute ${referenceNumber} has been escalated`,
       content,
       ctaText: "View dispute",
-      ctaUrl: `${siteUrl}/disputes/${disputeId}`,
+      ctaUrl: `${SITE_URL}/disputes/${disputeId}`,
     }),
   };
 }

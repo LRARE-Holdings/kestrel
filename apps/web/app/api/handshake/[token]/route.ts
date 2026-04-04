@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
 import { handshakeResponseSchema } from "@/lib/handshake/schemas";
 import { getResend } from "@kestrel/shared/email/client";
+import { SITE_URL, EMAILS } from "@kestrel/shared/constants";
 import { handshakeResponseEmail } from "@/lib/email/templates/handshake-response";
 
 const UUID_REGEX =
@@ -173,8 +174,7 @@ export async function POST(
     }
 
     // Send email notification to Party A (fire-and-forget)
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
-    const viewUrl = `${siteUrl}/tools/handshake/${handshake.access_token}`;
+    const viewUrl = `${SITE_URL}/tools/handshake/${handshake.access_token}`;
 
     const email = handshakeResponseEmail({
       partyAName: handshake.party_a_name,
@@ -189,7 +189,7 @@ export async function POST(
 
     getResend()
       .emails.send({
-        from: `Kestrel <notifications@${process.env.RESEND_FROM_DOMAIN || "kestrel.pellar.co.uk"}>`,
+        from: `Kestrel <${EMAILS.notifications}>`,
         to: handshake.party_a_email,
         subject: email.subject,
         html: email.html,

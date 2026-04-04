@@ -1,4 +1,5 @@
 import { emailLayout } from "@kestrel/shared/email/templates/layout";
+import { ADMIN_URL } from "@kestrel/shared/constants";
 
 interface RecentSignUp {
   display_name: string;
@@ -311,10 +312,7 @@ export function adminDigestEmail(data: AdminDigestData): {
       </tr>
     </table>`;
 
-  const adminUrl =
-    process.env.NEXT_PUBLIC_ADMIN_URL ||
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    "https://admin.kestrel.pellar.co.uk";
+  const adminUrl = ADMIN_URL;
 
   const html = emailLayout({
     title: "Admin Digest",

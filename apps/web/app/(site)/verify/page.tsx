@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { EMAILS } from "@kestrel/shared/constants";
 
 interface VerificationResult {
   valid: boolean;
@@ -158,7 +159,7 @@ export default function VerifyPage() {
                   </p>
                   <p className="text-sm text-text-secondary leading-relaxed">
                     {result.error ||
-                      "This code does not match any email sent by Kestrel. If you believe the email is fraudulent, do not click any links in it and forward it to security@kestrel.law."}
+                      `This code does not match any email sent by Kestrel. If you believe the email is fraudulent, do not click any links in it and forward it to ${EMAILS.security}.`}
                   </p>
                 </div>
               </div>

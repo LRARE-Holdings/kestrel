@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { EMAILS } from "@kestrel/shared/constants";
 
 export const metadata: Metadata = {
   title: "Contact — Kestrel",
@@ -23,10 +24,10 @@ export default function ContactPage() {
               For general enquiries, support, or partnership opportunities.
             </p>
             <a
-              href="mailto:hello@kestrel.law"
+              href={`mailto:${EMAILS.hello}`}
               className="mt-3 inline-block text-sm font-medium text-kestrel hover:text-kestrel-hover transition-colors"
             >
-              hello@kestrel.law
+              {EMAILS.hello}
             </a>
           </div>
 
@@ -45,10 +46,10 @@ export default function ContactPage() {
             For data protection enquiries, subject access requests, or to exercise
             your rights under UK GDPR, please email{" "}
             <a
-              href="mailto:privacy@kestrel.law"
+              href={`mailto:${EMAILS.privacy}`}
               className="font-medium text-kestrel hover:text-kestrel-hover transition-colors"
             >
-              privacy@kestrel.law
+              {EMAILS.privacy}
             </a>
             .
           </p>

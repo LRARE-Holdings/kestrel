@@ -1,3 +1,32 @@
+// ── Site Configuration ──────────────────────────────────────────────────────
+// Single source of truth for domain references. Change these when moving
+// to the final domain — every email, clause, and page references these.
+
+/** The primary domain (no protocol). Change this ONE value when you buy the domain. */
+export const KESTREL_DOMAIN = "kestrel.pellar.co.uk";
+
+/** Full site URL, respects env var override for local dev / preview deploys. */
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || `https://${KESTREL_DOMAIN}`;
+
+/** Admin panel URL. */
+export const ADMIN_URL =
+  process.env.NEXT_PUBLIC_ADMIN_URL || `https://admin.${KESTREL_DOMAIN}`;
+
+/** Resend "from" domain for transactional email. */
+export const EMAIL_FROM_DOMAIN =
+  process.env.RESEND_FROM_DOMAIN || KESTREL_DOMAIN;
+
+/** Standard email addresses — derived from the domain. */
+export const EMAILS = {
+  notifications: `notifications@${EMAIL_FROM_DOMAIN}`,
+  auth: `auth@${EMAIL_FROM_DOMAIN}`,
+  admin: `admin@${EMAIL_FROM_DOMAIN}`,
+  security: `security@${KESTREL_DOMAIN}`,
+  privacy: `privacy@${KESTREL_DOMAIN}`,
+  hello: `hello@${KESTREL_DOMAIN}`,
+} as const;
+
 // ── Shared Dropdown Options ─────────────────────────────────────────────────
 // Used by onboarding, settings, and profile forms.
 

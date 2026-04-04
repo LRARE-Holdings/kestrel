@@ -1,4 +1,5 @@
 import type { AssembledDocument, DocumentSection, PartyDetails } from "@/lib/clauses/types";
+import { KESTREL_DOMAIN } from "@kestrel/shared/constants";
 import {
   getDisputeResolutionClause,
   getGoverningLawClause,
@@ -187,7 +188,7 @@ export function renderDocumentToText(doc: AssembledDocument): string {
   lines.push("---");
   lines.push("");
   lines.push(
-    "This document was generated using Kestrel (kestrel.law). It is provided as a starting point and should be reviewed by a qualified legal professional before execution.",
+    `This document was generated using Kestrel (${KESTREL_DOMAIN}). It is provided as a starting point and should be reviewed by a qualified legal professional before execution.`,
   );
 
   return lines.join("\n");

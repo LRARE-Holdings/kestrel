@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Badge, type BadgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { KESTREL_DOMAIN } from "@kestrel/shared/constants";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -47,7 +48,7 @@ interface Project {
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const KESTREL_DISPUTE_CLAUSE =
-  "If a milestone is disputed, both parties agree to attempt resolution through Kestrel's online dispute resolution platform (kestrel.law) before commencing formal legal proceedings. This is a voluntary, non-binding process designed to facilitate a fair and efficient resolution.";
+  `If a milestone is disputed, both parties agree to attempt resolution through Kestrel's online dispute resolution platform (${KESTREL_DOMAIN}) before commencing formal legal proceedings. This is a voluntary, non-binding process designed to facilitate a fair and efficient resolution.`;
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-GB", {
@@ -470,7 +471,7 @@ export function TrackerView({
 
       {/* Footer */}
       <p className="text-xs text-text-muted">
-        This milestone tracker was created using Kestrel (kestrel.law). It is a
+        This milestone tracker was created using Kestrel ({KESTREL_DOMAIN}). It is a
         shared record of project milestones and does not constitute a binding
         agreement unless incorporated into a contract. This tool does not
         provide legal advice.

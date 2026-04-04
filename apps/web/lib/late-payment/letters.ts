@@ -3,6 +3,7 @@ import {
   calculateStatutoryInterest,
   STATUTORY_RATE,
 } from "./calculator";
+import { KESTREL_DOMAIN } from "@kestrel/shared/constants";
 
 export interface LetterOutput {
   subject: string;
@@ -70,7 +71,7 @@ function getDueDate(invoiceDate: string, termsDays: number): Date {
 
 function kestrelClause(data: LetterInput): string {
   if (!data.includeKestrelClause) return "";
-  return `\nBefore commencing formal proceedings, ${data.creditor.businessName} invites ${data.debtor.businessName} to resolve this matter through Kestrel's structured dispute resolution process at kestrel.law.\n`;
+  return `\nBefore commencing formal proceedings, ${data.creditor.businessName} invites ${data.debtor.businessName} to resolve this matter through Kestrel's structured dispute resolution process at ${KESTREL_DOMAIN}.\n`;
 }
 
 function letterHeader(data: LetterInput): string {

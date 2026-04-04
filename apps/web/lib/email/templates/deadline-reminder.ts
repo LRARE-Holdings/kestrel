@@ -1,4 +1,5 @@
 import { emailLayout } from "./layout";
+import { SITE_URL } from "@kestrel/shared/constants";
 import type { EmailResult } from "../types";
 
 interface DeadlineReminderParams {
@@ -21,8 +22,6 @@ export function deadlineReminderEmail(
   params: DeadlineReminderParams,
 ): EmailResult {
   const { recipientName, referenceNumber, disputeId, daysRemaining } = params;
-
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
 
   let subject: string;
   let title: string;
@@ -131,7 +130,7 @@ export function deadlineReminderEmail(
           : `${daysRemaining} day${daysRemaining === 1 ? "" : "s"} remaining to respond to ${referenceNumber}`,
       content: bodyText,
       ctaText: "Respond now",
-      ctaUrl: `${siteUrl}/disputes/${disputeId}`,
+      ctaUrl: `${SITE_URL}/disputes/${disputeId}`,
     }),
   };
 }

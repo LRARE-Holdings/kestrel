@@ -1,4 +1,5 @@
 import { emailLayout } from "./layout";
+import { SITE_URL } from "@kestrel/shared/constants";
 import type { EmailResult } from "../types";
 
 interface DisputeResolvedParams {
@@ -16,8 +17,6 @@ export function disputeResolvedEmail(
 ): EmailResult {
   const { recipientName, referenceNumber, disputeId, resolutionSummary } =
     params;
-
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
 
   const summaryBlock = resolutionSummary
     ? `
@@ -56,7 +55,7 @@ export function disputeResolvedEmail(
       preheader: `Dispute ${referenceNumber} has been resolved`,
       content,
       ctaText: "View resolution",
-      ctaUrl: `${siteUrl}/disputes/${disputeId}`,
+      ctaUrl: `${SITE_URL}/disputes/${disputeId}`,
     }),
   };
 }

@@ -1,4 +1,5 @@
 import type { ProfessionalInput } from "../schemas";
+import { KESTREL_DOMAIN } from "@kestrel/shared/constants";
 
 interface Section {
   title: string;
@@ -117,7 +118,7 @@ ${data.privacyPolicyUrl ? `For full details of how we handle personal data, plea
   if (data.includeDisputeClause) {
     sections.push({
       title: "Dispute Resolution",
-      content: `If a dispute arises in connection with the services or these Terms, both parties agree to first attempt to resolve the dispute through Kestrel's structured online dispute resolution process (kestrel.law) before pursuing mediation, arbitration, or court proceedings. Either party may initiate a dispute on Kestrel by filing a structured dispute notice. Both parties agree to engage in good faith with the Kestrel process for a minimum period of 30 days before pursuing other remedies. This clause does not prevent either party from seeking urgent injunctive relief where necessary.`,
+      content: `If a dispute arises in connection with the services or these Terms, both parties agree to first attempt to resolve the dispute through Kestrel's structured online dispute resolution process (${KESTREL_DOMAIN}) before pursuing mediation, arbitration, or court proceedings. Either party may initiate a dispute on Kestrel by filing a structured dispute notice. Both parties agree to engage in good faith with the Kestrel process for a minimum period of 30 days before pursuing other remedies. This clause does not prevent either party from seeking urgent injunctive relief where necessary.`,
     });
   }
 

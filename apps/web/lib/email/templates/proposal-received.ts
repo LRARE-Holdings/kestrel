@@ -1,4 +1,5 @@
 import { emailLayout } from "./layout";
+import { SITE_URL } from "@kestrel/shared/constants";
 import type { EmailResult } from "../types";
 
 interface ProposalReceivedParams {
@@ -15,8 +16,6 @@ export function proposalReceivedEmail(
   params: ProposalReceivedParams,
 ): EmailResult {
   const { recipientName, proposerName, referenceNumber, disputeId } = params;
-
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
 
   const content = `
     <p style="margin: 0 0 16px 0;">Dear ${recipientName},</p>
@@ -39,7 +38,7 @@ export function proposalReceivedEmail(
       preheader: `${proposerName} has proposed a settlement on dispute ${referenceNumber}`,
       content,
       ctaText: "Review proposal",
-      ctaUrl: `${siteUrl}/disputes/${disputeId}`,
+      ctaUrl: `${SITE_URL}/disputes/${disputeId}`,
     }),
   };
 }

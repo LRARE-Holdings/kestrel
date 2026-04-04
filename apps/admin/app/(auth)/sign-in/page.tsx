@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { signInWithPassword } from "@/lib/auth/actions";
+import { EMAILS } from "@kestrel/shared/constants";
 
 export default function SignInPage() {
   const [state, formAction, isPending] = useActionState(signInWithPassword, null);
@@ -19,7 +20,7 @@ export default function SignInPage() {
           required
           autoComplete="email"
           autoFocus
-          placeholder="admin@kestrel.law"
+          placeholder={EMAILS.admin}
           className="w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-text-muted outline-none transition-colors focus:border-kestrel focus:ring-1 focus:ring-kestrel"
         />
       </div>

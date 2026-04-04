@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
+import { EMAILS } from "@kestrel/shared/constants";
 
 const BOE_RATE_URL =
   "https://www.bankofengland.co.uk/boeapps/database/Bank-Rate.asp";
@@ -21,7 +22,7 @@ export async function GET(request: Request) {
     const response = await fetch(BOE_RATE_URL, {
       headers: {
         "User-Agent":
-          "Kestrel/1.0 (Legal toolkit; base rate monitoring; contact@kestrel.law)",
+          `Kestrel/1.0 (Legal toolkit; base rate monitoring; ${EMAILS.hello})`,
       },
     });
 

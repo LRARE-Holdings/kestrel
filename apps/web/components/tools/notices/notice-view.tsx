@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge, type BadgeVariant } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { KESTREL_DOMAIN } from "@kestrel/shared/constants";
 
 interface Notice {
   id: string;
@@ -150,7 +151,7 @@ export function NoticeView({ notice: initialNotice }: { notice: Notice }) {
     }
     lines.push("");
     lines.push("---");
-    lines.push(`Notice created via Kestrel (kestrel.law) on ${formatDateTime(notice.created_at)}`);
+    lines.push(`Notice created via Kestrel (${KESTREL_DOMAIN}) on ${formatDateTime(notice.created_at)}`);
     return lines.join("\n");
   }
 
@@ -393,7 +394,7 @@ export function NoticeView({ notice: initialNotice }: { notice: Notice }) {
 
       {/* Footer */}
       <p className="text-xs text-text-muted">
-        This notice was created using Kestrel (kestrel.law). It is a formal
+        This notice was created using Kestrel ({KESTREL_DOMAIN}). It is a formal
         record and should be treated accordingly. This tool does not constitute
         legal advice.
       </p>

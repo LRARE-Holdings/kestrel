@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
 import { createHandshakeSchema } from "@/lib/handshake/schemas";
 import { getResend } from "@kestrel/shared/email/client";
+import { SITE_URL, EMAILS } from "@kestrel/shared/constants";
 import { handshakeCreatedEmail } from "@/lib/email/templates/handshake-created";
 
 export async function POST(request: Request) {
@@ -75,8 +76,7 @@ export async function POST(request: Request) {
     }
 
     // Send email notification to Party B (fire-and-forget)
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
-    const shareUrl = `${siteUrl}/tools/handshake/${handshake.access_token}`;
+    const shareUrl = `${SITE_URL}/tools/handshake/${handshake.access_token}`;
 
     const email = handshakeCreatedEmail({
       partyBName: partyB.name,
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
 
     getResend()
       .emails.send({
-        from: `Kestrel <notifications@${process.env.RESEND_FROM_DOMAIN || "kestrel.pellar.co.uk"}>`,
+        from: `Kestrel <${EMAILS.notifications}>`,
         to: partyB.email,
         subject: email.subject,
         html: email.html,

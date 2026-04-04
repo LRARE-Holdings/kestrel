@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
 import { getResend } from "@kestrel/shared/email/client";
+import { EMAILS } from "@kestrel/shared/constants";
 import { adminDigestEmail } from "@/lib/email/templates/admin-digest";
 
 /**
@@ -124,7 +125,7 @@ export async function GET(request: NextRequest) {
     const results = await Promise.allSettled(
       adminEmails.map((email) =>
         getResend().emails.send({
-          from: `Kestrel <admin@${process.env.RESEND_FROM_DOMAIN || "kestrel.pellar.co.uk"}>`,
+          from: `Kestrel <${EMAILS.admin}>`,
           to: email,
           subject,
           html,

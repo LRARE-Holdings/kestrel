@@ -1,4 +1,5 @@
 import { emailLayout } from "./layout";
+import { SITE_URL } from "@kestrel/shared/constants";
 import type { EmailResult } from "../types";
 
 interface DisputeFiledParams {
@@ -45,7 +46,6 @@ export function disputeFiledEmail(params: DisputeFiledParams): EmailResult {
     respondentIsExistingUser = false,
   } = params;
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kestrel.law";
   const typeLabel = DISPUTE_TYPE_LABELS[disputeType] || "Dispute";
   const authPath = respondentIsExistingUser ? "sign-in" : "sign-up";
 
@@ -129,7 +129,7 @@ export function disputeFiledEmail(params: DisputeFiledParams): EmailResult {
 
     <p style="margin: 0 0 8px 0;">
       If you have any questions about this process, our
-      <a href="${siteUrl}/contact" style="color: #2B5C4F; text-decoration: underline;">support team</a>
+      <a href="${SITE_URL}/contact" style="color: #2B5C4F; text-decoration: underline;">support team</a>
       is available to help. Kestrel does not take sides — we facilitate
       fair resolution between both parties.
     </p>
@@ -142,7 +142,7 @@ export function disputeFiledEmail(params: DisputeFiledParams): EmailResult {
       preheader: `${initiatorName} of ${initiatorBusiness} has filed a ${typeLabel.toLowerCase()} — reference ${referenceNumber}`,
       content,
       ctaText: "Review and respond",
-      ctaUrl: `${siteUrl}/${authPath}?redirect=/disputes/${encodeURIComponent(disputeId)}`,
+      ctaUrl: `${SITE_URL}/${authPath}?redirect=/disputes/${encodeURIComponent(disputeId)}`,
     }),
   };
 }

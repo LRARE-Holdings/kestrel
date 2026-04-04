@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { EMAILS } from "@kestrel/shared/constants";
 
 export const metadata: Metadata = {
   title: "Terms of Service — Kestrel",
@@ -79,10 +80,10 @@ export default function TermsPage() {
             <p className="mt-3">
               Questions about these terms?{" "}
               <a
-                href="mailto:hello@kestrel.law"
+                href={`mailto:${EMAILS.hello}`}
                 className="font-medium text-kestrel hover:text-kestrel-hover transition-colors"
               >
-                hello@kestrel.law
+                {EMAILS.hello}
               </a>
             </p>
           </section>

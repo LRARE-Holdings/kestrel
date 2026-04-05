@@ -82,7 +82,7 @@ export async function GET(request: Request) {
 
     if (error) {
       return NextResponse.json(
-        { error: "Failed to insert rate", detail: error.message },
+        { error: "Failed to insert rate" },
         { status: 500 },
       );
     }
@@ -96,7 +96,7 @@ export async function GET(request: Request) {
   } catch (err) {
     console.error("BoE rate fetch error:", err);
     return NextResponse.json(
-      { error: "Internal error", detail: String(err) },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }

@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "packageManager": "npm@11.11.0",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
@@ -16,5 +19,9 @@
   },
   "devDependencies": {
     "turbo": "^2"
+  },
+  "dependencies": {
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.37.0"
   }
 }

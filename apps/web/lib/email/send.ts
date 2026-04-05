@@ -27,8 +27,11 @@ interface SendDisputeEmailParams {
  */
 function generateVerificationCode(): string {
   const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-  const segment = () =>
-    Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  const segment = () => {
+    const bytes = new Uint8Array(4);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, (b) => chars[b % chars.length]).join("");
+  };
   return `KV-${segment()}-${segment()}`;
 }
 

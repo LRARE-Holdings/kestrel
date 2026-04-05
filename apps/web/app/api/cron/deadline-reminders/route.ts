@@ -136,7 +136,7 @@ export async function GET(request: Request) {
   } catch (err) {
     console.error("[cron/deadline-reminders] Unexpected error:", err);
     return NextResponse.json(
-      { error: "Internal error", detail: String(err) },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }

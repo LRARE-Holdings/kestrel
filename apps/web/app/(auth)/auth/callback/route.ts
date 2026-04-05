@@ -47,7 +47,9 @@ export async function GET(request: Request) {
         }
       }
 
-      const destination = redirectTo || "/dashboard";
+      const isInternalPath =
+        redirectTo?.startsWith("/") && !redirectTo.startsWith("//") && !redirectTo.includes("\\");
+      const destination = isInternalPath ? redirectTo : "/dashboard";
       return NextResponse.redirect(`${origin}${destination}`);
     }
   }

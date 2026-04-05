@@ -3,7 +3,13 @@
 import { createClient } from "@kestrel/shared/supabase/server";
 import { hashContent } from "@/lib/disputes/hash";
 import { disputeFilingSchema, submissionSchema, escalationSchema } from "@/lib/disputes/schemas";
-import { RESPONSE_DEADLINE_DAYS, STATUS_TRANSITIONS } from "@/lib/disputes/constants";
+import {
+  RESPONSE_DEADLINE_DAYS,
+  STATUS_TRANSITIONS,
+  ALLOWED_EVIDENCE_TYPES,
+  ALLOWED_EVIDENCE_EXTENSIONS,
+  MAX_FILE_SIZE_BYTES,
+} from "@/lib/disputes/constants";
 import { sendDisputeEmail } from "@kestrel/shared/email/send";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
 import { disputeInitiatedEmail } from "@/lib/email/templates/dispute-initiated";
@@ -1143,6 +1149,20 @@ export async function uploadEvidence(
   for (let i = 0; i < entries.length; i++) {
     const file = entries[i];
     if (!(file instanceof File) || file.size === 0) continue;
+
+    // Server-side validation: file type, extension, and size
+    const ext = `.${file.name.split(".").pop()?.toLowerCase()}`;
+    if (
+      !ALLOWED_EVIDENCE_TYPES.includes(file.type) &&
+      !ALLOWED_EVIDENCE_EXTENSIONS.includes(ext)
+    ) {
+      console.warn(`[evidence] Rejected file type: ${file.type} / ${ext}`);
+      continue;
+    }
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      console.warn(`[evidence] Rejected oversized file: ${file.size} bytes`);
+      continue;
+    }
 
     // Build a storage path: {disputeId}/{uniqueId}_{sanitisedName}
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");

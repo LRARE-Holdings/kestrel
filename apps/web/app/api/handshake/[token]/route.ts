@@ -4,6 +4,8 @@ import { handshakeResponseSchema } from "@/lib/handshake/schemas";
 import { getResend } from "@kestrel/shared/email/client";
 import { SITE_URL, EMAILS } from "@kestrel/shared/constants";
 import { handshakeResponseEmail } from "@/lib/email/templates/handshake-response";
+import { publicRateLimit, applyRateLimit } from "@/lib/security/rate-limit";
+import { validateOrigin } from "@/lib/security/csrf";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -75,6 +77,12 @@ export async function POST(
   { params }: { params: Promise<{ token: string }> },
 ) {
   try {
+    const originError = validateOrigin(request);
+    if (originError) return originError;
+
+    const rateLimitError = await applyRateLimit(request, publicRateLimit());
+    if (rateLimitError) return rateLimitError;
+
     const { token } = await params;
 
     if (!UUID_REGEX.test(token)) {

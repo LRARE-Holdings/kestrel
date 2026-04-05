@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
+import { z } from "zod/v4";
 import { stripe } from "@/lib/stripe/client";
 import { createClient } from "@kestrel/shared/supabase/server";
+import { stripeRateLimit, applyRateLimit } from "@/lib/security/rate-limit";
+
+const checkoutSchema = z.object({
+  priceId: z.string().startsWith("price_", "Invalid price ID"),
+  mode: z.enum(["subscription", "payment", "setup"]).default("subscription"),
+});
 
 export async function POST(request: Request) {
   try {
@@ -13,14 +20,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const { priceId, mode } = await request.json();
+    const rateLimitError = await applyRateLimit(request, stripeRateLimit(), user.id);
+    if (rateLimitError) return rateLimitError;
 
-    if (!priceId) {
+    const body = await request.json();
+    const parsed = checkoutSchema.safeParse(body);
+
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Price ID is required" },
+        { error: "Validation failed", issues: parsed.error.issues },
         { status: 400 },
       );
     }
+
+    const { priceId, mode } = parsed.data;
 
     // Check if user already has a Stripe customer
     const { data: subscription } = await supabase

@@ -51,7 +51,7 @@ export async function POST(
   if (!response.ok) {
     const err = await response.text();
     return NextResponse.json(
-      { error: "AI scoring failed", detail: err },
+      { error: "AI scoring failed" },
       { status: 500 },
     );
   }

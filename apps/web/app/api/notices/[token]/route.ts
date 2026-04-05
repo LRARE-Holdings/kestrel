@@ -2,12 +2,23 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
 import { acknowledgeSchema } from "@/lib/notices/schemas";
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ token: string }> },
 ) {
   try {
     const { token } = await params;
+
+    if (!UUID_REGEX.test(token)) {
+      return NextResponse.json(
+        { error: "Invalid token format" },
+        { status: 400 },
+      );
+    }
+
     const supabase = createServiceClient();
 
     const { data: notice, error } = await supabase
@@ -27,7 +38,7 @@ export async function GET(
   } catch (err) {
     console.error("Notice fetch error:", err);
     return NextResponse.json(
-      { error: "Internal error", detail: String(err) },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }
@@ -39,6 +50,14 @@ export async function POST(
 ) {
   try {
     const { token } = await params;
+
+    if (!UUID_REGEX.test(token)) {
+      return NextResponse.json(
+        { error: "Invalid token format" },
+        { status: 400 },
+      );
+    }
+
     const body = await request.json();
     const parsed = acknowledgeSchema.safeParse(body);
 
@@ -83,7 +102,7 @@ export async function POST(
     if (updateError) {
       console.error("Notice acknowledge error:", updateError);
       return NextResponse.json(
-        { error: "Failed to acknowledge notice", detail: updateError.message },
+        { error: "Failed to acknowledge notice" },
         { status: 500 },
       );
     }
@@ -92,7 +111,7 @@ export async function POST(
   } catch (err) {
     console.error("Notice acknowledge error:", err);
     return NextResponse.json(
-      { error: "Internal error", detail: String(err) },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }

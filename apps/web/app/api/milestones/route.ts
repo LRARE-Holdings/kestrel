@@ -1,9 +1,17 @@
 import { NextResponse } from "next/server";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
 import { createProjectSchema } from "@/lib/milestones/schemas";
+import { publicRateLimit, applyRateLimit } from "@/lib/security/rate-limit";
+import { validateOrigin } from "@/lib/security/csrf";
 
 export async function POST(request: Request) {
   try {
+    const originError = validateOrigin(request);
+    if (originError) return originError;
+
+    const rateLimitError = await applyRateLimit(request, publicRateLimit());
+    if (rateLimitError) return rateLimitError;
+
     const body = await request.json();
     const parsed = createProjectSchema.safeParse(body);
 
@@ -40,7 +48,7 @@ export async function POST(request: Request) {
     if (projectError || !project) {
       console.error("Project insert error:", projectError);
       return NextResponse.json(
-        { error: "Failed to create project", detail: projectError?.message },
+        { error: "Failed to create project" },
         { status: 500 },
       );
     }
@@ -67,7 +75,7 @@ export async function POST(request: Request) {
       // Clean up the project if milestone insert fails
       await supabase.from("projects").delete().eq("id", project.id);
       return NextResponse.json(
-        { error: "Failed to create milestones", detail: milestoneError.message },
+        { error: "Failed to create milestones" },
         { status: 500 },
       );
     }
@@ -76,7 +84,7 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error("Project creation error:", err);
     return NextResponse.json(
-      { error: "Internal error", detail: String(err) },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }

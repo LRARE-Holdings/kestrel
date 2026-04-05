@@ -4,9 +4,17 @@ import { createHandshakeSchema } from "@/lib/handshake/schemas";
 import { getResend } from "@kestrel/shared/email/client";
 import { SITE_URL, EMAILS } from "@kestrel/shared/constants";
 import { handshakeCreatedEmail } from "@/lib/email/templates/handshake-created";
+import { publicRateLimit, applyRateLimit } from "@/lib/security/rate-limit";
+import { validateOrigin } from "@/lib/security/csrf";
 
 export async function POST(request: Request) {
   try {
+    const originError = validateOrigin(request);
+    if (originError) return originError;
+
+    const rateLimitError = await applyRateLimit(request, publicRateLimit());
+    if (rateLimitError) return rateLimitError;
+
     const body = await request.json();
     const parsed = createHandshakeSchema.safeParse(body);
 

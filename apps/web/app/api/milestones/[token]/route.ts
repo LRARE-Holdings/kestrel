@@ -2,12 +2,23 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
 import { updateMilestoneSchema } from "@/lib/milestones/schemas";
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ token: string }> },
 ) {
   try {
     const { token } = await params;
+
+    if (!UUID_REGEX.test(token)) {
+      return NextResponse.json(
+        { error: "Invalid token format" },
+        { status: 400 },
+      );
+    }
+
     const supabase = createServiceClient();
 
     const { data: project, error } = await supabase
@@ -35,7 +46,7 @@ export async function GET(
   } catch (err) {
     console.error("Project fetch error:", err);
     return NextResponse.json(
-      { error: "Internal error", detail: String(err) },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }
@@ -47,6 +58,13 @@ export async function PATCH(
 ) {
   try {
     const { token } = await params;
+
+    if (!UUID_REGEX.test(token)) {
+      return NextResponse.json(
+        { error: "Invalid token format" },
+        { status: 400 },
+      );
+    }
     const body = await request.json();
     const parsed = updateMilestoneSchema.safeParse(body);
 
@@ -112,7 +130,7 @@ export async function PATCH(
     if (updateError) {
       console.error("Milestone update error:", updateError);
       return NextResponse.json(
-        { error: "Failed to update milestone", detail: updateError.message },
+        { error: "Failed to update milestone" },
         { status: 500 },
       );
     }
@@ -121,7 +139,7 @@ export async function PATCH(
   } catch (err) {
     console.error("Milestone update error:", err);
     return NextResponse.json(
-      { error: "Internal error", detail: String(err) },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }

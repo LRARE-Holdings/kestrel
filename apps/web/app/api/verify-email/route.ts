@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { verifyEmailCode } from "@/lib/email/verification";
+import { verifyRateLimit, applyRateLimit } from "@/lib/security/rate-limit";
 
 /**
  * POST /api/verify-email
@@ -9,6 +10,9 @@ import { verifyEmailCode } from "@/lib/email/verification";
  */
 export async function POST(request: Request) {
   try {
+    const rateLimitError = await applyRateLimit(request, verifyRateLimit());
+    if (rateLimitError) return rateLimitError;
+
     const body = await request.json();
     const code = typeof body.code === "string" ? body.code.trim() : "";
 

@@ -7,9 +7,17 @@ import {
   noticeSentToRecipientEmail,
   noticeSentConfirmationEmail,
 } from "@/lib/email/templates/notice-sent";
+import { publicRateLimit, applyRateLimit } from "@/lib/security/rate-limit";
+import { validateOrigin } from "@/lib/security/csrf";
 
 export async function POST(request: Request) {
   try {
+    const originError = validateOrigin(request);
+    if (originError) return originError;
+
+    const rateLimitError = await applyRateLimit(request, publicRateLimit());
+    if (rateLimitError) return rateLimitError;
+
     const body = await request.json();
     const parsed = noticeSchema.safeParse(body);
 
@@ -51,7 +59,7 @@ export async function POST(request: Request) {
     if (error) {
       console.error("Notice insert error:", error);
       return NextResponse.json(
-        { error: "Failed to create notice", detail: error.message },
+        { error: "Failed to create notice" },
         { status: 500 },
       );
     }
@@ -115,7 +123,7 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error("Notice creation error:", err);
     return NextResponse.json(
-      { error: "Internal error", detail: String(err) },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }

@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cream">
+    <div className="h-screen overflow-hidden flex items-center justify-center bg-cream">
       <div className="w-full max-w-[400px] mx-4">
         {/* Kestrel Admin header */}
         <div className="text-center mb-8">

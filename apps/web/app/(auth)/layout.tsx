@@ -7,7 +7,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-cream px-4 py-12">
+    <div className="relative flex h-screen overflow-hidden items-center justify-center bg-cream px-4 py-12">
 
       {/* Subtle orbs */}
       <div className="pointer-events-none absolute -top-32 right-1/3 h-[400px] w-[400px] rounded-full bg-kestrel/[0.03] blur-[100px]" />

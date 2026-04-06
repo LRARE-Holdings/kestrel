@@ -21,13 +21,24 @@ export async function signInWithPassword(formData: FormData) {
   });
 
   if (error) {
-    if (error.message === "Invalid login credentials") {
+    // Use a single generic message for all credential errors to prevent
+    // account enumeration (attacker cannot distinguish "no account" from
+    // "wrong password" or "unconfirmed email").
+    if (
+      error.message === "Invalid login credentials" ||
+      error.message === "Email not confirmed"
+    ) {
       return { error: "Invalid email or password" };
     }
-    if (error.message === "Email not confirmed") {
-      return { error: "Please check your email and confirm your account before signing in" };
-    }
-    return { error: error.message };
+    return { error: "Sign in failed. Please try again." };
+  }
+
+  // Check if user has MFA enrolled — if so, redirect to verify page
+  const { data: aalData } =
+    await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+
+  if (aalData?.currentLevel === "aal1" && aalData?.nextLevel === "aal2") {
+    redirect("/mfa/verify");
   }
 
   redirect(redirectTo || "/dashboard");
@@ -62,10 +73,12 @@ export async function signUpWithPassword(formData: FormData) {
   });
 
   if (error) {
+    // Don't reveal whether an email is already registered — return a
+    // generic success-like message to prevent account enumeration.
     if (error.message.includes("already registered")) {
-      return { error: "An account with this email already exists" };
+      return { success: true };
     }
-    return { error: error.message };
+    return { error: "Sign up failed. Please try again." };
   }
 
   return { success: true };

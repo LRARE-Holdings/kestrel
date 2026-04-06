@@ -4,12 +4,17 @@ import { ScrollProgressBar } from "@/components/ui/scroll-progress-bar";
 import { AnnouncementBar } from "@/components/ui/announcement-bar";
 import { getUser, getProfile } from "@/lib/auth/actions";
 import { AppShell } from "@/components/app/sidebar";
+import { isMaintenanceMode } from "@/lib/maintenance";
+import { MaintenanceScreen } from "@/components/maintenance-screen";
 
 export default async function ToolsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const maintenance = await isMaintenanceMode();
+  if (maintenance) return <MaintenanceScreen />;
+
   const user = await getUser();
 
   // Authenticated user with completed onboarding: render inside app shell

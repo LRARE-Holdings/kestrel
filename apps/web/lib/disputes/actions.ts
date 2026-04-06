@@ -9,7 +9,10 @@ import {
   ALLOWED_EVIDENCE_TYPES,
   ALLOWED_EVIDENCE_EXTENSIONS,
   MAX_FILE_SIZE_BYTES,
+  MAX_TOTAL_EVIDENCE_BYTES,
+  MAX_EVIDENCE_FILES,
 } from "@/lib/disputes/constants";
+import { verifyFileMagicBytes } from "@/lib/security/file-validation";
 import { sendDisputeEmail } from "@kestrel/shared/email/send";
 import { createServiceClient } from "@kestrel/shared/supabase/service";
 import { disputeInitiatedEmail } from "@/lib/email/templates/dispute-initiated";
@@ -1144,6 +1147,31 @@ export async function uploadEvidence(
 
   if (!entries.length) return { error: "No files provided" };
 
+  // Enforce cumulative file count and total size limits across the dispute
+  const { data: existingEvidence } = await supabase
+    .from("evidence_files")
+    .select("file_size_bytes")
+    .eq("dispute_id", disputeId);
+
+  const existingCount = existingEvidence?.length ?? 0;
+  const existingSize = (existingEvidence ?? []).reduce(
+    (sum, e) => sum + (e.file_size_bytes ?? 0),
+    0,
+  );
+  const newSize = entries.reduce((sum, f) => sum + (f instanceof File ? f.size : 0), 0);
+
+  if (existingCount + entries.length > MAX_EVIDENCE_FILES) {
+    return {
+      error: `This dispute already has ${existingCount} evidence files. Maximum is ${MAX_EVIDENCE_FILES}.`,
+    };
+  }
+  if (existingSize + newSize > MAX_TOTAL_EVIDENCE_BYTES) {
+    const remainingMB = Math.floor((MAX_TOTAL_EVIDENCE_BYTES - existingSize) / 1048576);
+    return {
+      error: `Upload would exceed the 100 MB evidence limit for this dispute. ${remainingMB} MB remaining.`,
+    };
+  }
+
   let uploaded = 0;
 
   for (let i = 0; i < entries.length; i++) {
@@ -1161,6 +1189,13 @@ export async function uploadEvidence(
     }
     if (file.size > MAX_FILE_SIZE_BYTES) {
       console.warn(`[evidence] Rejected oversized file: ${file.size} bytes`);
+      continue;
+    }
+
+    // Verify file content matches declared type (magic byte check)
+    const validContent = await verifyFileMagicBytes(file);
+    if (!validContent) {
+      console.warn(`[evidence] Rejected file with mismatched content: ${file.name} (${file.type})`);
       continue;
     }
 

@@ -31,6 +31,12 @@ export default async function SettingsPage() {
             Profile
           </Link>
           <Link
+            href="/settings/security"
+            className="rounded-[var(--radius-sm)] px-3 py-2 text-sm font-medium text-text-secondary hover:bg-stone/60 hover:text-ink transition-colors"
+          >
+            Security
+          </Link>
+          <Link
             href="/settings/billing"
             className="rounded-[var(--radius-sm)] px-3 py-2 text-sm font-medium text-text-secondary hover:bg-stone/60 hover:text-ink transition-colors"
           >

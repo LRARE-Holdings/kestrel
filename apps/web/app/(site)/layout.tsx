@@ -3,12 +3,17 @@ import { Footer } from "@/components/layout/footer";
 import { ScrollProgressBar } from "@/components/ui/scroll-progress-bar";
 import { AnnouncementBar } from "@/components/ui/announcement-bar";
 import { getUser } from "@/lib/auth/actions";
+import { isMaintenanceMode } from "@/lib/maintenance";
+import { MaintenanceScreen } from "@/components/maintenance-screen";
 
 export default async function SiteLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const maintenance = await isMaintenanceMode();
+  if (maintenance) return <MaintenanceScreen />;
+
   const user = await getUser();
 
   return (

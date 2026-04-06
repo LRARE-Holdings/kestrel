@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@kestrel/shared/supabase/server";
+import { safeRedirectPath } from "@/lib/security/redirect";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -47,9 +48,7 @@ export async function GET(request: Request) {
         }
       }
 
-      const isInternalPath =
-        redirectTo?.startsWith("/") && !redirectTo.startsWith("//") && !redirectTo.includes("\\");
-      const destination = isInternalPath ? redirectTo : "/dashboard";
+      const destination = safeRedirectPath(redirectTo, origin);
       return NextResponse.redirect(`${origin}${destination}`);
     }
   }

@@ -543,3 +543,41 @@ Excluded: leads, lead_interactions (already correct), email_verifications (alrea
 Follow-up to Migration 4 -- fixed 6 INSERT policies that were missed in the initial pass: disputes (Initiator creates disputes), dispute_submissions (Parties create submissions), evidence_files (Parties upload evidence), dispute_mediator_requests (Parties create mediator requests), onboarding_responses (Users can insert own onboarding response), site_settings (Admins can insert site settings).
 
 **Verification:** Final query against `pg_policies` confirmed zero remaining bare `auth.uid()` or `auth.jwt()` calls across all public schema policies. Supabase security advisor shows no new RLS-related issues (remaining warnings are intentional: permissive INSERT on free tool tables, leaked password protection is a dashboard setting).
+
+## [2026-04-06] Architecture — Maintenance Mode Fix
+The admin panel could toggle maintenance_mode in site_settings, but the web app never checked it. Added `isMaintenanceMode()` check in all three user-facing layouts: `(site)`, `(tools)`, `(app)`. When enabled, a full-screen branded maintenance page replaces all content. Auth routes remain accessible (admin can still sign in). Admin panel is unaffected (separate app). Also reset the accidentally-enabled maintenance_mode flag in the database.
+
+## [2026-04-06] Product — Privacy Policy & Terms of Service Rewrite
+Comprehensive rewrite of both /privacy and /terms pages to include proper liability limitation clauses:
+- **Terms:** 16 numbered sections. Key additions: "What Kestrel is not" (no legal advice disclaimer), limitation of liability (cap at greater of 12-month fees or £100, excludes indirect/consequential damages), indemnification clause, IP ownership, paid services & refunds, acceptable use, severability.
+- **Privacy:** 12 numbered sections. Key additions: sub-processor table (Supabase, Vercel, Resend, Stripe, GA), lawful basis stated per data category, data retention for payment records (7 years) and audit logs (6 years), limitation of liability for data processing, ICO complaints guidance, cookies section.
+Both written in professional-but-plain language. Preserve Kestrel brand voice (not aggressive legalese).
+
+## [2026-04-06] Security — Full Sweep Hardening
+Comprehensive security audit and remediation:
+1. **Open redirect fix**: Replaced string-matching redirect validation in auth callback/confirm routes with URL-parsing approach (`lib/security/redirect.ts`). Handles encoded slashes, protocol-relative URLs, and other bypass techniques.
+2. **Account enumeration fix**: Unified all auth error messages in `signInWithPassword` and `signUpWithPassword` to prevent distinguishing "no account" from "wrong password" or "unconfirmed email". Sign-up with existing email now returns fake success.
+3. **CSP hardening**: Removed `'unsafe-eval'` from both web and admin CSP headers. Added `https://js.stripe.com` to script-src and `https://api.stripe.com` to connect-src for embedded payment forms.
+4. **Evidence upload hardening**: Added cumulative file count (MAX_EVIDENCE_FILES=10) and total size (MAX_TOTAL_EVIDENCE_BYTES=100MB) enforcement across entire dispute. Added server-side file magic byte verification (`lib/security/file-validation.ts`) — checks PDF, PNG, JPEG, DOCX/XLSX headers match declared MIME type.
+5. **RLS performance migration**: Applied `wrap_remaining_auth_calls_in_subselect_v2` — fixed 20 RLS policies across leads, lead_interactions, email_verifications, handshakes, handshake_terms, handshake_responses, notices, projects, milestones, profiles, disputes, dispute_submissions, evidence_files. Dropped duplicate index on lead_interactions.
+6. **Supabase advisors**: Reviewed all security and performance findings. Remaining intentional warnings: permissive INSERT on free tool tables (anonymous-first design), leaked password protection (dashboard setting to enable manually).
+
+## [2026-04-06] Architecture — Voluntary MFA for Regular Users
+Added optional TOTP-based two-factor authentication for regular (non-admin) users:
+- **Enrollment**: New `/settings/security` page with `MfaSettings` client component. Users can enable MFA by scanning a QR code (Supabase `mfa.enroll()`), entering a 6-digit code to verify, and the session is upgraded to aal2.
+- **Sign-in flow**: `signInWithPassword` server action now checks AAL after successful sign-in. If user has MFA enrolled (currentLevel=aal1, nextLevel=aal2), redirects to `/mfa/verify` instead of dashboard.
+- **Verification**: New `(auth)/mfa/verify/page.tsx` — client component, loads verified TOTP factor, challenges and verifies code, upgrades session to aal2, redirects to dashboard.
+- **Disable**: Users can unenroll their TOTP factor from the security settings page.
+- **Not mandatory**: Unlike admin panel (mandatory MFA), regular users choose whether to enable it. No proxy-level AAL enforcement for regular users.
+- Settings sidebar updated across all three settings pages (Profile, Security, Billing).
+
+## [2026-04-06] Architecture — Stripe Custom Checkout Integration
+Completed Stripe integration harnessing for custom on-site checkout (no redirect to Stripe-hosted checkout):
+- **New API route**: `api/stripe/create-subscription` — creates a Stripe subscription with `payment_behavior: 'default_incomplete'`, returns `clientSecret` for the PaymentIntent.
+- **Checkout component**: `components/app/billing/checkout-form.tsx` — uses `@stripe/react-stripe-js` Elements with PaymentElement. Kestrel-branded appearance (ink/kestrel colours, DM Sans font, border radius matching design tokens).
+- **Webhook improvements**: Added `customer.subscription.created` and `invoice.payment_succeeded` handlers. Improved plan detection — `planFromPriceId()` matches against env var price IDs. Upsert with user_id from metadata on subscription.created.
+- **Billing page**: Dynamic — fetches real subscription data from DB, shows plan name/status/next billing date, success banner after upgrade, working "Open billing portal" button (Stripe Customer Portal).
+- **Dependencies**: Installed `@stripe/stripe-js` and `@stripe/react-stripe-js`.
+- **CSP**: Added `js.stripe.com` to script-src and `api.stripe.com` to connect-src.
+- **Env vars needed**: `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` for client-side Elements.
+- Old checkout route (redirect-based) preserved as fallback — can be removed once custom checkout is validated.

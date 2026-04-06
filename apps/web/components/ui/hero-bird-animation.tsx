@@ -41,7 +41,6 @@ export function HeroBirdAnimation() {
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      <div className="absolute inset-0 bg-grid" />
 
       <svg
         className="absolute inset-0 h-full w-full"

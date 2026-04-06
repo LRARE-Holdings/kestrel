@@ -86,25 +86,25 @@ const tiers = [
 
 export default function PricingPage() {
   return (
-    <div className="mx-auto max-w-screen-2xl px-4 py-28 sm:px-6 lg:px-8 2xl:px-12">
+    <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
       <ScrollBlur className="mx-auto max-w-2xl text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kestrel">
           Pricing
         </p>
-        <h1 className="mt-4 font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">
+        <h1 className="mt-3 font-display text-3xl font-bold tracking-tight text-ink sm:mt-4 sm:text-4xl lg:text-5xl">
           Simple, transparent pricing
         </h1>
-        <p className="mt-6 text-lg leading-relaxed text-text-secondary">
+        <p className="mt-4 text-base leading-relaxed text-text-secondary sm:mt-6 sm:text-lg">
           Free tools stay free. Pay only when you need dispute resolution
           and document management.
         </p>
       </ScrollBlur>
 
-      <ScrollStagger stagger={0.1} className="mt-20 grid gap-6 lg:grid-cols-4">
+      <ScrollStagger stagger={0.1} className="mt-12 grid gap-4 sm:mt-16 sm:grid-cols-2 sm:gap-6 lg:mt-20 lg:grid-cols-4">
         {tiers.map((tier) => (
           <StaggerItem key={tier.name}>
             <div
-              className={`relative flex h-full flex-col rounded-2xl border p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-lg)] ${
+              className={`relative flex h-full flex-col rounded-2xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-lg)] sm:p-8 ${
                 tier.highlight
                   ? "border-kestrel bg-surface shadow-[var(--shadow-lg)] ring-1 ring-kestrel/10"
                   : "border-border-subtle/60 bg-surface/70 shadow-sm backdrop-blur-xl"
@@ -147,7 +147,7 @@ export default function PricingPage() {
 
       {/* FAQ-style note */}
       <ScrollFade delay={0.2}>
-        <div className="mt-16 rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 text-center shadow-sm backdrop-blur-xl">
+        <div className="mt-10 rounded-2xl border border-border-subtle/60 bg-surface/70 p-6 text-center shadow-sm backdrop-blur-xl sm:mt-16 sm:p-8">
           <h3 className="font-display text-lg font-bold text-ink">
             Not sure which plan?
           </h3>

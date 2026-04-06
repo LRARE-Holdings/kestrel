@@ -8,8 +8,6 @@ export default function AuthLayout({
 }) {
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-cream px-4 py-12">
-      {/* Grid background */}
-      <div className="pointer-events-none fixed inset-0 bg-grid" aria-hidden="true" />
 
       {/* Subtle orbs */}
       <div className="pointer-events-none absolute -top-32 right-1/3 h-[400px] w-[400px] rounded-full bg-kestrel/[0.03] blur-[100px]" />

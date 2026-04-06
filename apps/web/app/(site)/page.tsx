@@ -113,57 +113,56 @@ const trustSignals = [
 
 export default function HomePage() {
   return (
-    <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 2xl:px-12">
+    <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
       {/* ═══ HERO ═══ */}
-      <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden pt-8">
+      <section className="relative flex min-h-[60vh] items-center justify-center overflow-hidden py-16 sm:min-h-[75vh] sm:py-20 lg:min-h-[85vh]">
         <HeroBirdAnimation />
 
-        <div className="absolute -top-24 right-1/4 h-[480px] w-[480px] rounded-full bg-kestrel/[0.04] blur-[100px]" />
-        <div className="absolute -bottom-32 left-1/4 h-[400px] w-[400px] rounded-full bg-sage/[0.06] blur-[80px]" />
+        <div className="absolute -top-24 right-1/4 h-[320px] w-[320px] rounded-full bg-kestrel/[0.04] blur-[100px] sm:h-[480px] sm:w-[480px]" />
+        <div className="absolute -bottom-32 left-1/4 h-[280px] w-[280px] rounded-full bg-sage/[0.06] blur-[80px] sm:h-[400px] sm:w-[400px]" />
 
         <div className="relative z-10 mx-auto max-w-3xl text-center">
-          <div className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-kestrel/15 bg-surface/80 px-4 py-1.5 text-xs font-medium text-kestrel backdrop-blur-sm">
+          <div className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-kestrel/15 bg-surface/80 px-3.5 py-1.5 text-xs font-medium text-kestrel backdrop-blur-sm sm:px-4">
             <span className="h-1.5 w-1.5 rounded-full bg-kestrel animate-pulse" />
             Structured dispute resolution for business
           </div>
 
-          <h1 className="animate-fade-up delay-100 mt-8 font-display text-5xl font-bold leading-[1.08] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+          <h1 className="animate-fade-up delay-100 mt-6 font-display text-4xl font-bold leading-[1.08] tracking-tight text-ink sm:mt-8 sm:text-6xl lg:text-7xl">
             Resolve it
             <br />
             <span className="text-kestrel">on Kestrel.</span>
           </h1>
 
-          <p className="animate-fade-up delay-200 mx-auto mt-6 max-w-xl text-lg leading-relaxed text-text-secondary sm:text-xl">
+          <p className="animate-fade-up delay-200 mx-auto mt-5 max-w-xl text-base leading-relaxed text-text-secondary sm:mt-6 sm:text-lg lg:text-xl">
             Free tools to protect your contracts.
             A structured path when things go wrong.
           </p>
 
-          <div className="animate-fade-up delay-300 mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-            <Link href="/tools">
-              <Button size="lg" className="min-w-[200px] shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-lg)] transition-shadow">
+          <div className="animate-fade-up delay-300 mt-8 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
+            <Link href="/tools" className="w-full sm:w-auto">
+              <Button size="lg" className="w-full shadow-[var(--shadow-md)] transition-shadow hover:shadow-[var(--shadow-lg)] sm:w-auto sm:min-w-[200px]">
                 Explore free tools
               </Button>
             </Link>
-            <Link href="/about">
-              <Button variant="secondary" size="lg" className="min-w-[200px]">
+            <Link href="/about" className="w-full sm:w-auto">
+              <Button variant="secondary" size="lg" className="w-full sm:w-auto sm:min-w-[200px]">
                 How it works
               </Button>
             </Link>
           </div>
-
         </div>
       </section>
 
       {/* ═══ HOW IT WORKS ═══ */}
-      <ScrollSection className="pb-6">
-        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+      <ScrollSection className="pb-4 sm:pb-6">
+        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-6 shadow-sm backdrop-blur-xl sm:p-10 lg:p-12">
           <ScrollFade direction="none" className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kestrel">How it works</p>
-            <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">Three steps to resolution</h2>
-            <p className="mt-4 text-text-secondary">From contract clause to structured outcome.</p>
+            <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-ink sm:mt-4 sm:text-3xl lg:text-4xl">Three steps to resolution</h2>
+            <p className="mt-3 text-sm text-text-secondary sm:mt-4 sm:text-base">From contract clause to structured outcome.</p>
           </ScrollFade>
 
-          <ScrollStagger stagger={0.15} className="mt-14 grid gap-12 sm:grid-cols-3 sm:gap-8">
+          <ScrollStagger stagger={0.15} className="mt-10 grid gap-8 sm:mt-14 sm:grid-cols-3 sm:gap-8">
             {steps.map((step) => (
               <StaggerItem key={step.number}>
                 <div className="relative flex flex-col items-start">
@@ -171,7 +170,7 @@ export default function HomePage() {
                     <span className="flex h-10 w-10 items-center justify-center rounded-full border border-kestrel/15 bg-kestrel/5 text-kestrel">{step.icon}</span>
                     <span className="font-mono text-xs font-semibold text-kestrel/60">{step.number}</span>
                   </div>
-                  <h3 className="mt-5 text-lg font-semibold text-ink">{step.title}</h3>
+                  <h3 className="mt-4 text-lg font-semibold text-ink">{step.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-text-secondary">{step.description}</p>
                 </div>
               </StaggerItem>
@@ -181,22 +180,22 @@ export default function HomePage() {
       </ScrollSection>
 
       {/* ═══ FREE TOOLS ═══ */}
-      <ScrollSection className="pb-6" delay={0.05}>
-        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+      <ScrollSection className="pb-4 sm:pb-6" delay={0.05}>
+        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-6 shadow-sm backdrop-blur-xl sm:p-10 lg:p-12">
           <ScrollFade direction="none" className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kestrel">Free tools</p>
-            <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">Use them now. No sign-up.</h2>
-            <p className="mt-4 text-text-secondary">Six tools built for businesses. Free forever.</p>
+            <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-ink sm:mt-4 sm:text-3xl lg:text-4xl">Use them now. No sign-up.</h2>
+            <p className="mt-3 text-sm text-text-secondary sm:mt-4 sm:text-base">Six tools built for businesses. Free forever.</p>
           </ScrollFade>
 
-          <ScrollStagger stagger={0.08} className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ScrollStagger stagger={0.08} className="mt-8 grid gap-3 sm:mt-12 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             {tools.map((tool) => (
               <StaggerItem key={tool.href}>
                 <Link href={tool.href} className="group block">
-                  <div className="relative h-full rounded-xl border border-border-subtle/60 bg-cream/50 p-6 transition-all duration-300 hover:border-kestrel/20 hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]">
+                  <div className="relative h-full rounded-xl border border-border-subtle/60 bg-cream/50 p-5 transition-all duration-300 hover:border-kestrel/20 hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)] sm:p-6">
                     <h3 className="text-base font-semibold text-ink transition-colors group-hover:text-kestrel">{tool.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-text-secondary">{tool.description}</p>
-                    <div className="mt-4 flex items-center text-xs font-medium text-kestrel opacity-0 transition-opacity group-hover:opacity-100">
+                    <p className="mt-1.5 text-sm leading-relaxed text-text-secondary sm:mt-2">{tool.description}</p>
+                    <div className="mt-3 flex items-center text-xs font-medium text-kestrel opacity-0 transition-opacity group-hover:opacity-100 sm:mt-4">
                       <span>Open tool</span>
                       <svg className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -208,7 +207,7 @@ export default function HomePage() {
             ))}
           </ScrollStagger>
 
-          <ScrollFade delay={0.3} className="mt-10 text-center">
+          <ScrollFade delay={0.3} className="mt-8 text-center sm:mt-10">
             <Link href="/tools">
               <Button variant="secondary">View all tools</Button>
             </Link>
@@ -217,18 +216,18 @@ export default function HomePage() {
       </ScrollSection>
 
       {/* ═══ TRUST ═══ */}
-      <ScrollSection className="pb-6" delay={0.05}>
-        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
+      <ScrollSection className="pb-4 sm:pb-6" delay={0.05}>
+        <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-6 shadow-sm backdrop-blur-xl sm:p-10 lg:p-12">
           <ScrollBlur className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-kestrel">Trust</p>
-            <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">Grounded in English law</h2>
-            <p className="mt-4 text-text-secondary">Jurisdiction-specific. Built for professionals who handle contracts.</p>
+            <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-ink sm:mt-4 sm:text-3xl lg:text-4xl">Grounded in English law</h2>
+            <p className="mt-3 text-sm text-text-secondary sm:mt-4 sm:text-base">Jurisdiction-specific. Built for professionals who handle contracts.</p>
           </ScrollBlur>
 
-          <ScrollStagger stagger={0.12} className="mt-12 grid gap-6 sm:grid-cols-3">
+          <ScrollStagger stagger={0.12} className="mt-8 grid gap-3 sm:mt-12 sm:grid-cols-3 sm:gap-6">
             {trustSignals.map((signal) => (
               <StaggerItem key={signal.title}>
-                <div className="flex flex-col gap-4 rounded-xl border border-border-subtle/60 bg-cream/50 p-6 transition-all duration-300 hover:border-kestrel/20 hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]">
+                <div className="flex flex-col gap-3 rounded-xl border border-border-subtle/60 bg-cream/50 p-5 transition-all duration-300 hover:border-kestrel/20 hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)] sm:gap-4 sm:p-6">
                   <span className="flex h-10 w-10 items-center justify-center rounded-full bg-kestrel/8 text-kestrel">{signal.icon}</span>
                   <h3 className="text-base font-semibold text-ink">{signal.title}</h3>
                   <p className="text-sm leading-relaxed text-text-secondary">{signal.description}</p>
@@ -240,24 +239,24 @@ export default function HomePage() {
       </ScrollSection>
 
       {/* ═══ CTA ═══ */}
-      <ScrollScale className="pb-6" from={0.96}>
-        <div className="relative overflow-hidden rounded-2xl bg-ink p-12 text-center shadow-sm sm:p-16">
+      <ScrollScale className="pb-4 sm:pb-6" from={0.96}>
+        <div className="relative overflow-hidden rounded-2xl bg-ink p-8 text-center shadow-sm sm:p-12 lg:p-16">
           <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-kestrel/20 blur-[80px]" />
           <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-sage/15 blur-[60px]" />
           <div className="relative z-10">
             <ScrollFade direction="none" delay={0.1}>
-              <h2 className="font-display text-3xl font-bold tracking-tight text-cream sm:text-4xl">Start now</h2>
+              <h2 className="font-display text-2xl font-bold tracking-tight text-cream sm:text-3xl lg:text-4xl">Start now</h2>
             </ScrollFade>
             <ScrollFade direction="up" delay={0.2} distance={20}>
-              <p className="mt-4 text-base text-cream/70">Use the free tools. Add a Kestrel dispute clause to your next contract.</p>
+              <p className="mt-3 text-sm text-cream/70 sm:mt-4 sm:text-base">Use the free tools. Add a Kestrel dispute clause to your next contract.</p>
             </ScrollFade>
             <ScrollFade direction="up" delay={0.3} distance={20}>
-              <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-                <Link href="/tools">
-                  <Button size="lg" className="min-w-[180px] !bg-cream !text-ink shadow-[0_2px_12px_rgba(246,243,238,0.25)] transition-all duration-300 hover:!bg-surface hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(246,243,238,0.35)]">Explore free tools</Button>
+              <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row sm:gap-4">
+                <Link href="/tools" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full !bg-cream !text-ink shadow-[0_2px_12px_rgba(246,243,238,0.25)] transition-all duration-300 hover:!bg-surface hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(246,243,238,0.35)] sm:w-auto sm:min-w-[180px]">Explore free tools</Button>
                 </Link>
-                <Link href="/sign-in">
-                  <Button variant="ghost" size="lg" className="min-w-[180px] border border-cream/25 !text-cream transition-all duration-300 hover:border-cream/50 hover:bg-cream/10 hover:-translate-y-0.5">Create account</Button>
+                <Link href="/sign-in" className="w-full sm:w-auto">
+                  <Button variant="ghost" size="lg" className="w-full border border-cream/25 !text-cream transition-all duration-300 hover:border-cream/50 hover:bg-cream/10 hover:-translate-y-0.5 sm:w-auto sm:min-w-[180px]">Create account</Button>
                 </Link>
               </div>
             </ScrollFade>

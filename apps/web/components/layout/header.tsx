@@ -15,8 +15,8 @@ export function Header({ user }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full px-4 pt-4 sm:px-6 lg:px-8 2xl:px-12">
-      <div className="mx-auto max-w-screen-2xl rounded-2xl border border-border-subtle/60 bg-surface/70 shadow-sm backdrop-blur-xl">
+    <header className="sticky top-0 z-50 w-full px-3 pt-3 sm:px-6 sm:pt-4 lg:px-8">
+      <div className="mx-auto max-w-screen-xl rounded-2xl border border-border-subtle/60 bg-surface/70 shadow-sm backdrop-blur-xl">
         <div className="flex h-14 items-center justify-between px-5">
           <Logo />
 

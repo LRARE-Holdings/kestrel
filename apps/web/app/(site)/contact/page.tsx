@@ -8,17 +8,17 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="mx-auto max-w-screen-2xl px-4 py-24 sm:px-6 lg:px-8 2xl:px-12">
-      <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
-        <h1 className="font-display text-4xl text-ink sm:text-5xl">
+    <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
+      <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-6 shadow-sm backdrop-blur-xl sm:p-10 lg:p-12">
+        <h1 className="font-display text-3xl text-ink sm:text-4xl lg:text-5xl">
           Get in touch
         </h1>
-        <p className="mt-6 text-lg leading-relaxed text-text-secondary">
+        <p className="mt-4 text-base leading-relaxed text-text-secondary sm:mt-6 sm:text-lg">
           Questions about the tools, a dispute, or Kestrel itself? Reach out.
         </p>
 
-        <div className="mt-16 grid gap-8 sm:grid-cols-2">
-          <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-6">
+        <div className="mt-10 grid gap-4 sm:mt-16 sm:grid-cols-2 sm:gap-8">
+          <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-5 sm:p-6">
             <h2 className="text-base font-semibold text-ink">Email</h2>
             <p className="mt-2 text-sm text-text-secondary">
               For general enquiries, support, or partnership opportunities.

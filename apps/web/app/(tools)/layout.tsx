@@ -36,10 +36,9 @@ export default async function ToolsLayout({
   return (
     <div className="relative min-h-screen bg-cream">
       <ScrollProgressBar />
-      <div
-        className="pointer-events-none fixed inset-0 bg-grid"
-        aria-hidden="true"
-      />
+      <div className="pointer-events-none fixed inset-0" aria-hidden="true">
+        <div className="absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-kestrel/[0.03] blur-[120px]" />
+      </div>
       <div className="relative z-10 flex min-h-screen flex-col">
         <AnnouncementBar />
         <Header user={user ? { email: user.email } : null} />

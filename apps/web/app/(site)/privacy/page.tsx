@@ -8,16 +8,16 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="mx-auto max-w-screen-2xl px-4 py-24 sm:px-6 lg:px-8 2xl:px-12">
-      <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-8 shadow-sm backdrop-blur-xl sm:p-12">
-        <h1 className="font-display text-4xl text-ink sm:text-5xl">
+    <div className="mx-auto max-w-screen-xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
+      <div className="rounded-2xl border border-border-subtle/60 bg-surface/70 p-6 shadow-sm backdrop-blur-xl sm:p-10 lg:p-12">
+        <h1 className="font-display text-3xl text-ink sm:text-4xl lg:text-5xl">
           Privacy Policy
         </h1>
-        <p className="mt-6 text-sm text-text-muted">
+        <p className="mt-4 text-sm text-text-muted sm:mt-6">
           Last updated: 6 April 2026
         </p>
 
-        <div className="mt-12 space-y-10 text-text-secondary leading-relaxed">
+        <div className="mt-8 space-y-8 text-text-secondary leading-relaxed sm:mt-12 sm:space-y-10">
           {/* 1 */}
           <section>
             <h2 className="font-display text-xl text-ink">1. Who we are</h2>

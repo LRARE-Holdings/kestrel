@@ -7,7 +7,6 @@ import { KestrelMark } from "@/components/ui/logo";
 export function MaintenanceScreen() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-cream px-4">
-      <div className="pointer-events-none fixed inset-0 bg-grid" aria-hidden="true" />
       <div className="relative z-10 mx-auto max-w-md text-center">
         <KestrelMark className="mx-auto h-12 w-auto text-kestrel" />
         <h1 className="mt-8 font-display text-3xl font-bold text-ink">

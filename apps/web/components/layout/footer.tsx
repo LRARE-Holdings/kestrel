@@ -21,11 +21,11 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="px-4 pb-4 sm:px-6 lg:px-8 2xl:px-12">
+    <footer className="px-3 pb-3 sm:px-6 sm:pb-4 lg:px-8">
       <ScrollSection>
-        <div className="mx-auto max-w-screen-2xl rounded-2xl border border-border-subtle/60 bg-surface/70 shadow-sm backdrop-blur-xl">
-          <div className="px-8 py-12 sm:px-10">
-            <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto max-w-screen-xl rounded-2xl border border-border-subtle/60 bg-surface/70 shadow-sm backdrop-blur-xl">
+          <div className="px-6 py-10 sm:px-10 sm:py-12">
+            <div className="grid gap-8 sm:grid-cols-2 sm:gap-12 lg:grid-cols-4">
               {/* Brand + Social */}
               <div className="lg:col-span-2">
                 <ScrollFade direction="up" distance={20}>

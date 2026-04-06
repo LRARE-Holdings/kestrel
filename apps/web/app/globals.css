@@ -95,14 +95,6 @@ body {
 .delay-700 { animation-delay: 700ms; }
 .delay-800 { animation-delay: 800ms; }
 
-/* ─── Decorative grid pattern ─── */
-.bg-grid {
-  background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--raw-kestrel) 3%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--raw-kestrel) 3%, transparent) 1px, transparent 1px);
-  background-size: 48px 48px;
-}
-
 /* ─── Gradient overlays ─── */
 .gradient-fade-b {
   mask-image: linear-gradient(to bottom, black 60%, transparent 100%);

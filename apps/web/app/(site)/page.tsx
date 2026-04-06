@@ -118,8 +118,8 @@ export default function HomePage() {
       <section className="relative flex min-h-[60vh] items-center justify-center overflow-hidden py-16 sm:min-h-[75vh] sm:py-20 lg:min-h-[85vh]">
         <HeroBirdAnimation />
 
-        <div className="absolute -top-24 right-1/4 h-[320px] w-[320px] rounded-full bg-kestrel/[0.04] blur-[100px] sm:h-[480px] sm:w-[480px]" />
-        <div className="absolute -bottom-32 left-1/4 h-[280px] w-[280px] rounded-full bg-sage/[0.06] blur-[80px] sm:h-[400px] sm:w-[400px]" />
+        <div className="absolute -top-24 right-1/4 h-[320px] w-[320px] rounded-full bg-kestrel/[0.04] blur-[100px] dark:bg-kestrel/[0.10] sm:h-[480px] sm:w-[480px]" />
+        <div className="absolute -bottom-32 left-1/4 h-[280px] w-[280px] rounded-full bg-sage/[0.06] blur-[80px] dark:bg-sage/[0.12] sm:h-[400px] sm:w-[400px]" />
 
         <div className="relative z-10 mx-auto max-w-3xl text-center">
           <div className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-kestrel/15 bg-surface/80 px-3.5 py-1.5 text-xs font-medium text-kestrel backdrop-blur-sm sm:px-4">

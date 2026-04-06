@@ -95,6 +95,20 @@ body {
 .delay-700 { animation-delay: 700ms; }
 .delay-800 { animation-delay: 800ms; }
 
+/* ─── Ambient background ─── */
+.bg-ambient {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, color-mix(in srgb, var(--raw-kestrel) 3%, transparent), transparent),
+    radial-gradient(ellipse 60% 40% at 0% 100%, color-mix(in srgb, var(--raw-sage) 2%, transparent), transparent),
+    radial-gradient(ellipse 50% 50% at 100% 40%, color-mix(in srgb, var(--raw-kestrel) 1.5%, transparent), transparent);
+}
+.dark .bg-ambient {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, color-mix(in srgb, var(--raw-kestrel) 8%, transparent), transparent),
+    radial-gradient(ellipse 60% 40% at 0% 100%, color-mix(in srgb, var(--raw-sage) 5%, transparent), transparent),
+    radial-gradient(ellipse 50% 50% at 100% 40%, color-mix(in srgb, var(--raw-kestrel) 4%, transparent), transparent);
+}
+
 /* ─── Gradient overlays ─── */
 .gradient-fade-b {
   mask-image: linear-gradient(to bottom, black 60%, transparent 100%);

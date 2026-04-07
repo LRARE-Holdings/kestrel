@@ -167,6 +167,78 @@ export type Database = {
           },
         ]
       }
+      dispute_payments: {
+        Row: {
+          amount_pence: number
+          created_at: string
+          currency: string
+          dispute_id: string
+          id: string
+          party_role: Database["public"]["Enums"]["dispute_payment_party_role"]
+          purpose: Database["public"]["Enums"]["dispute_payment_purpose"]
+          refund_processed_at: string | null
+          refund_processed_by: string | null
+          refund_reason: string | null
+          status: Database["public"]["Enums"]["dispute_payment_status"]
+          stripe_charge_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_refund_id: string | null
+          tier_id: Database["public"]["Enums"]["dispute_tier_id"]
+          updated_at: string
+        }
+        Insert: {
+          amount_pence: number
+          created_at?: string
+          currency?: string
+          dispute_id: string
+          id?: string
+          party_role: Database["public"]["Enums"]["dispute_payment_party_role"]
+          purpose: Database["public"]["Enums"]["dispute_payment_purpose"]
+          refund_processed_at?: string | null
+          refund_processed_by?: string | null
+          refund_reason?: string | null
+          status?: Database["public"]["Enums"]["dispute_payment_status"]
+          stripe_charge_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_refund_id?: string | null
+          tier_id: Database["public"]["Enums"]["dispute_tier_id"]
+          updated_at?: string
+        }
+        Update: {
+          amount_pence?: number
+          created_at?: string
+          currency?: string
+          dispute_id?: string
+          id?: string
+          party_role?: Database["public"]["Enums"]["dispute_payment_party_role"]
+          purpose?: Database["public"]["Enums"]["dispute_payment_purpose"]
+          refund_processed_at?: string | null
+          refund_processed_by?: string | null
+          refund_reason?: string | null
+          status?: Database["public"]["Enums"]["dispute_payment_status"]
+          stripe_charge_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_refund_id?: string | null
+          tier_id?: Database["public"]["Enums"]["dispute_tier_id"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispute_payments_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispute_payments_refund_processed_by_fkey"
+            columns: ["refund_processed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dispute_submissions: {
         Row: {
           content: string
@@ -218,6 +290,10 @@ export type Database = {
       disputes: {
         Row: {
           amount_disputed: number | null
+          claimant_paid_at: string | null
+          claimant_payment_status:
+            | Database["public"]["Enums"]["dispute_payment_status"]
+            | null
           created_at: string | null
           created_by: string | null
           currency: string | null
@@ -225,21 +301,34 @@ export type Database = {
           description: string | null
           dispute_type: Database["public"]["Enums"]["dispute_type"]
           escalated_at: string | null
+          escalation_reason: string | null
           id: string
           includes_dispute_clause: boolean
           initiating_party_id: string
+          parent_dispute_id: string | null
           reference_number: string
           resolution_summary: string | null
           resolved_at: string | null
+          respondent_engagement_recorded_at: string | null
+          respondent_paid_at: string | null
+          respondent_payment_status:
+            | Database["public"]["Enums"]["dispute_payment_status"]
+            | null
           responding_party_email: string
           responding_party_id: string | null
           response_deadline: string | null
           status: Database["public"]["Enums"]["dispute_status"]
           subject: string
+          tier_id: Database["public"]["Enums"]["dispute_tier_id"] | null
+          tier_locked_at: string | null
           updated_at: string | null
         }
         Insert: {
           amount_disputed?: number | null
+          claimant_paid_at?: string | null
+          claimant_payment_status?:
+            | Database["public"]["Enums"]["dispute_payment_status"]
+            | null
           created_at?: string | null
           created_by?: string | null
           currency?: string | null
@@ -247,21 +336,34 @@ export type Database = {
           description?: string | null
           dispute_type: Database["public"]["Enums"]["dispute_type"]
           escalated_at?: string | null
+          escalation_reason?: string | null
           id?: string
           includes_dispute_clause?: boolean
           initiating_party_id: string
+          parent_dispute_id?: string | null
           reference_number?: string
           resolution_summary?: string | null
           resolved_at?: string | null
+          respondent_engagement_recorded_at?: string | null
+          respondent_paid_at?: string | null
+          respondent_payment_status?:
+            | Database["public"]["Enums"]["dispute_payment_status"]
+            | null
           responding_party_email: string
           responding_party_id?: string | null
           response_deadline?: string | null
           status?: Database["public"]["Enums"]["dispute_status"]
           subject: string
+          tier_id?: Database["public"]["Enums"]["dispute_tier_id"] | null
+          tier_locked_at?: string | null
           updated_at?: string | null
         }
         Update: {
           amount_disputed?: number | null
+          claimant_paid_at?: string | null
+          claimant_payment_status?:
+            | Database["public"]["Enums"]["dispute_payment_status"]
+            | null
           created_at?: string | null
           created_by?: string | null
           currency?: string | null
@@ -269,17 +371,26 @@ export type Database = {
           description?: string | null
           dispute_type?: Database["public"]["Enums"]["dispute_type"]
           escalated_at?: string | null
+          escalation_reason?: string | null
           id?: string
           includes_dispute_clause?: boolean
           initiating_party_id?: string
+          parent_dispute_id?: string | null
           reference_number?: string
           resolution_summary?: string | null
           resolved_at?: string | null
+          respondent_engagement_recorded_at?: string | null
+          respondent_paid_at?: string | null
+          respondent_payment_status?:
+            | Database["public"]["Enums"]["dispute_payment_status"]
+            | null
           responding_party_email?: string
           responding_party_id?: string | null
           response_deadline?: string | null
           status?: Database["public"]["Enums"]["dispute_status"]
           subject?: string
+          tier_id?: Database["public"]["Enums"]["dispute_tier_id"] | null
+          tier_locked_at?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -295,6 +406,57 @@ export type Database = {
             columns: ["initiating_party_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disputes_parent_dispute_id_fkey"
+            columns: ["parent_dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_verifications: {
+        Row: {
+          created_at: string
+          dispute_id: string | null
+          email_type: string
+          id: string
+          recipient_email: string
+          sent_at: string
+          subject: string
+          verification_code: string
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          dispute_id?: string | null
+          email_type: string
+          id?: string
+          recipient_email: string
+          sent_at?: string
+          subject: string
+          verification_code: string
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          dispute_id?: string | null
+          email_type?: string
+          id?: string
+          recipient_email?: string
+          sent_at?: string
+          subject?: string
+          verification_code?: string
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_verifications_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "disputes"
             referencedColumns: ["id"]
           },
         ]
@@ -600,48 +762,63 @@ export type Database = {
       }
       leads: {
         Row: {
+          ai_assessed_at: string | null
+          ai_assessment: Json | null
           assigned_to: string | null
           company: string | null
           created_at: string
-          created_by: string
+          created_by: string | null
           email: string | null
           id: string
+          last_scored_at: string | null
           name: string
           next_action_date: string | null
           notes: string | null
           phone: string | null
+          score: number | null
+          score_breakdown: Json | null
           source: string | null
           stage: string
           status: string
           updated_at: string
         }
         Insert: {
+          ai_assessed_at?: string | null
+          ai_assessment?: Json | null
           assigned_to?: string | null
           company?: string | null
           created_at?: string
-          created_by: string
+          created_by?: string | null
           email?: string | null
           id?: string
+          last_scored_at?: string | null
           name: string
           next_action_date?: string | null
           notes?: string | null
           phone?: string | null
+          score?: number | null
+          score_breakdown?: Json | null
           source?: string | null
           stage?: string
           status?: string
           updated_at?: string
         }
         Update: {
+          ai_assessed_at?: string | null
+          ai_assessment?: Json | null
           assigned_to?: string | null
           company?: string | null
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           email?: string | null
           id?: string
+          last_scored_at?: string | null
           name?: string
           next_action_date?: string | null
           notes?: string | null
           phone?: string | null
+          score?: number | null
+          score_breakdown?: Json | null
           source?: string | null
           stage?: string
           status?: string
@@ -1153,6 +1330,27 @@ export type Database = {
           },
         ]
       }
+      site_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string | null
@@ -1200,6 +1398,36 @@ export type Database = {
           },
         ]
       }
+      tool_usage_events: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          session_id: string | null
+          tool_name: string
+          user_id: string | null
+        }
+        Insert: {
+          action?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string | null
+          tool_name: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string | null
+          tool_name?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1209,6 +1437,14 @@ export type Database = {
       generate_dispute_reference: { Args: never; Returns: string }
     }
     Enums: {
+      dispute_payment_party_role: "claimant" | "respondent"
+      dispute_payment_purpose: "filing" | "tier_bump" | "counter_claim"
+      dispute_payment_status:
+        | "pending"
+        | "succeeded"
+        | "failed"
+        | "refunded"
+        | "partially_refunded"
       dispute_status:
         | "draft"
         | "filed"
@@ -1218,6 +1454,7 @@ export type Database = {
         | "escalated"
         | "withdrawn"
         | "expired"
+      dispute_tier_id: "small" | "standard" | "larger" | "complex"
       dispute_type:
         | "payment"
         | "deliverables"
@@ -1261,6 +1498,7 @@ export type Database = {
         | "acceptance"
         | "rejection"
         | "withdrawal"
+        | "escalation"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1388,6 +1626,15 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      dispute_payment_party_role: ["claimant", "respondent"],
+      dispute_payment_purpose: ["filing", "tier_bump", "counter_claim"],
+      dispute_payment_status: [
+        "pending",
+        "succeeded",
+        "failed",
+        "refunded",
+        "partially_refunded",
+      ],
       dispute_status: [
         "draft",
         "filed",
@@ -1398,6 +1645,7 @@ export const Constants = {
         "withdrawn",
         "expired",
       ],
+      dispute_tier_id: ["small", "standard", "larger", "complex"],
       dispute_type: [
         "payment",
         "deliverables",
@@ -1446,6 +1694,7 @@ export const Constants = {
         "acceptance",
         "rejection",
         "withdrawal",
+        "escalation",
       ],
     },
   },

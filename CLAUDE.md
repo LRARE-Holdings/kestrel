@@ -55,6 +55,7 @@ These files contain all product, technical, and business context. Read them befo
 | `SECURITY.md` | GDPR, threat model, encryption, incident response | When handling data, auth, uploads |
 | `DATABASE.md` | Schema, RLS policies, migrations, indexes | When working with the database |
 | `FREE_TOOLS.md` | All six free tools: specs, flows, inputs, outputs, priorities | When building any free tool |
+| `PRICING.md` | Pricing strategy: tier rules, refund mechanics, dispute fee model | Before any payment, billing, or dispute fee work |
 | `DEVELOPMENT.md` | Setup, scripts, branch strategy, PR checklist, testing | Getting started and contributing |
 
 If a decision contradicts these docs, **ask the user** before proceeding. Do not silently override documented decisions.

@@ -51,7 +51,7 @@ const STEPS: TutorialStep[] = [
     title: "Free Toolkit",
     subtitle: "Six tools, no sign-up required",
     description:
-      "Your toolkit is accessible from the sidebar. Each tool is fully functional without a subscription -- signing in lets you save and manage your documents.",
+      "Your toolkit is accessible from the sidebar. Every tool is free, forever, with no usage limits -- signing in lets you save and manage your documents.",
     details: [
       "Late Payment Calculator -- work out statutory interest and compensation",
       "Letter Generator -- four-stage escalation letters for unpaid invoices",
@@ -156,10 +156,10 @@ const STEPS: TutorialStep[] = [
     title: "Your Profile & Settings",
     subtitle: "Keep your details up to date",
     description:
-      "Your profile information appears on contracts and disputes. You can update your business details, notification preferences, and subscription plan at any time from Settings.",
+      "Your profile information appears on contracts and disputes. You can update your business details, notification preferences, and security settings any time from Settings.",
     details: [
       "Update your display name, business details, and industry",
-      "Manage your subscription and billing",
+      "View your dispute fee history and receipts under Billing",
       "Your dashboard adapts as you use the platform -- it'll show active disputes and recent documents",
       "The sidebar collapses for more screen space when you need it",
     ],

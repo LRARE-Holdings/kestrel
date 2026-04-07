@@ -1,5 +1,51 @@
 # Decisions Log
 
+## [2026-04-07] Email — Respondent + Initiator Templates Mirrored to Production
+Followed up on the earlier edge-function test: founder approved the new respondent copy, so mirrored it into the local templates that `fileDispute()` actually imports.
+
+**`apps/web/lib/email/templates/dispute-filed.ts` (respondent)** — full rewrite, preserving `DisputeFiledParams` interface so `lib/disputes/actions.ts` keeps working unchanged. New copy includes:
+- £35 response fee, 14-day refund mechanic
+- "Respondent did not engage" record + small claims evidence framing
+- Court cost comparison (£35–£455, 3–6 months)
+- Italicised claim summary card replacing the old structured details table
+- Subject: "Dispute notice: [initiatorBusiness] — response required within 14 days"
+- Title: "You've received a dispute notice"
+- Greeting: "Hello" (not "Dear")
+- Deadline surfaced as a real date: "You have until [responseDeadline] (14 days from the date of this email) to respond"
+- Keeps existing CTA target `/sign-up?redirect=/disputes/[id]` — payment happens on the dispute page after sign-up
+
+**`apps/web/lib/email/templates/dispute-initiated.ts` (initiator)** — targeted addition, no full rewrite. Added a new "What [respondentName] has been told" section that explains the £35 + refund mechanic and the non-engagement record to the initiator, so they understand the structure working on the other side. Also tightened the "What happens next" steps to reference the 14-day window explicitly.
+
+Both files typecheck clean (only pre-existing Stripe errors remain in `tsc --noEmit`). No changes required to `actions.ts` — call sites pass the same params.
+
+Note: the Supabase edge function `test-dispute-emails` (v15) already contains the same respondent copy but with a hardcoded `contractDate` and `claimSummary`. The local template derives `claimSummary` from `subject + amount` instead (because `actions.ts` doesn't have a `contractDate` field yet). If we want the real emails to reference a specific contract date and a richer one-sentence allegation, we'll need to:
+1. Add `contract_date` and `claim_summary` columns to the disputes table
+2. Capture them in the dispute filing form
+3. Thread them through `DisputeFiledParams`
+
+Leaving as follow-up unless founder wants it now.
+
+## [2026-04-07] Email — Respondent Notification Rewrite (£35 fee, 14-day refund, court comparison)
+Rewrote the respondent dispute notification email with stronger, more action-oriented copy. Key changes:
+- **£35 response fee** now explicitly stated, with **full refund if dispute resolves within 14 days of respondent joining**.
+- **"Respondent did not engage" record** introduced as a new mechanic — non-engagement creates a record the claimant can use as evidence in Small Claims Court (and may affect costs awarded).
+- **Court cost comparison** added: £35–£455 in fees, 3–6 months — to make the value of responding on Kestrel obvious.
+- **Subject line** changed from "A dispute has been raised: [REF]" to "Dispute notice: [Claimant Business] — response required within 14 days" — more direct, harder to ignore in inbox.
+- **Title** changed from "You have received a dispute" to "You've received a dispute notice".
+- **Claim summary card** replaces the structured details table — single italicised quote of the allegation, with reference number underneath.
+- **CTA** unchanged in destination (sign-up → /disputes/[id]); payment now happens on the dispute page after sign-up (per founder: "Payment needs to show on the actual dispute page and must be clear").
+- **"Sent in error" reply path** added — directs to /contact, not direct email reply.
+
+Deployed via Supabase edge function `test-dispute-emails` (version 15). Test emails sent to alex@pellar.co.uk and confirmed accepted by Resend.
+
+**Note:** The local file `apps/web/lib/email/templates/dispute-filed.ts` still contains the OLD copy and is unchanged. The edge function is the test surface; the local template needs to be updated separately to mirror the edge function before the next dispute is filed via `actions.ts` (which still imports the local template). Treat this as a follow-up: mirror the new respondent copy into `dispute-filed.ts`, port the £35 + refund mechanic into shared constants, and decide whether the initiator confirmation (`dispute-initiated.ts`) needs corresponding updates.
+
+Brand fixes also applied to the edge function (was stale):
+- Footer: `Kestrel Solutions Limited` → `OnKestrel Limited`
+- Site URL: `kestrel.pellar.co.uk` → `onkestrel.com`
+- From: `notifications@kestrel.pellar.co.uk` → `notifications@onkestrel.com`
+- Security: `security@kestrel.law` → `security@onkestrel.com`
+
 ## [2026-04-04] Design — Full Dark Mode Implementation
 Added dark mode support across both web and admin apps. Key decisions:
 - **Semantic token switching**: Restructured `@theme inline` to use `var(--raw-*)` indirection so all existing Tailwind classes (`bg-cream`, `text-ink`, `bg-stone`, etc.) auto-switch between light/dark — zero `dark:` prefixes needed on components.
@@ -581,3 +627,96 @@ Completed Stripe integration harnessing for custom on-site checkout (no redirect
 - **CSP**: Added `js.stripe.com` to script-src and `api.stripe.com` to connect-src.
 - **Env vars needed**: `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` for client-side Elements.
 - Old checkout route (redirect-based) preserved as fallback — can be removed once custom checkout is validated.
+
+## [2026-04-07] Product — Pricing model formalised (PRICING.md adopted)
+
+The previous placeholder pricing (Single Case £49, Professional £29/mo, Business £79/mo on /pricing; matching subscription scaffold) was scrapped. Replaced with the founder's `PRICING.md` model (Draft v1, dated April 2026) which is now canonical at the project root alongside `CONTEXT.md`.
+
+**Headline shape:**
+- Free tools stay free, forever, no sign-up gate.
+- Per-dispute fees in four tiers, set by declared dispute value:
+  - Small (≤£1,000): £35 per party
+  - Standard (£1,000–£10,000): £75 per party
+  - Larger (£10,000–£25,000): £150 per party
+  - Complex (£25,000+): £250 base + 0.5% above £25k, capped at £1,500/party
+- **Good-faith refund**: respondent's fee is fully refunded if they pay within 14 days of notification, submit a substantive (≥100-word) response, and the dispute resolves within 14 days of them joining. Manual at MVP, automated by Y2.
+- **Withdrawal refunds** per §4.4: pre-notification = full refund minus £5 Stripe retention; post-notification = no refund to claimant, full refund to respondent if paid.
+- **Counter-claims**: filed as a separate dispute with `parent_dispute_id` link.
+- **Kestrel Pro subscription**: deferred to Year 2. PRICING.md §7 still uses the working name "Pellar Pro" — rename noted with editor's note at top of PRICING.md.
+
+**Files deleted (subscription scaffold removed):**
+- `apps/web/lib/stripe/config.ts`
+- `apps/web/app/api/stripe/checkout/route.ts`
+- `apps/web/app/api/stripe/create-subscription/route.ts`
+- `apps/web/app/api/stripe/portal/route.ts`
+- `apps/web/components/app/billing/checkout-form.tsx`
+- `apps/web/app/(app)/settings/billing/billing-actions.tsx`
+
+The `subscriptions` DB table is preserved (dormant) for the Year 2 Kestrel Pro launch.
+
+**New pricing core (`packages/shared/pricing/`):**
+- `config.ts` — single source of truth for tier values (`YEAR_1_TIERS`), refund windows, Stripe statement descriptor, currency. All amounts integer pence, no floats. NEVER hardcode prices outside this file.
+- `types.ts` — `TierId`, `PartyRole`, `PaymentPurpose`, `PaymentStatus`, `FeeQuote`, `TierBumpQuote`, `GoodFaithEligibilityResult`.
+- `tiers.ts` — pure functions: `resolveTier()`, `quoteFee()` (handles Complex marginal + cap), `quoteTierBump()`, `evaluateGoodFaithRefund()` (the four-criterion predicate), `quoteWithdrawalRefund()`.
+- `format.ts` — `formatGBP()`, `formatGBPCompact()`, `formatTierLabel()`, `formatTierRange()`.
+- `apps/web/lib/pricing/{tiers,format,types,schemas}.ts` — re-export shells (so apps/web imports stay stable). `schemas.ts` adds Zod schemas for the future payment API route bodies.
+- `apps/web/lib/pricing/__tests__/tiers.test.ts` — 45 unit tests pinning every PRICING.md §4/§5 rule including boundary cases (£999 → small, £1000 → standard, £25,001 → complex with 1p marginal, £325,000 → capped, refund eligibility for each criterion). All green via `npx vitest run lib/pricing`.
+
+**Database migrations applied via Supabase MCP (project zyebrpcjdoyrckxbpicz):**
+1. `add_pricing_enums` — `dispute_tier_id`, `dispute_payment_status`, `dispute_payment_party_role`, `dispute_payment_purpose`.
+2. `add_pricing_columns_to_disputes` — added `tier_id`, `tier_locked_at`, `claimant_payment_status`, `claimant_paid_at`, `respondent_payment_status`, `respondent_paid_at`, `respondent_engagement_recorded_at`, `parent_dispute_id` (all nullable, fully backwards-compatible with legacy disputes).
+3. `create_dispute_payments_table` — Stripe payment ledger. RLS: parties can `SELECT` their own dispute's payment rows; no public INSERT/UPDATE/DELETE (writes are service-role-only via webhook handlers and admin actions).
+4. `create_dispute_payments_indexes_and_trigger` — `(dispute_id, party_role)` index, partial index on `stripe_payment_intent_id` and on active statuses, `updated_at` trigger.
+5. `add_pricing_fk_covering_indexes` — covering indexes for `disputes.parent_dispute_id` and `dispute_payments.refund_processed_by` to satisfy advisor lint 0001.
+
+TypeScript types regenerated and synced into both `packages/shared/supabase/types.ts` and `apps/web/lib/supabase/types.ts`. Supabase security advisor: zero new warnings on the new tables (the eight remaining warnings are all pre-existing and intentionally accepted per §2026-04-06 hardening sweep). Performance advisor: no new issues after the FK covering-index migration.
+
+**Public `/pricing` page rewrite (`apps/web/app/(site)/pricing/page.tsx`):**
+Three sections: free tools grid (six tools), four dispute fee tier cards (Standard tier highlighted as "Most common"), and a Kestrel Pro placeholder card ("Coming later"). All tier values pulled from `YEAR_1_TIERS` via `quoteFee()` — zero hardcoded prices. Includes a prominent good-faith refund callout and a §6.4-compliant "What the fee buys" disclaimer.
+
+**Billing & receipts page rewrite (`apps/web/app/(app)/settings/billing/page.tsx`):**
+Removed all subscription/plan UI. Replaced with a "How Kestrel charges" explainer card, a "Dispute fee history" table (queries `dispute_payments` joined to `disputes`, falls back to empty state if the table is missing or the user has no payments), and a Kestrel Pro placeholder. No more Stripe portal button (no subscriptions to manage).
+
+**Stripe webhook handlers rewrite (`apps/web/lib/stripe/webhook-handlers.ts`):**
+Removed all five subscription handlers. Added three new handlers, all idempotent and using `createServiceClient`:
+- `payment_intent.succeeded` → marks `dispute_payments.status = 'succeeded'`, captures `latest_charge`, updates `disputes.{role}_payment_status` and `{role}_paid_at`. Logs a TODO for the Phase 6 respondent notification email trigger (deferred until Stripe IDs).
+- `payment_intent.payment_failed` → marks status `failed`.
+- `charge.refunded` → distinguishes `refunded` vs `partially_refunded` from `amount_refunded` vs `amount`, updates the row and the dispute. Idempotent.
+
+**Admin pricing tooling (apps/admin/):**
+- `lib/admin/pricing-queries.ts` — `getDisputePayments()`, `getDisputeFeeSummary()`. The summary aggregates dispute + payment rows + most-recent respondent response word count, then runs `evaluateGoodFaithRefund()` and decorates the result with per-criterion human-readable labels for the UI.
+- `lib/admin/pricing-actions.ts` — server actions: `processGoodFaithRefund()`, `processWithdrawalRefund()`, `manuallyAdjustTier()`. All gated behind `getAdminUser()` (existing aal2 + admin claim). All audit-logged. The actual `stripe.refunds.create()` call is **deferred** — code is structured so the Stripe step is a single TODO block to uncomment when live keys land. The DB row is marked `refunded` immediately so the admin UI is consistent.
+- `components/admin/dispute-fee-panel.tsx` — slotted into the right column of `apps/admin/app/(admin)/disputes/[id]/page.tsx`, above the Timestamps card. Shows tier, claimant + respondent payment badges, the four-item good-faith refund eligibility checklist (with detail per criterion), "Process good-faith refund" button (disabled unless eligible), "Process withdrawal refund" button. Both call server actions that re-evaluate eligibility server-side — never trusting the client checklist.
+
+**New email templates (`apps/web/lib/email/templates/`):**
+- `payment-receipt.ts` — receipt-style email. Variant copy for claimant vs respondent; respondent variant includes good-faith refund reminder.
+- `refund-issued.ts` — admin-triggered refund email with three variants: `good_faith` (appreciative), `withdrawal` (factual), `manual` (neutral).
+- `dispute-payment-required.ts` — replaces `dispute-filed.ts` for the respondent path once Phase 6 wires the new flow. Headline leads with the good-faith refund mechanic, NOT the fee. Pulls all fee/window values from `@kestrel/shared/pricing/config`.
+
+**Documentation:**
+- `PRICING.md` added to project root with editor's note about the Pellar Pro → Kestrel Pro rename.
+- `CLAUDE.md` documentation table updated with PRICING.md row.
+- `CONTEXT.md` Pricing Model section replaced with a one-paragraph pointer to PRICING.md.
+
+**Verification:**
+- 45 pricing unit tests pass: `cd apps/web && npx vitest run lib/pricing`
+- `apps/web` builds clean: `npx turbo build --filter=@kestrel/web` (6.7s)
+- `apps/admin` builds clean: `npx turbo build --filter=@kestrel/admin` (6.3s)
+- Zero new TypeScript errors in pricing/admin files. Pre-existing admin TS errors (in `disputes/page.tsx`, `leads/page.tsx`, `dispute-queries.ts`, `leads/actions.ts`, `discover-actions.ts`) are unaffected and predate this change.
+- Supabase advisors: zero new security/performance warnings on `dispute_payments` or the new `disputes` columns.
+
+**Deferred to Phase 6 (per founder instruction — wait for live Stripe IDs):**
+- Per-dispute payment API routes (`/api/disputes/[id]/payment/initiate` etc.)
+- Adding a payment step to the dispute filing wizard
+- Wiring `fileDispute()` to call `resolveTier()` and create the `dispute_payments` row
+- Triggering the respondent notification email from the webhook on claimant payment success
+- Triggering refund-issued emails from the admin actions
+- Activating the Stripe SDK call inside `processGoodFaithRefund()` and `processWithdrawalRefund()` (currently a clear TODO block; the row is marked refunded and audit-logged but no money moves)
+- Adding the `stripe` package to `apps/admin` (only needed when the SDK calls are uncommented)
+
+**Open questions to resolve before merging Phase 6:**
+1. Co-founder review of the §6.4 "what the fee buys" language as it appears on /pricing and in the new `dispute-payment-required.ts` email.
+2. Tier-bump trigger UX for the respondent — PRICING.md §4.1 says they "contest" upward but doesn't specify the mechanism. Likely a structured `tier_challenge` submission type added in Phase 6.
+3. Multi-respondent disputes (§4.4) — current schema has a single `responding_party_id`. Out of scope for this rewrite; tracked as a follow-up.
+4. Statement descriptor `KESTREL DISPUTE FEE` is referenced in code (`STRIPE_STATEMENT_DESCRIPTOR` constant) but must also be configured in the Stripe Dashboard before going live.
+5. Admin app does not yet have a `stripe` SDK dependency. Add it when uncommenting the deferred refund Stripe calls.

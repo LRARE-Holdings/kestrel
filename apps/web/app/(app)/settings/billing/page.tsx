@@ -4,38 +4,124 @@ import { redirect } from "next/navigation";
 import { getUser } from "@/lib/auth/actions";
 import { createClient } from "@kestrel/shared/supabase/server";
 import { Badge } from "@/components/ui/badge";
-import { BillingActions } from "./billing-actions";
+import { formatGBP, formatTierLabel } from "@/lib/pricing/format";
+import type { TierId } from "@/lib/pricing/types";
 
 export const metadata: Metadata = {
-  title: "Billing — Kestrel",
+  title: "Billing & receipts — Kestrel",
 };
 
-async function getSubscription(userId: string) {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("subscriptions")
-    .select("*")
-    .eq("user_id", userId)
-    .single();
-  return data;
+// ---------------------------------------------------------------------------
+// Types — kept local until the dispute_payments table is in the generated
+// Supabase types (Phase 4 migration). Until then the query is best-effort
+// and falls back to an empty list.
+// ---------------------------------------------------------------------------
+
+interface DisputePaymentSummary {
+  id: string;
+  dispute_id: string;
+  reference_number: string | null;
+  party_role: "claimant" | "respondent";
+  purpose: "filing" | "tier_bump" | "counter_claim";
+  tier_id: TierId;
+  amount_pence: number;
+  status:
+    | "pending"
+    | "succeeded"
+    | "failed"
+    | "refunded"
+    | "partially_refunded";
+  created_at: string;
 }
 
-export default async function BillingPage({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
+async function getDisputeFeeHistory(
+  userId: string,
+): Promise<DisputePaymentSummary[]> {
+  const supabase = await createClient();
+
+  // Best-effort query: if the dispute_payments table doesn't exist yet
+  // (pre-migration), we return an empty list rather than throw.
+  try {
+    const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .from("dispute_payments" as any)
+      .select(
+        `
+          id,
+          dispute_id,
+          party_role,
+          purpose,
+          tier_id,
+          amount_pence,
+          status,
+          created_at,
+          disputes!inner(reference_number, initiating_party_id, responding_party_id)
+        `,
+      )
+      .or(
+        `disputes.initiating_party_id.eq.${userId},disputes.responding_party_id.eq.${userId}`,
+      )
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (error || !data) return [];
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (data as any[]).map((row) => ({
+      id: row.id,
+      dispute_id: row.dispute_id,
+      reference_number: row.disputes?.reference_number ?? null,
+      party_role: row.party_role,
+      purpose: row.purpose,
+      tier_id: row.tier_id,
+      amount_pence: row.amount_pence,
+      status: row.status,
+      created_at: row.created_at,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+function statusBadgeVariant(
+  status: DisputePaymentSummary["status"],
+): { label: string; className: string } {
+  switch (status) {
+    case "succeeded":
+      return {
+        label: "Paid",
+        className: "bg-kestrel/10 text-kestrel border-kestrel/20",
+      };
+    case "refunded":
+      return {
+        label: "Refunded",
+        className: "bg-sage/15 text-sage border-sage/30",
+      };
+    case "partially_refunded":
+      return {
+        label: "Partially refunded",
+        className: "bg-sage/10 text-sage border-sage/20",
+      };
+    case "failed":
+      return {
+        label: "Failed",
+        className: "bg-error/10 text-error border-error/20",
+      };
+    case "pending":
+    default:
+      return {
+        label: "Pending",
+        className: "bg-warning/10 text-warning border-warning/20",
+      };
+  }
+}
+
+export default async function BillingPage() {
   const user = await getUser();
   if (!user) redirect("/sign-in");
 
-  const subscription = await getSubscription(user.id);
-  const params = await searchParams;
-  const showSuccess = params.success === "true";
-
-  const plan = subscription?.plan ?? "free";
-  const status = subscription?.status ?? "active";
-  const hasActiveSubscription =
-    subscription && ["active", "trialing"].includes(status);
+  const payments = await getDisputeFeeHistory(user.id);
+  const hasPayments = payments.length > 0;
 
   return (
     <div>
@@ -63,81 +149,128 @@ export default async function BillingPage({
             href="/settings/billing"
             className="rounded-[var(--radius-sm)] bg-stone/60 px-3 py-2 text-sm font-medium text-ink"
           >
-            Billing
+            Billing &amp; receipts
           </Link>
         </nav>
 
         {/* Billing content */}
         <div className="lg:col-span-2 space-y-6">
-          {showSuccess && (
-            <div className="rounded-lg bg-kestrel/5 border border-kestrel/15 px-4 py-3 text-sm text-kestrel">
-              Your subscription has been activated. Thank you for upgrading.
-            </div>
-          )}
-
-          {/* Current plan */}
+          {/* Pricing summary card */}
           <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-6">
-            <div className="flex items-center gap-3">
-              <h2 className="text-lg font-semibold text-ink">Current plan</h2>
-              <Badge variant={hasActiveSubscription ? "default" : "default"}>
-                {plan.charAt(0).toUpperCase() + plan.slice(1)}
-              </Badge>
-              {status === "past_due" && (
-                <Badge variant="default" className="bg-warning/10 text-warning border-warning/20">
-                  Payment overdue
-                </Badge>
-              )}
-              {status === "canceled" && (
-                <Badge variant="default" className="bg-error/10 text-error border-error/20">
-                  Cancelled
-                </Badge>
+            <h2 className="text-lg font-semibold text-ink">How Kestrel charges</h2>
+            <p className="mt-2 text-sm leading-relaxed text-text-secondary">
+              Free tools are free forever. You only pay if you file a dispute,
+              and the per-party fee is set by the disputed value. If you are
+              the respondent and engage in good faith within 14 days, your fee
+              is fully refunded.
+            </p>
+            <div className="mt-4">
+              <Link
+                href="/pricing"
+                className="inline-flex items-center text-sm font-medium text-kestrel hover:text-kestrel-hover transition-colors"
+              >
+                See the full pricing model →
+              </Link>
+            </div>
+          </div>
+
+          {/* Dispute fee history */}
+          <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-ink">
+                Dispute fee history
+              </h2>
+              {hasPayments && (
+                <Badge variant="default">{payments.length}</Badge>
               )}
             </div>
 
-            {hasActiveSubscription ? (
-              <p className="mt-2 text-sm text-text-secondary">
-                You&apos;re on the {plan} plan.
-                {subscription?.current_period_end && (
-                  <>
-                    {" "}
-                    Next billing date:{" "}
-                    {new Date(subscription.current_period_end).toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </>
-                )}
-              </p>
+            {!hasPayments ? (
+              <div className="mt-4 rounded-[var(--radius-md)] border border-dashed border-border-subtle bg-cream/40 px-4 py-8 text-center">
+                <p className="text-sm font-medium text-ink">
+                  No dispute fees yet
+                </p>
+                <p className="mt-1 text-xs text-text-muted">
+                  Free tools stay free. You will only see entries here if you
+                  file or respond to a dispute.
+                </p>
+              </div>
             ) : (
-              <p className="mt-2 text-sm text-text-secondary">
-                You&apos;re on the free plan. Upgrade to file disputes and save
-                documents.
-              </p>
-            )}
-
-            {!hasActiveSubscription && (
-              <div className="mt-4">
-                <Link
-                  href="/pricing"
-                  className="inline-flex items-center rounded-lg bg-kestrel px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-kestrel-hover"
-                >
-                  View plans
-                </Link>
+              <div className="mt-4 overflow-hidden rounded-[var(--radius-md)] border border-border-subtle">
+                <table className="w-full text-sm">
+                  <thead className="bg-cream/60 text-left text-xs uppercase tracking-wider text-text-muted">
+                    <tr>
+                      <th className="px-4 py-2 font-semibold">Date</th>
+                      <th className="px-4 py-2 font-semibold">Dispute</th>
+                      <th className="px-4 py-2 font-semibold">Tier</th>
+                      <th className="px-4 py-2 font-semibold">Role</th>
+                      <th className="px-4 py-2 font-semibold text-right">
+                        Amount
+                      </th>
+                      <th className="px-4 py-2 font-semibold">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border-subtle">
+                    {payments.map((payment) => {
+                      const badge = statusBadgeVariant(payment.status);
+                      return (
+                        <tr key={payment.id} className="hover:bg-cream/40">
+                          <td className="px-4 py-3 text-text-secondary">
+                            {new Date(payment.created_at).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              },
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            <Link
+                              href={`/disputes/${payment.dispute_id}`}
+                              className="font-medium text-kestrel hover:text-kestrel-hover transition-colors"
+                            >
+                              {payment.reference_number ?? payment.dispute_id.slice(0, 8)}
+                            </Link>
+                          </td>
+                          <td className="px-4 py-3 text-text-secondary">
+                            {formatTierLabel(payment.tier_id)}
+                          </td>
+                          <td className="px-4 py-3 text-text-secondary capitalize">
+                            {payment.party_role}
+                          </td>
+                          <td className="px-4 py-3 text-right font-medium text-ink">
+                            {formatGBP(payment.amount_pence)}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${badge.className}`}
+                            >
+                              {badge.label}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
 
-          {/* Payment management */}
-          <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-6">
-            <h2 className="text-lg font-semibold text-ink">
-              Payment management
-            </h2>
-            <p className="mt-2 text-sm text-text-secondary">
-              Manage your payment method, view invoices, and update billing
-              details through our secure payment portal.
+          {/* Future Kestrel Pro placeholder */}
+          <div className="rounded-[var(--radius-lg)] border border-border-subtle bg-surface/60 p-6">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center rounded-full bg-warm/40 px-3 py-0.5 text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                Coming later
+              </span>
+              <h2 className="text-lg font-semibold text-ink">Kestrel Pro</h2>
+            </div>
+            <p className="mt-2 text-sm leading-relaxed text-text-secondary">
+              A monthly subscription for businesses managing multiple ongoing
+              relationships. Document vault, branded exports, multi-user
+              accounts. Launching in Year 2.
             </p>
-            <BillingActions hasSubscription={!!subscription?.stripe_customer_id} />
           </div>
         </div>
       </div>

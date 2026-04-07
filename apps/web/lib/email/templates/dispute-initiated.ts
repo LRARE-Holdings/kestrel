@@ -96,24 +96,40 @@ export function disputeInitiatedEmail(
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 0 0 24px 0;">
       <tr>
         <td style="padding: 4px 0; font-size: 14px; color: #4A5553; line-height: 1.6;">
-          1.&nbsp;&nbsp;The other party has been invited to review and respond.
+          1.&nbsp;&nbsp;${respondentName} has been sent a formal dispute notice with 14 days to respond.
         </td>
       </tr>
       <tr>
         <td style="padding: 4px 0; font-size: 14px; color: #4A5553; line-height: 1.6;">
-          2.&nbsp;&nbsp;You will be notified when they respond, or if the deadline passes without a response.
+          2.&nbsp;&nbsp;You will be notified as soon as they respond, or if the deadline passes without engagement.
         </td>
       </tr>
       <tr>
         <td style="padding: 4px 0; font-size: 14px; color: #4A5553; line-height: 1.6;">
-          3.&nbsp;&nbsp;Both parties can submit evidence and settlement proposals at any stage.
+          3.&nbsp;&nbsp;Once they join, both parties can submit evidence and settlement proposals at any stage.
         </td>
       </tr>
     </table>
 
+    <p style="margin: 0 0 12px 0; font-weight: 600; color: #0C1311;">What ${respondentName} has been told</p>
+    <p style="margin: 0 0 16px 0;">
+      ${respondentName} has been informed that responding costs
+      <strong style="color: #0C1311;">£35</strong>, and that the fee is
+      refunded in full if the dispute is resolved within 14 days of their
+      joining. They have also been told that ignoring the notice will be
+      recorded as
+      <em>&ldquo;respondent did not engage&rdquo;</em> &mdash; a record
+      that can be used as evidence of attempted resolution before any
+      further action, including Small Claims Court.
+    </p>
+    <p style="margin: 0 0 24px 0;">
+      This is deliberate. The structure rewards good-faith engagement and
+      makes non-engagement costly &mdash; so most respondents join.
+    </p>
+
     <p style="margin: 0 0 8px 0;">
-      You can view your dispute, upload evidence, and track progress from your dashboard.
-      Please keep your reference number for your records.
+      You can view your dispute, upload evidence, and track progress from
+      your dashboard. Please keep your reference number for your records.
     </p>
   `;
 

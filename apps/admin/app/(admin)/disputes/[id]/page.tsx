@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDisputeOverview } from "@/lib/admin/dispute-queries";
+import { getDisputeFeeSummary } from "@/lib/admin/pricing-queries";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { Timeline, type TimelineItem } from "@/components/admin/timeline";
+import { DisputeFeePanel } from "@/components/admin/dispute-fee-panel";
 import {
   formatCurrency,
   formatDisputeType,
@@ -34,13 +36,17 @@ export default async function DisputeDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const [overview, feeSummary] = await Promise.all([
+    getDisputeOverview(id),
+    getDisputeFeeSummary(id),
+  ]);
   const {
     dispute,
     respondingParty,
     submissionCount,
     evidenceCount,
     auditLog,
-  } = await getDisputeOverview(id);
+  } = overview;
 
   if (!dispute) {
     notFound();
@@ -289,6 +295,9 @@ export default async function DisputeDetailPage({
               for data isolation purposes.
             </p>
           </div>
+
+          {/* Dispute fee panel */}
+          {feeSummary && <DisputeFeePanel summary={feeSummary} />}
 
           {/* Timestamps */}
           <div className="bg-surface rounded-xl border border-border p-6">

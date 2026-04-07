@@ -118,14 +118,7 @@ Geometric swept-wing bird outline (Concept A). Available in: mark in Kestrel gre
 
 ## Pricing Model
 
-Free tools are free forever — they are the distribution mechanic, not a trial.
-
-Paid revenue comes from:
-- Dispute resolution workflows (per-dispute or subscription)
-- Premium features for businesses managing multiple relationships
-- Escalation/mediator marketplace fees
-
-Exact pricing tiers should be validated through early user research. Do not hardcode pricing assumptions into the architecture.
+See `PRICING.md` for the full pricing model. Free tools stay free forever — they are the distribution mechanic, not a trial. Paid revenue comes from per-dispute tier fees with a good-faith refund mechanic for engaged respondents. The Kestrel Pro subscription launches in Year 2. All pricing values live in `packages/shared/pricing/config.ts` — never hardcoded in user-facing files.
 
 ## Key Principles
 

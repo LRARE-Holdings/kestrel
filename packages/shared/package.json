@@ -14,6 +14,10 @@
     "./email/templates/layout": "./email/templates/layout.ts",
     "./constants": "./constants/index.ts",
     "./dates/format": "./dates/format.ts",
+    "./pricing/config": "./pricing/config.ts",
+    "./pricing/types": "./pricing/types.ts",
+    "./pricing/tiers": "./pricing/tiers.ts",
+    "./pricing/format": "./pricing/format.ts",
     "./theme/provider": "./theme/provider.tsx",
     "./theme/theme-toggle": "./theme/theme-toggle.tsx",
     "./theme/theme-selector": "./theme/theme-selector.tsx"

@@ -3,7 +3,7 @@
 // to the final domain — every email, clause, and page references these.
 
 /** The primary domain (no protocol). Change this ONE value when you buy the domain. */
-export const KESTREL_DOMAIN = "kestrel.pellar.co.uk";
+export const KESTREL_DOMAIN = "onkestrel.com";
 
 /** Full site URL, respects env var override for local dev / preview deploys. */
 export const SITE_URL =

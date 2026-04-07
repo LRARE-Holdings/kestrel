@@ -4,9 +4,9 @@ import { Webhook } from "https://esm.sh/standardwebhooks@1.0.0";
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
 const HOOK_SECRET = Deno.env.get("SEND_EMAIL_HOOK_SECRET")!;
 const SITE_URL =
-  Deno.env.get("SITE_URL") || "https://kestrel.pellar.co.uk";
+  Deno.env.get("SITE_URL") || "https://onkestrel.com";
 const FROM_DOMAIN =
-  Deno.env.get("RESEND_FROM_DOMAIN") || "kestrel.pellar.co.uk";
+  Deno.env.get("RESEND_FROM_DOMAIN") || "onkestrel.com";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const LOGO_URL =
   "https://zyebrpcjdoyrckxbpicz.supabase.co/storage/v1/object/public/logo/kpm.png";
@@ -144,7 +144,7 @@ function buildConfirmationUrl(emailData: HookPayload["email_data"]): string {
     // Preserve the original redirect_to for other flows
     const redirectUrl = new URL(emailData.redirect_to);
     // Extract the path from the redirect_to (which may be a full URL like
-    // https://kestrel.pellar.co.uk/auth/callback?redirect=/dashboard)
+    // https://onkestrel.com/auth/callback?redirect=/dashboard)
     // We want to use /auth/confirm directly with the token_hash instead.
   }
 

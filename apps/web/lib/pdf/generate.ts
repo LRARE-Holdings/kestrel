@@ -29,7 +29,7 @@ function addHeader(doc: jsPDF) {
   doc.text("KESTREL", MARGIN.left, 12);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...COLORS.muted);
-  doc.text("kestrel.law", PAGE_WIDTH - MARGIN.right, 12, { align: "right" });
+  doc.text("onkestrel.com", PAGE_WIDTH - MARGIN.right, 12, { align: "right" });
 }
 
 function addFooter(doc: jsPDF, pageNum: number, totalPages: number) {
@@ -37,7 +37,7 @@ function addFooter(doc: jsPDF, pageNum: number, totalPages: number) {
   doc.setFontSize(7);
   doc.setTextColor(...COLORS.muted);
   doc.text(
-    "Generated using Kestrel (kestrel.law) — This document does not constitute legal advice.",
+    "Generated using Kestrel (onkestrel.com) — This document does not constitute legal advice.",
     MARGIN.left,
     y,
   );

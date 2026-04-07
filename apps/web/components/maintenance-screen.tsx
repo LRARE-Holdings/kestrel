@@ -19,10 +19,10 @@ export function MaintenanceScreen() {
         <p className="mt-6 text-sm text-text-muted">
           If you need immediate assistance, please email{" "}
           <a
-            href="mailto:hello@kestrel.pellar.co.uk"
+            href="mailto:hello@onkestrel.com"
             className="font-medium text-kestrel hover:text-kestrel-hover transition-colors"
           >
-            hello@kestrel.pellar.co.uk
+            hello@onkestrel.com
           </a>
         </p>
       </div>

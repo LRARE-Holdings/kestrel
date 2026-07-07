@@ -1,5 +1,28 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createSupabaseProxyClient } from "@kestrel/shared/supabase/middleware";
+import { isValidSlug } from "@/lib/branding/slug";
+
+/**
+ * Detect a firm slug from a `{slug}.onkestrel.com` style host. Returns null for
+ * the apex, `www`, multi-level or non-canonical hosts, and anything that isn't
+ * a valid slug — so localhost, Vercel preview URLs, etc. are all left untouched.
+ * Subdomain routing is groundwork; path-based `/f/[slug]` is the live interface.
+ */
+function getFirmSlugFromHost(host: string | null): string | null {
+  if (!host) return null;
+  const hostname = host.split(":")[0].toLowerCase();
+  const rootDomain = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || "onkestrel.com").toLowerCase();
+
+  const suffix = `.${rootDomain}`;
+  if (!hostname.endsWith(suffix)) return null;
+
+  const sub = hostname.slice(0, -suffix.length);
+  // Reject apex (empty), www, and multi-level subdomains (e.g. a.b.onkestrel.com).
+  if (!sub || sub === "www" || sub.includes(".")) return null;
+  if (!isValidSlug(sub)) return null;
+
+  return sub;
+}
 
 export async function proxy(request: NextRequest) {
   // Supabase sends auth codes to the Site URL root — forward to the callback handler.
@@ -71,6 +94,26 @@ export async function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return redirectTo(url);
+  }
+
+  // Subdomain readiness: on `{slug}.onkestrel.com`, serve the branded login by
+  // rewriting `/sign-in` → `/f/{slug}/sign-in`. Conservative by design — only
+  // the sign-in page is rewritten; the apex, `www`, API routes and all other
+  // paths are untouched. Signed-in visitors were already redirected above.
+  const firmSlug = getFirmSlugFromHost(request.headers.get("host"));
+  if (
+    firmSlug &&
+    request.nextUrl.pathname === "/sign-in" &&
+    !request.nextUrl.pathname.startsWith("/api")
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/f/${firmSlug}/sign-in`;
+    const rewriteResponse = NextResponse.rewrite(url);
+    // Preserve any refreshed Supabase session cookies across the rewrite.
+    response.cookies.getAll().forEach((cookie) => {
+      rewriteResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return rewriteResponse;
   }
 
   return response;

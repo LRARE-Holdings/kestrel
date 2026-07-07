@@ -735,3 +735,18 @@ Decision: multi-tenant branding via organisations + organisation_members tables,
 
 ## [2026-07-07] Database — Migrations pending application
 Supabase MCP is permission-denied in this session, so migrations are committed as SQL files in supabase/migrations/ and all dependent code degrades gracefully until applied: 20260707120000_add_created_by_to_tool_tables.sql, plus the organisations/branding migration. Apply via Supabase MCP or Studio, then regenerate TypeScript types.
+
+## [2026-07-07] Product — Firm-branded login pages (/f/[slug])
+Flagship: each organisation (law firm/business) gets a branded sign-in page above LEAP-tier polish. Path-based `/f/{slug}` is the live interface; `{slug}.onkestrel.com` subdomains are wired in proxy.ts as groundwork.
+
+## [2026-07-07] Architecture — Multi-tenant organisations
+New `organisations` + `organisation_members` tables; `profiles.organisation_id` nullable FK. First multi-tenant primitive in the codebase (profiles was flat single-user). RLS via SECURITY DEFINER helpers `is_org_member`/`is_org_owner` to avoid policy recursion. Migration: supabase/migrations/20260707130000_organisations_and_branding.sql (NOT yet applied — Supabase MCP was permission-denied this session; all app code degrades to default Kestrel branding when tables/functions are absent).
+
+## [2026-07-07] Security — Anon-safe branding read
+Unauthenticated login page reads branding ONLY via SECURITY DEFINER function `get_organisation_branding(slug)` returning a whitelisted column set (granted anon+authenticated, stable search_path). No anon SELECT policy on organisations. Brand colours validated against `^#[0-9a-fA-F]{6}$` before any inline-style injection; logo URLs restricted to http(s); accessible button foreground computed via WCAG relative-luminance (white only when contrast ≥ 4.5, else ink).
+
+## [2026-07-07] Database — org-logos storage bucket
+Public-read `org-logos` bucket; owner-only insert/update/delete scoped to `{organisation_id}/` prefix (regex-guarded uuid cast). Logo uploads validated png/svg/jpeg + ≤1MB on client and server (magic-bytes for raster types).
+
+## [2026-07-07] Product — Branded firm-specific login pages shipped
+/f/{slug}/sign-in renders the firm's logo, name, tagline, and brand colour over the Kestrel auth shell with "Powered by Kestrel" attribution; unknown slugs fall back to the standard sign-in. Branding is anon-readable only via the get_organisation_branding security-definer RPC (six whitelisted columns, no anon table SELECT). Colours regex-validated before style injection; button foreground chosen by WCAG contrast. Organisation settings page: create org (name → slug with availability check), edit branding with live preview, magic-byte-validated logo upload (≤1MB) to the org-logos bucket, shareable URL. Subdomain rewrite groundwork in proxy.ts ({slug}.onkestrel.com → /f/{slug}/sign-in) pending DNS/wildcard cert. Migration 20260707130000 pending application; all code degrades to default Kestrel branding until then. 140/140 tests pass.

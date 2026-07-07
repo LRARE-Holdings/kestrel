@@ -164,6 +164,12 @@ export default async function BillingPage() {
             Profile
           </Link>
           <Link
+            href="/settings/organisation"
+            className="rounded-[var(--radius-sm)] px-3 py-2 text-sm font-medium text-text-secondary hover:bg-stone/60 hover:text-ink transition-colors"
+          >
+            Organisation
+          </Link>
+          <Link
             href="/settings/security"
             className="rounded-[var(--radius-sm)] px-3 py-2 text-sm font-medium text-text-secondary hover:bg-stone/60 hover:text-ink transition-colors"
           >

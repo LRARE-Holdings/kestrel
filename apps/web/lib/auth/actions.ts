@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@kestrel/shared/supabase/server";
+import { getRequestOrigin } from "@/lib/auth/origin";
 
 export async function signInWithPassword(formData: FormData) {
   const email = formData.get("email") as string;
@@ -59,7 +60,8 @@ export async function signUpWithPassword(formData: FormData) {
 
   const supabase = await createClient();
 
-  const confirmUrl = new URL("/auth/confirm", process.env.NEXT_PUBLIC_SITE_URL);
+  const origin = await getRequestOrigin();
+  const confirmUrl = new URL("/auth/confirm", origin);
   if (redirectTo) {
     confirmUrl.searchParams.set("redirect", redirectTo);
   }
@@ -96,8 +98,9 @@ export async function resetPassword(formData: FormData) {
   // Works for all users: email+password users reset their password,
   // OAuth-only users (Google/Microsoft) get to set a password for the
   // first time, giving them email+password as an additional sign-in method.
+  const origin = await getRequestOrigin();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?redirect=/update-password`,
+    redirectTo: `${origin}/auth/callback?redirect=/update-password`,
   });
 
   if (error) {
@@ -146,11 +149,19 @@ export async function signOut() {
 }
 
 export async function getUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
+  // Resilient to a misconfigured environment: if the Supabase client cannot be
+  // created (missing NEXT_PUBLIC_SUPABASE_URL / ANON_KEY), treat the visitor as
+  // logged out rather than throwing, so public pages that read the current user
+  // (e.g. the marketing layout) still render instead of returning a 500.
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user;
+  } catch {
+    return null;
+  }
 }
 
 export async function getProfile() {

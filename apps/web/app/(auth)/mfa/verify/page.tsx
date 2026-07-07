@@ -1,13 +1,23 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@kestrel/shared/supabase/client";
 import { Button } from "@/components/ui/button";
 
 export default function MfaVerifyPage() {
   const router = useRouter();
-  const supabase = createClient();
+
+  // Create the Supabase browser client lazily. Building it at module/render
+  // time throws when the public env vars are empty (e.g. during static
+  // prerender), so we only instantiate it inside client-side handlers.
+  const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
+  function getSupabase() {
+    if (!supabaseRef.current) {
+      supabaseRef.current = createClient();
+    }
+    return supabaseRef.current;
+  }
 
   const [factorId, setFactorId] = useState<string>("");
   const [code, setCode] = useState<string>("");
@@ -15,32 +25,39 @@ export default function MfaVerifyPage() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadFactor = useCallback(async () => {
-    setIsLoading(true);
-
-    const { data, error: listError } = await supabase.auth.mfa.listFactors();
-
-    if (listError) {
-      setError(listError.message);
-      setIsLoading(false);
-      return;
-    }
-
-    const totpFactor = data.totp.find((f) => f.status === "verified");
-
-    if (!totpFactor) {
-      // No MFA enrolled — go to dashboard
-      router.replace("/dashboard");
-      return;
-    }
-
-    setFactorId(totpFactor.id);
-    setIsLoading(false);
-  }, [supabase.auth.mfa, router]);
-
   useEffect(() => {
+    let active = true;
+
+    async function loadFactor() {
+      const { data, error: listError } =
+        await getSupabase().auth.mfa.listFactors();
+
+      if (!active) return;
+
+      if (listError) {
+        setError(listError.message);
+        setIsLoading(false);
+        return;
+      }
+
+      const totpFactor = data.totp.find((f) => f.status === "verified");
+
+      if (!totpFactor) {
+        // No MFA enrolled — go to dashboard
+        router.replace("/dashboard");
+        return;
+      }
+
+      setFactorId(totpFactor.id);
+      setIsLoading(false);
+    }
+
     loadFactor();
-  }, [loadFactor]);
+
+    return () => {
+      active = false;
+    };
+  }, [router]);
 
   async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
@@ -48,7 +65,7 @@ export default function MfaVerifyPage() {
     setIsVerifying(true);
 
     const { data: challengeData, error: challengeError } =
-      await supabase.auth.mfa.challenge({ factorId });
+      await getSupabase().auth.mfa.challenge({ factorId });
 
     if (challengeError) {
       setError(challengeError.message);
@@ -56,7 +73,7 @@ export default function MfaVerifyPage() {
       return;
     }
 
-    const { error: verifyError } = await supabase.auth.mfa.verify({
+    const { error: verifyError } = await getSupabase().auth.mfa.verify({
       factorId,
       challengeId: challengeData.id,
       code,
@@ -74,7 +91,7 @@ export default function MfaVerifyPage() {
   }
 
   async function handleSignOut() {
-    await supabase.auth.signOut();
+    await getSupabase().auth.signOut();
     router.replace("/sign-in");
   }
 

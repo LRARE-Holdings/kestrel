@@ -5,10 +5,22 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signUpWithPassword } from "@/lib/auth/actions";
 import { createClient } from "@kestrel/shared/supabase/client";
+import { oauthErrorMessage } from "@/lib/auth/oauth-errors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-function OAuthButtons({ redirectTo }: { redirectTo?: string | null }) {
+const PROVIDER_LABELS: Record<"google" | "azure", string> = {
+  google: "Google",
+  azure: "Microsoft",
+};
+
+function OAuthButtons({
+  redirectTo,
+  onError,
+}: {
+  redirectTo?: string | null;
+  onError: (message: string) => void;
+}) {
   const [loading, setLoading] = useState<string | null>(null);
 
   async function handleOAuth(provider: "google" | "azure") {
@@ -26,6 +38,9 @@ function OAuthButtons({ redirectTo }: { redirectTo?: string | null }) {
     });
     if (error) {
       setLoading(null);
+      onError(
+        `${PROVIDER_LABELS[provider]} sign-in is not available at the moment. Please use your email and password below.`,
+      );
     }
   }
 
@@ -71,6 +86,9 @@ function SignUpForm() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [oauthError, setOauthError] = useState<string | null>(() =>
+    oauthErrorMessage(searchParams.get("error")),
+  );
 
   async function handleSubmit(formData: FormData) {
     setLoading(true);
@@ -143,8 +161,17 @@ function SignUpForm() {
         </p>
       </div>
 
+      {oauthError && (
+        <div
+          role="alert"
+          className="mt-6 rounded-lg border border-error/20 bg-error/5 px-3.5 py-2.5 text-sm text-error"
+        >
+          {oauthError}
+        </div>
+      )}
+
       <div className="mt-7">
-        <OAuthButtons redirectTo={redirectTo} />
+        <OAuthButtons redirectTo={redirectTo} onError={setOauthError} />
       </div>
 
       <div className="relative mt-6">

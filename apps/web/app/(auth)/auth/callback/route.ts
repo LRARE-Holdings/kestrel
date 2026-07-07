@@ -1,11 +1,25 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@kestrel/shared/supabase/server";
 import { safeRedirectPath } from "@/lib/security/redirect";
+import { mapSupabaseOAuthError } from "@/lib/auth/oauth-errors";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const redirectTo = searchParams.get("redirect");
+
+  // The provider (or Supabase) returned an error — e.g. OAuth is not configured,
+  // or the user cancelled. Map it to a safe, whitelisted code and surface it on
+  // the sign-in page rather than bouncing silently.
+  const providerError = searchParams.get("error");
+  if (providerError) {
+    const mapped = mapSupabaseOAuthError(
+      providerError,
+      searchParams.get("error_code"),
+      searchParams.get("error_description"),
+    );
+    return NextResponse.redirect(`${origin}/sign-in?error=${mapped}`);
+  }
 
   if (code) {
     const supabase = await createClient();
@@ -51,8 +65,13 @@ export async function GET(request: Request) {
       const destination = safeRedirectPath(redirectTo, origin);
       return NextResponse.redirect(`${origin}${destination}`);
     }
+
+    // The code was present but could not be exchanged for a session.
+    return NextResponse.redirect(
+      `${origin}/sign-in?error=session_exchange_failed`,
+    );
   }
 
-  // Auth error — redirect to sign-in with error
-  return NextResponse.redirect(`${origin}/sign-in`);
+  // No code and no error — nothing to process.
+  return NextResponse.redirect(`${origin}/sign-in?error=unknown`);
 }

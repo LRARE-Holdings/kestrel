@@ -12,10 +12,9 @@ import { NextResponse } from "next/server";
  */
 export function validateOrigin(request: Request): NextResponse | null {
   const origin = request.headers.get("origin");
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
-  // In development or if SITE_URL is not set, allow all
-  if (!siteUrl || process.env.NODE_ENV === "development") {
+  // In development, allow all.
+  if (process.env.NODE_ENV === "development") {
     return null;
   }
 
@@ -25,15 +24,39 @@ export function validateOrigin(request: Request): NextResponse | null {
     return null;
   }
 
-  // Parse the expected origin from the site URL
-  const expectedOrigin = new URL(siteUrl).origin;
-
-  if (origin !== expectedOrigin) {
-    return NextResponse.json(
-      { error: "Forbidden" },
-      { status: 403 },
-    );
+  let originHost: string;
+  try {
+    originHost = new URL(origin).host;
+  } catch {
+    // Malformed Origin header — reject.
+    return forbidden();
   }
 
-  return null;
+  // Same-origin check: the Origin host matches the request's own host. This is
+  // the primary defence and does not depend on NEXT_PUBLIC_SITE_URL being fresh
+  // (a stale env var must never 403 a legitimate same-origin submission).
+  const requestHost =
+    request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  if (requestHost && originHost === requestHost) {
+    return null;
+  }
+
+  // Also accept the explicitly configured site URL, if set and parseable.
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (siteUrl) {
+    try {
+      if (new URL(siteUrl).host === originHost) {
+        return null;
+      }
+    } catch {
+      // Ignore a malformed SITE_URL and fall through to reject.
+    }
+  }
+
+  // Cross-origin — reject. No wildcard allow.
+  return forbidden();
+}
+
+function forbidden(): NextResponse {
+  return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 }

@@ -8,8 +8,16 @@ const styleMap = {
 } as const;
 
 export async function AnnouncementBar() {
-  const supabase = await createClient();
-  const announcement = await getAnnouncementSettings(supabase);
+  // Fail closed (render nothing) if the announcement settings cannot be read —
+  // e.g. when the Supabase environment is not configured. This keeps the shared
+  // layout rendering rather than returning a 500 for the whole site.
+  let announcement: Awaited<ReturnType<typeof getAnnouncementSettings>>;
+  try {
+    const supabase = await createClient();
+    announcement = await getAnnouncementSettings(supabase);
+  } catch {
+    return null;
+  }
 
   if (!announcement.enabled || !announcement.text) return null;
 

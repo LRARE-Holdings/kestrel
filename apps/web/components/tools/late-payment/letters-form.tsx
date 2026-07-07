@@ -8,11 +8,30 @@ import { letterSchema, type LetterInput } from "@/lib/late-payment/schemas";
 import { generateLetter, type LetterOutput } from "@/lib/late-payment/letters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/ui/select";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
 import { SaveDocumentButton } from "@/components/tools/save-document-button";
 import { generateLetterPdf, downloadPdf } from "@/lib/pdf/generate";
 import { DownloadPdfButton } from "@/components/tools/download-pdf-button";
+import {
+  DraftRestoredNotice,
+  FieldHint,
+  scrollToFirstError,
+} from "@/components/tools/form-wizard";
+import { useFormDraft } from "@/components/tools/use-form-draft";
+
+const DEFAULT_VALUES: LetterInput = {
+  creditor: { name: "", businessName: "", address: "", email: "" },
+  debtor: { name: "", businessName: "", address: "", email: "" },
+  invoiceNumber: "",
+  invoiceDate: "",
+  amountOwed: undefined as unknown as number,
+  paymentTermsDays: 30,
+  includeKestrelClause: true,
+  letterStage: 1,
+};
 
 const STAGES = [
   {
@@ -46,20 +65,20 @@ export function LettersForm({ baseRate }: { baseRate: number }) {
     register,
     handleSubmit,
     watch,
+    reset,
     setValue,
     formState: { errors },
   } = useForm<LetterInput>({
     resolver: zodResolver(letterSchema),
-    defaultValues: {
-      creditor: { name: "", businessName: "", address: "", email: "" },
-      debtor: { name: "", businessName: "", address: "", email: "" },
-      invoiceNumber: "",
-      invoiceDate: "",
-      amountOwed: undefined,
-      paymentTermsDays: 30,
-      includeKestrelClause: true,
-      letterStage: 1,
-    },
+    defaultValues: DEFAULT_VALUES,
+  });
+
+  const draft = useFormDraft({
+    tool: "late-payment-letter",
+    watch,
+    reset,
+    defaultValues: DEFAULT_VALUES,
+    enabled: !letter,
   });
 
   const includeKestrelClause = watch("includeKestrelClause");
@@ -68,6 +87,7 @@ export function LettersForm({ baseRate }: { baseRate: number }) {
   function onSubmit(data: LetterInput) {
     const output = generateLetter(data, { baseRate });
     setLetter(output);
+    draft.clear();
   }
 
   function downloadAsPdf() {
@@ -115,7 +135,16 @@ export function LettersForm({ baseRate }: { baseRate: number }) {
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_1fr]">
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form
+          onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
+          className="space-y-6"
+        >
+          {draft.restored && (
+            <DraftRestoredNotice
+              onStartAfresh={draft.startAfresh}
+              onDismiss={draft.dismissRestoredNotice}
+            />
+          )}
           {/* Letter stage selector */}
           <Card>
             <CardHeader>
@@ -169,26 +198,13 @@ export function LettersForm({ baseRate }: { baseRate: number }) {
                 error={errors.creditor?.businessName?.message}
                 {...register("creditor.businessName")}
               />
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-ink">
-                  Business address
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder={"123 High Street\nNewcastle upon Tyne\nNE1 1AA"}
-                  className={`w-full rounded-[var(--radius-md)] border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel ${
-                    errors.creditor?.address
-                      ? "border-error focus:ring-error/40 focus:border-error"
-                      : "border-border"
-                  }`}
-                  {...register("creditor.address")}
-                />
-                {errors.creditor?.address && (
-                  <p className="text-xs text-error">
-                    {errors.creditor.address.message}
-                  </p>
-                )}
-              </div>
+              <Textarea
+                label="Business address"
+                rows={3}
+                placeholder={"123 High Street\nNewcastle upon Tyne\nNE1 1AA"}
+                error={errors.creditor?.address?.message}
+                {...register("creditor.address")}
+              />
               <Input
                 label="Email address"
                 type="email"
@@ -217,26 +233,13 @@ export function LettersForm({ baseRate }: { baseRate: number }) {
                 error={errors.debtor?.businessName?.message}
                 {...register("debtor.businessName")}
               />
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-ink">
-                  Business address
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder={"456 Market Street\nLondon\nEC1A 1BB"}
-                  className={`w-full rounded-[var(--radius-md)] border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel ${
-                    errors.debtor?.address
-                      ? "border-error focus:ring-error/40 focus:border-error"
-                      : "border-border"
-                  }`}
-                  {...register("debtor.address")}
-                />
-                {errors.debtor?.address && (
-                  <p className="text-xs text-error">
-                    {errors.debtor.address.message}
-                  </p>
-                )}
-              </div>
+              <Textarea
+                label="Business address"
+                rows={3}
+                placeholder={"456 Market Street\nLondon\nEC1A 1BB"}
+                error={errors.debtor?.address?.message}
+                {...register("debtor.address")}
+              />
               <Input
                 label="Email address"
                 type="email"
@@ -274,21 +277,22 @@ export function LettersForm({ baseRate }: { baseRate: number }) {
                 error={errors.amountOwed?.message}
                 {...register("amountOwed", { valueAsNumber: true })}
               />
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-ink">
-                  Payment terms (days)
-                </label>
-                <select
-                  className="w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 py-2 text-sm text-ink transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel"
-                  {...register("paymentTermsDays", { valueAsNumber: true })}
-                >
-                  <option value={14}>14 days</option>
-                  <option value={30}>30 days</option>
-                  <option value={45}>45 days</option>
-                  <option value={60}>60 days</option>
-                  <option value={90}>90 days</option>
-                </select>
-              </div>
+              <Select
+                label="Payment terms (days)"
+                error={errors.paymentTermsDays?.message}
+                {...register("paymentTermsDays", { valueAsNumber: true })}
+              >
+                <option value={14}>14 days</option>
+                <option value={30}>30 days</option>
+                <option value={45}>45 days</option>
+                <option value={60}>60 days</option>
+                <option value={90}>90 days</option>
+              </Select>
+              <FieldHint>
+                The number of days the customer had to pay, taken from the
+                payment terms on your invoice. Statutory interest begins to run
+                once this period has passed.
+              </FieldHint>
             </CardContent>
           </Card>
 

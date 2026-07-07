@@ -12,8 +12,10 @@ import {
 } from "@/lib/late-payment/calculator";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SaveDocumentButton } from "@/components/tools/save-document-button";
+import { FieldHint, scrollToFirstError } from "@/components/tools/form-wizard";
 
 const PAYMENT_TERMS_OPTIONS = [
   { value: 14, label: "14 days" },
@@ -135,7 +137,10 @@ export function CalculatorForm({
       </div>
 
       {/* Calculator form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+      <form
+        onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
+        className="mt-8 space-y-6"
+      >
         <Card>
           <CardHeader>
             <CardTitle>Invoice Details</CardTitle>
@@ -159,26 +164,22 @@ export function CalculatorForm({
               {...register("invoiceDate")}
             />
 
-            <div className="flex flex-col gap-1.5">
-              <label
-                htmlFor="terms-select"
-                className="text-sm font-medium text-ink"
-              >
-                Payment terms
-              </label>
-              <select
-                id="terms-select"
-                value={selectedTerms}
-                onChange={(e) => handleTermsChange(e.target.value)}
-                className="w-full rounded-[var(--radius-md)] border border-border bg-surface px-3 py-2 text-sm text-ink transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel"
-              >
-                {PAYMENT_TERMS_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Select
+              id="terms-select"
+              label="Payment terms"
+              value={selectedTerms}
+              onChange={(e) => handleTermsChange(e.target.value)}
+            >
+              {PAYMENT_TERMS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+            <FieldHint>
+              The time the customer had to pay, from your invoice. If no terms
+              were agreed, the default under UK law is 30 days.
+            </FieldHint>
 
             {showCustomTerms && (
               <Input
@@ -199,6 +200,12 @@ export function CalculatorForm({
               error={errors.calculationDate?.message}
               {...register("calculationDate")}
             />
+            <FieldHint>
+              The date to calculate interest up to — usually today. Statutory
+              interest is the 8% above the Bank of England base rate you can
+              charge on overdue commercial invoices; fixed-sum compensation is a
+              flat amount (£40–£100) you can also claim per invoice.
+            </FieldHint>
           </CardContent>
         </Card>
 

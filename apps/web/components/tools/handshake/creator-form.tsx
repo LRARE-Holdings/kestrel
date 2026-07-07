@@ -14,6 +14,28 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Toggle } from "@/components/ui/toggle";
+import {
+  DraftRestoredNotice,
+  Spinner,
+  scrollToFirstError,
+} from "@/components/tools/form-wizard";
+import { useFormDraft } from "@/components/tools/use-form-draft";
+
+const DEFAULT_VALUES: CreateHandshakeInput = {
+  title: "",
+  description: "",
+  partyA: { name: "", email: "", businessName: "" },
+  partyB: { name: "", email: "", businessName: "" },
+  terms: [
+    {
+      description: "",
+      responsibleParty: "both",
+      deadline: "",
+      amount: undefined,
+    },
+  ],
+  includeDisputeClause: true,
+};
 
 export function HandshakeCreatorForm() {
   const router = useRouter();
@@ -25,20 +47,19 @@ export function HandshakeCreatorForm() {
     handleSubmit,
     control,
     watch,
+    reset,
     setValue,
     formState: { errors },
   } = useForm<CreateHandshakeInput>({
     resolver: zodResolver(createHandshakeSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      partyA: { name: "", email: "", businessName: "" },
-      partyB: { name: "", email: "", businessName: "" },
-      terms: [
-        { description: "", responsibleParty: "both", deadline: "", amount: undefined },
-      ],
-      includeDisputeClause: true,
-    },
+    defaultValues: DEFAULT_VALUES,
+  });
+
+  const draft = useFormDraft({
+    tool: "handshake",
+    watch,
+    reset,
+    defaultValues: DEFAULT_VALUES,
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -75,18 +96,27 @@ export function HandshakeCreatorForm() {
       }
 
       const { accessToken } = await res.json();
+      draft.clear();
       router.push(`/tools/handshake/success?token=${accessToken}`);
     } catch (err) {
       setSubmitError(
         err instanceof Error ? err.message : "Something went wrong",
       );
-    } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+    <form
+      onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
+      className="mt-8 space-y-6"
+    >
+      {draft.restored && (
+        <DraftRestoredNotice
+          onStartAfresh={draft.startAfresh}
+          onDismiss={draft.dismissRestoredNotice}
+        />
+      )}
       {/* What was agreed */}
       <Card>
         <CardHeader>
@@ -287,9 +317,10 @@ export function HandshakeCreatorForm() {
       <Button
         type="submit"
         size="lg"
-        className="w-full sm:w-auto"
+        className="w-full gap-2 sm:w-auto"
         disabled={submitting}
       >
+        {submitting && <Spinner />}
         {submitting ? "Creating..." : "Create Handshake"}
       </Button>
 

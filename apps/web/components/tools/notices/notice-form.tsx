@@ -15,6 +15,27 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
+import {
+  DraftRestoredNotice,
+  FieldHint,
+  Spinner,
+  scrollToFirstError,
+} from "@/components/tools/form-wizard";
+import { useFormDraft } from "@/components/tools/use-form-draft";
+
+const DEFAULT_VALUES: NoticeInput = {
+  noticeType: "breach",
+  sender: { name: "", businessName: "", address: "", email: "" },
+  recipient: { name: "", businessName: "", address: "", email: "" },
+  reference: "",
+  subject: "",
+  content: "",
+  relevantClause: "",
+  requiredAction: "",
+  responseDeadline: undefined,
+  consequences: "",
+  includeDisputeClause: true,
+};
 
 export function NoticeForm() {
   const router = useRouter();
@@ -25,23 +46,19 @@ export function NoticeForm() {
     register,
     handleSubmit,
     watch,
+    reset,
     setValue,
     formState: { errors },
   } = useForm<NoticeInput>({
     resolver: zodResolver(noticeSchema),
-    defaultValues: {
-      noticeType: "breach",
-      sender: { name: "", businessName: "", address: "", email: "" },
-      recipient: { name: "", businessName: "", address: "", email: "" },
-      reference: "",
-      subject: "",
-      content: "",
-      relevantClause: "",
-      requiredAction: "",
-      responseDeadline: undefined,
-      consequences: "",
-      includeDisputeClause: true,
-    },
+    defaultValues: DEFAULT_VALUES,
+  });
+
+  const draft = useFormDraft({
+    tool: "notice",
+    watch,
+    reset,
+    defaultValues: DEFAULT_VALUES,
   });
 
   const selectedType = watch("noticeType");
@@ -49,7 +66,7 @@ export function NoticeForm() {
 
   function applyConsequenceTemplate() {
     const template = CONSEQUENCE_TEMPLATES[selectedType] ?? "";
-    setValue("consequences", template);
+    setValue("consequences", template, { shouldDirty: true });
   }
 
   async function onSubmit(data: NoticeInput) {
@@ -69,15 +86,28 @@ export function NoticeForm() {
       }
 
       const { accessToken } = await response.json();
+      draft.clear();
       router.push(`/tools/notice-log/${accessToken}`);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Something went wrong");
+      setSubmitError(
+        err instanceof Error ? err.message : "Something went wrong",
+      );
       setSubmitting(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form
+      onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
+      className="space-y-6"
+    >
+      {draft.restored && (
+        <DraftRestoredNotice
+          onStartAfresh={draft.startAfresh}
+          onDismiss={draft.dismissRestoredNotice}
+        />
+      )}
+
       {/* Notice type selector */}
       <Card>
         <CardHeader>
@@ -104,9 +134,7 @@ export function NoticeForm() {
                 <span className="text-sm font-medium text-ink">
                   {type.label}
                 </span>
-                <p className="text-xs text-text-muted">
-                  {type.description}
-                </p>
+                <p className="text-xs text-text-muted">{type.description}</p>
               </div>
             </label>
           ))}
@@ -131,26 +159,13 @@ export function NoticeForm() {
             error={errors.sender?.businessName?.message}
             {...register("sender.businessName")}
           />
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-ink">
-              Business address
-            </label>
-            <textarea
-              rows={3}
-              placeholder={"123 High Street\nNewcastle upon Tyne\nNE1 1AA"}
-              className={`w-full rounded-[var(--radius-md)] border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel resize-y ${
-                errors.sender?.address
-                  ? "border-error focus:ring-error/40 focus:border-error"
-                  : "border-border"
-              }`}
-              {...register("sender.address")}
-            />
-            {errors.sender?.address && (
-              <p className="text-xs text-error">
-                {errors.sender.address.message}
-              </p>
-            )}
-          </div>
+          <Textarea
+            label="Business address"
+            rows={3}
+            placeholder={"123 High Street\nNewcastle upon Tyne\nNE1 1AA"}
+            error={errors.sender?.address?.message}
+            {...register("sender.address")}
+          />
           <Input
             label="Email address"
             type="email"
@@ -179,26 +194,13 @@ export function NoticeForm() {
             error={errors.recipient?.businessName?.message}
             {...register("recipient.businessName")}
           />
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-ink">
-              Business address
-            </label>
-            <textarea
-              rows={3}
-              placeholder={"456 Market Street\nLondon\nEC1A 1BB"}
-              className={`w-full rounded-[var(--radius-md)] border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel resize-y ${
-                errors.recipient?.address
-                  ? "border-error focus:ring-error/40 focus:border-error"
-                  : "border-border"
-              }`}
-              {...register("recipient.address")}
-            />
-            {errors.recipient?.address && (
-              <p className="text-xs text-error">
-                {errors.recipient.address.message}
-              </p>
-            )}
-          </div>
+          <Textarea
+            label="Business address"
+            rows={3}
+            placeholder={"456 Market Street\nLondon\nEC1A 1BB"}
+            error={errors.recipient?.address?.message}
+            {...register("recipient.address")}
+          />
           <Input
             label="Email address"
             type="email"
@@ -252,34 +254,24 @@ export function NoticeForm() {
             error={errors.responseDeadline?.message}
             {...register("responseDeadline")}
           />
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-ink">
-                Consequences (optional)
-              </label>
-              <button
-                type="button"
-                onClick={applyConsequenceTemplate}
-                className="text-xs font-medium text-kestrel hover:text-kestrel-hover transition-colors"
-              >
-                Use template
-              </button>
-            </div>
-            <textarea
+          <FieldHint>
+            The date by which you are asking the recipient to respond or act.
+          </FieldHint>
+          <div>
+            <Textarea
+              label="Consequences (optional)"
               rows={3}
               placeholder="Describe the consequences if the required action is not taken"
-              className={`w-full rounded-[var(--radius-md)] border bg-surface px-3 py-2 text-sm text-ink placeholder:text-text-muted transition-colors focus:outline-none focus:ring-2 focus:ring-kestrel/40 focus:border-kestrel resize-y ${
-                errors.consequences
-                  ? "border-error focus:ring-error/40 focus:border-error"
-                  : "border-border"
-              }`}
+              error={errors.consequences?.message}
               {...register("consequences")}
             />
-            {errors.consequences && (
-              <p className="text-xs text-error">
-                {errors.consequences.message}
-              </p>
-            )}
+            <button
+              type="button"
+              onClick={applyConsequenceTemplate}
+              className="mt-1.5 text-xs font-medium text-kestrel transition-colors hover:text-kestrel-hover"
+            >
+              Use suggested wording for this notice type
+            </button>
           </div>
         </CardContent>
       </Card>
@@ -291,7 +283,7 @@ export function NoticeForm() {
             <p className="text-sm font-medium text-ink">
               Include Kestrel dispute resolution clause
             </p>
-            <p className="mt-1 text-xs text-text-muted leading-relaxed">
+            <p className="mt-1 text-xs leading-relaxed text-text-muted">
               Adds an invitation to resolve any dispute arising from this notice
               through Kestrel before formal proceedings. Recommended and can be
               removed with one click.
@@ -299,9 +291,7 @@ export function NoticeForm() {
           </div>
           <Toggle
             checked={includeDisputeClause}
-            onChange={(e) =>
-              setValue("includeDisputeClause", e.target.checked)
-            }
+            onChange={(e) => setValue("includeDisputeClause", e.target.checked)}
           />
         </CardContent>
       </Card>
@@ -315,9 +305,10 @@ export function NoticeForm() {
       <Button
         type="submit"
         size="lg"
-        className="w-full sm:w-auto"
+        className="w-full gap-2 sm:w-auto"
         disabled={submitting}
       >
+        {submitting && <Spinner />}
         {submitting ? "Creating notice..." : "Create notice"}
       </Button>
     </form>

@@ -14,6 +14,32 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Toggle } from "@/components/ui/toggle";
+import {
+  DraftRestoredNotice,
+  Spinner,
+  scrollToFirstError,
+} from "@/components/tools/form-wizard";
+import { useFormDraft } from "@/components/tools/use-form-draft";
+
+const DEFAULT_VALUES: CreateProjectInput = {
+  name: "",
+  description: "",
+  partyA: { name: "", email: "", businessName: "" },
+  partyB: { name: "", email: "", businessName: "" },
+  startDate: "",
+  expectedEndDate: "",
+  milestones: [
+    {
+      title: "",
+      description: "",
+      responsibleParty: "party_a",
+      dueDate: "",
+      paymentAmount: undefined,
+      deliverables: [],
+    },
+  ],
+  includeDisputeClause: true,
+};
 
 export function ProjectForm() {
   const router = useRouter();
@@ -25,29 +51,19 @@ export function ProjectForm() {
     control,
     handleSubmit,
     watch,
+    reset,
     setValue,
     formState: { errors },
   } = useForm<CreateProjectInput>({
     resolver: zodResolver(createProjectSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      partyA: { name: "", email: "", businessName: "" },
-      partyB: { name: "", email: "", businessName: "" },
-      startDate: "",
-      expectedEndDate: "",
-      milestones: [
-        {
-          title: "",
-          description: "",
-          responsibleParty: "party_a",
-          dueDate: "",
-          paymentAmount: undefined,
-          deliverables: [],
-        },
-      ],
-      includeDisputeClause: true,
-    },
+    defaultValues: DEFAULT_VALUES,
+  });
+
+  const draft = useFormDraft({
+    tool: "milestones",
+    watch,
+    reset,
+    defaultValues: DEFAULT_VALUES,
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -74,6 +90,7 @@ export function ProjectForm() {
       }
 
       const { accessToken } = await response.json();
+      draft.clear();
       router.push(`/tools/milestones/${accessToken}`);
     } catch (err) {
       setSubmitError(
@@ -84,7 +101,16 @@ export function ProjectForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form
+      onSubmit={handleSubmit(onSubmit, scrollToFirstError)}
+      className="space-y-6"
+    >
+      {draft.restored && (
+        <DraftRestoredNotice
+          onStartAfresh={draft.startAfresh}
+          onDismiss={draft.dismissRestoredNotice}
+        />
+      )}
       {/* Project details */}
       <Card>
         <CardHeader>
@@ -252,9 +278,10 @@ export function ProjectForm() {
       <Button
         type="submit"
         size="lg"
-        className="w-full sm:w-auto"
+        className="w-full gap-2 sm:w-auto"
         disabled={submitting}
       >
+        {submitting && <Spinner />}
         {submitting ? "Creating project..." : "Create project"}
       </Button>
     </form>

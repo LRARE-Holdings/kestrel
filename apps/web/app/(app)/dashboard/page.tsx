@@ -20,7 +20,7 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <GreetingSplash firstName={firstName} />
+      <GreetingSplash firstName={firstName} enabled={showTutorial} />
       {showTutorial && <GuidedTutorial firstName={firstName} />}
 
       <div>

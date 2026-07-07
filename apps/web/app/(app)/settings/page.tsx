@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getProfile } from "@/lib/auth/actions";
-import { Button } from "@/components/ui/button";
 import { ProfileForm } from "@/components/app/settings/profile-form";
+import { DataExportButton } from "@/components/app/settings/data-export-button";
 import { ThemeSelector } from "@kestrel/shared/theme/theme-selector";
 
 export const metadata: Metadata = {
@@ -66,9 +66,7 @@ export default async function SettingsPage() {
               Download all data Kestrel holds about you (UK GDPR right of
               access).
             </p>
-            <Button variant="secondary" className="mt-4" disabled>
-              Export data (coming soon)
-            </Button>
+            <DataExportButton />
           </div>
         </div>
       </div>

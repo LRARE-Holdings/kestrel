@@ -5,7 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { KestrelMark } from "@/components/ui/logo";
 
 const EASE_OUT_EXPO: [number, number, number, number] = [0.16, 1, 0.3, 1];
-const REVEAL_DELAY_MS = 1800;
+// Kept short (≤1s total with the exit animation) — professionals sign in many
+// times a day, so the greeting must never feel like an obstacle.
+const REVEAL_DELAY_MS = 600;
 const SESSION_KEY = "kestrel-greeted";
 
 function getGreeting(): string {
@@ -15,22 +17,34 @@ function getGreeting(): string {
   return "Good evening";
 }
 
-export function GreetingSplash({ firstName }: { firstName: string }) {
+/**
+ * @param enabled Only show on a user's first-ever session. The caller passes
+ *   the server-persisted first-login signal (a profile that hasn't completed
+ *   the tutorial), so returning users never see the blocking splash again.
+ */
+export function GreetingSplash({
+  firstName,
+  enabled = true,
+}: {
+  firstName: string;
+  enabled?: boolean;
+}) {
   const [phase, setPhase] = useState<"greeting" | "revealing" | "done">(
     "greeting",
   );
   const [shouldShow, setShouldShow] = useState(false);
 
-  // Gate: check sessionStorage and reduced-motion preference
+  // Gate: first-login flag, sessionStorage guard, and reduced-motion preference
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (!enabled) return;
     if (sessionStorage.getItem(SESSION_KEY) === "true") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       sessionStorage.setItem(SESSION_KEY, "true");
       return;
     }
     setShouldShow(true);
-  }, []);
+  }, [enabled]);
 
   // Lock body scroll while overlay is visible
   useEffect(() => {

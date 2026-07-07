@@ -3,6 +3,7 @@ import { createServiceClient } from "@kestrel/shared/supabase/service";
 import { createProjectSchema } from "@/lib/milestones/schemas";
 import { publicRateLimit, applyRateLimit } from "@/lib/security/rate-limit";
 import { validateOrigin } from "@/lib/security/csrf";
+import { resolveCurrentUserId, insertToolRecord } from "@/lib/tool-records/creator";
 
 export async function POST(request: Request) {
   try {
@@ -25,10 +26,18 @@ export async function POST(request: Request) {
     const data = parsed.data;
     const supabase = createServiceClient();
 
+    // Stamp the creator when the request comes from a signed-in user so they
+    // can find this milestone tracker again from their dashboard.
+    const createdBy = await resolveCurrentUserId();
+
     // Insert the project
-    const { data: project, error: projectError } = await supabase
-      .from("projects")
-      .insert({
+    const { data: project, error: projectError } = await insertToolRecord<{
+      id: string;
+      access_token: string;
+    }>(
+      supabase,
+      "projects",
+      {
         name: data.name,
         description: data.description || null,
         party_a_name: data.partyA.name,
@@ -41,9 +50,10 @@ export async function POST(request: Request) {
         expected_end_date: data.expectedEndDate || null,
         includes_dispute_clause: data.includeDisputeClause,
         status: "active",
-      })
-      .select("id, access_token")
-      .single();
+      },
+      createdBy,
+      "id, access_token",
+    );
 
     if (projectError || !project) {
       console.error("Project insert error:", projectError);

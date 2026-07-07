@@ -9,6 +9,7 @@ import {
 } from "@/lib/email/templates/notice-sent";
 import { publicRateLimit, applyRateLimit } from "@/lib/security/rate-limit";
 import { validateOrigin } from "@/lib/security/csrf";
+import { resolveCurrentUserId, insertToolRecord } from "@/lib/tool-records/creator";
 
 export async function POST(request: Request) {
   try {
@@ -31,9 +32,14 @@ export async function POST(request: Request) {
     const data = parsed.data;
     const supabase = createServiceClient();
 
-    const { data: notice, error } = await supabase
-      .from("notices")
-      .insert({
+    // Stamp the creator when the request comes from a signed-in user so they
+    // can find this notice again from their dashboard.
+    const createdBy = await resolveCurrentUserId();
+
+    const { data: notice, error } = await insertToolRecord<{ access_token: string }>(
+      supabase,
+      "notices",
+      {
         notice_type: data.noticeType,
         status: "sent",
         sender_name: data.sender.name,
@@ -52,11 +58,12 @@ export async function POST(request: Request) {
         response_deadline: data.responseDeadline || null,
         consequences: data.consequences || null,
         includes_dispute_clause: data.includeDisputeClause,
-      })
-      .select("access_token")
-      .single();
+      },
+      createdBy,
+      "access_token",
+    );
 
-    if (error) {
+    if (error || !notice) {
       console.error("Notice insert error:", error);
       return NextResponse.json(
         { error: "Failed to create notice" },
@@ -65,7 +72,7 @@ export async function POST(request: Request) {
     }
 
     // Send email notifications (fire-and-forget — never block the response)
-    const viewUrl = `${SITE_URL}/tools/notices/${notice.access_token}`;
+    const viewUrl = `${SITE_URL}/tools/notice-log/${notice.access_token}`;
     const fromAddress = `Kestrel <${EMAILS.notifications}>`;
 
     const formattedDeadline = data.responseDeadline

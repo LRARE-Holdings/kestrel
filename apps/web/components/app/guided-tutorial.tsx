@@ -125,7 +125,7 @@ const STEPS: TutorialStep[] = [
       "File a dispute with a reference number and deadline",
       "Both parties submit structured responses, proposals, and evidence",
       "Every submission is hashed for integrity -- nothing can be altered",
-      "If resolution isn't possible, escalate for external mediation",
+      "If resolution isn't possible, either party can formally escalate -- recording the deadlock on the file and closing the structured process",
     ],
     icon: (
       <div className={`${iconBase} bg-sage/15`}>
@@ -314,8 +314,8 @@ export function GuidedTutorial({ firstName }: GuidedTutorialProps) {
       return;
     }
 
-    // Wait for greeting splash to finish (1.8s reveal + 0.6s exit = ~2.5s)
-    const timer = setTimeout(() => setVisible(true), 2600);
+    // Wait for the (now brief) greeting splash to finish (~0.6s reveal + ~0.6s exit)
+    const timer = setTimeout(() => setVisible(true), 1300);
     return () => clearTimeout(timer);
   }, []);
 

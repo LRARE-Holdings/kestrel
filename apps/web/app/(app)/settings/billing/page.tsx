@@ -34,13 +34,27 @@ interface DisputePaymentSummary {
   created_at: string;
 }
 
-async function getDisputeFeeHistory(
-  userId: string,
-): Promise<DisputePaymentSummary[]> {
+interface FeeHistoryResult {
+  payments: DisputePaymentSummary[];
+  failed: boolean;
+}
+
+/**
+ * A missing-relation error means the payments feature isn't live yet (the
+ * table hasn't been migrated) — that's a legitimate empty state, not a
+ * failure. Any other error is a genuine failure the user should be told about,
+ * so we don't silently show "no fees yet" when the query actually broke.
+ */
+function isMissingTableError(error: { code?: string; message?: string } | null): boolean {
+  if (!error) return false;
+  if (error.code === "PGRST205" || error.code === "42P01") return true;
+  const message = error.message ?? "";
+  return /dispute_payments/i.test(message) && /(does not exist|not find|schema cache)/i.test(message);
+}
+
+async function getDisputeFeeHistory(userId: string): Promise<FeeHistoryResult> {
   const supabase = await createClient();
 
-  // Best-effort query: if the dispute_payments table doesn't exist yet
-  // (pre-migration), we return an empty list rather than throw.
   try {
     const { data, error } = await supabase
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,10 +78,17 @@ async function getDisputeFeeHistory(
       .order("created_at", { ascending: false })
       .limit(50);
 
-    if (error || !data) return [];
+    if (error) {
+      // Feature not live yet → benign empty state. Real error → surface it.
+      if (isMissingTableError(error)) return { payments: [], failed: false };
+      console.error("[billing] Failed to load dispute fee history:", error);
+      return { payments: [], failed: true };
+    }
+
+    if (!data) return { payments: [], failed: false };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (data as any[]).map((row) => ({
+    const payments = (data as any[]).map((row) => ({
       id: row.id,
       dispute_id: row.dispute_id,
       reference_number: row.disputes?.reference_number ?? null,
@@ -78,8 +99,11 @@ async function getDisputeFeeHistory(
       status: row.status,
       created_at: row.created_at,
     }));
-  } catch {
-    return [];
+
+    return { payments, failed: false };
+  } catch (err) {
+    console.error("[billing] Unexpected error loading fee history:", err);
+    return { payments: [], failed: true };
   }
 }
 
@@ -120,7 +144,7 @@ export default async function BillingPage() {
   const user = await getUser();
   if (!user) redirect("/sign-in");
 
-  const payments = await getDisputeFeeHistory(user.id);
+  const { payments, failed } = await getDisputeFeeHistory(user.id);
   const hasPayments = payments.length > 0;
 
   return (
@@ -185,7 +209,17 @@ export default async function BillingPage() {
               )}
             </div>
 
-            {!hasPayments ? (
+            {failed ? (
+              <div className="mt-4 rounded-[var(--radius-md)] border border-error/20 bg-error/5 px-4 py-8 text-center">
+                <p className="text-sm font-medium text-error">
+                  We couldn&apos;t load your fee history
+                </p>
+                <p className="mt-1 text-xs text-text-secondary">
+                  Something went wrong fetching your dispute fees. Please try
+                  again shortly — if the problem persists, contact support.
+                </p>
+              </div>
+            ) : !hasPayments ? (
               <div className="mt-4 rounded-[var(--radius-md)] border border-dashed border-border-subtle bg-cream/40 px-4 py-8 text-center">
                 <p className="text-sm font-medium text-ink">
                   No dispute fees yet

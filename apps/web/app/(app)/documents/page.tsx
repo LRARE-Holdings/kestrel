@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getDocuments } from "@/lib/documents/actions";
+import { getUserToolRecords } from "@/lib/tool-records/actions";
+import { ToolRecordsSection } from "@/components/app/documents/tool-records-section";
 import { formatRelativeDate, formatDocumentType } from "@kestrel/shared/dates/format";
 
 export const metadata: Metadata = {
@@ -10,7 +12,15 @@ export const metadata: Metadata = {
 };
 
 export default async function DocumentsPage() {
-  const documents = await getDocuments();
+  const [documents, toolRecords] = await Promise.all([
+    getDocuments(),
+    getUserToolRecords(),
+  ]);
+
+  const hasToolRecords =
+    toolRecords.handshakes.length > 0 ||
+    toolRecords.notices.length > 0 ||
+    toolRecords.projects.length > 0;
 
   return (
     <div>
@@ -55,9 +65,10 @@ export default async function DocumentsPage() {
       ) : (
         <div className="mt-8 space-y-3">
           {documents.map((doc) => (
-            <div
+            <Link
               key={doc.id}
-              className="flex items-center justify-between card-hover rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-4"
+              href={`/documents/${doc.id}`}
+              className="flex items-center justify-between card-hover rounded-[var(--radius-lg)] border border-border-subtle bg-surface p-4 transition-colors hover:border-border"
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
@@ -75,10 +86,15 @@ export default async function DocumentsPage() {
                   <span>{formatRelativeDate(doc.created_at ?? "")}</span>
                 </div>
               </div>
-            </div>
+              <span className="ml-4 shrink-0 text-xs font-medium text-kestrel">
+                View →
+              </span>
+            </Link>
           ))}
         </div>
       )}
+
+      {hasToolRecords && <ToolRecordsSection records={toolRecords} />}
     </div>
   );
 }

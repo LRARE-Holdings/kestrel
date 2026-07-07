@@ -8,7 +8,8 @@ import { FilingStepType } from "@/components/app/disputes/filing-step-type";
 import { FilingStepRespondent } from "@/components/app/disputes/filing-step-respondent";
 import { FilingStepEvidence } from "@/components/app/disputes/filing-step-evidence";
 import { FilingStepReview } from "@/components/app/disputes/filing-step-review";
-import { fileDispute } from "@/lib/disputes/actions";
+import { fileDispute, uploadEvidence } from "@/lib/disputes/actions";
+import { Button } from "@/components/ui/button";
 import type { FileWithMeta } from "@/components/app/disputes/evidence-upload";
 import type { FilingStep1Data, FilingStep2Data } from "@/lib/disputes/schemas";
 
@@ -27,6 +28,14 @@ export function FilingWizard() {
   const [files, setFiles] = useState<FileWithMeta[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Evidence-upload progress after the dispute is created.
+  const [evidencePhase, setEvidencePhase] = useState<
+    "idle" | "uploading" | "partial"
+  >("idle");
+  const [uploadedCount, setUploadedCount] = useState(0);
+  const [failedFiles, setFailedFiles] = useState<string[]>([]);
+  const [createdDisputeId, setCreatedDisputeId] = useState<string | null>(null);
 
   const goForward = useCallback(() => {
     setDirection(1);
@@ -86,14 +95,49 @@ export function FilingWizard() {
         return;
       }
 
-      // Upload evidence files if any
-      if (files.length > 0) {
-        // File uploads would be handled by a separate action/API route
-        // that uploads to Supabase Storage and creates evidence_files records.
-        // For now we navigate to the dispute; the user can upload via the detail page.
+      const disputeId = result.disputeId;
+      setCreatedDisputeId(disputeId);
+
+      // No evidence attached — go straight to the dispute.
+      if (files.length === 0) {
+        router.push(`/disputes/${disputeId}`);
+        return;
       }
 
-      router.push(`/disputes/${result.disputeId}`);
+      // Upload each evidence file against the new dispute, one at a time so we
+      // can report exactly which files did (and didn't) attach.
+      setEvidencePhase("uploading");
+      setUploadedCount(0);
+      const failed: string[] = [];
+
+      for (const item of files) {
+        const formData = new FormData();
+        formData.append("files", item.file);
+        formData.append("descriptions", item.description ?? "");
+
+        try {
+          const uploadResult = await uploadEvidence(disputeId, formData);
+          if ("error" in uploadResult || uploadResult.count < 1) {
+            failed.push(item.file.name);
+          } else {
+            setUploadedCount((c) => c + 1);
+          }
+        } catch {
+          failed.push(item.file.name);
+        }
+      }
+
+      if (failed.length === 0) {
+        // Everything attached — proceed to the dispute.
+        router.push(`/disputes/${disputeId}`);
+        return;
+      }
+
+      // Partial failure: tell the user exactly what didn't attach and let them
+      // continue to the dispute's evidence panel to retry.
+      setFailedFiles(failed);
+      setEvidencePhase("partial");
+      setIsSubmitting(false);
     },
     [data, files, router]
   );
@@ -174,6 +218,51 @@ export function FilingWizard() {
       {error && (
         <div className="rounded-[var(--radius-md)] border border-error/20 bg-error/5 p-3">
           <p className="text-sm text-error">{error}</p>
+        </div>
+      )}
+
+      {evidencePhase === "uploading" && (
+        <div className="rounded-[var(--radius-md)] border border-border-subtle bg-surface p-4">
+          <div className="flex items-center gap-3">
+            <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-kestrel border-t-transparent" />
+            <p className="text-sm text-ink">
+              Attaching evidence… {uploadedCount} of {files.length} uploaded
+            </p>
+          </div>
+        </div>
+      )}
+
+      {evidencePhase === "partial" && (
+        <div className="rounded-[var(--radius-md)] border border-warning/30 bg-warning/5 p-4">
+          <p className="text-sm font-medium text-ink">
+            Your dispute was filed, but {failedFiles.length} of {files.length}{" "}
+            evidence file{failedFiles.length !== 1 ? "s" : ""} didn&apos;t
+            attach.
+          </p>
+          <ul className="mt-2 list-disc space-y-0.5 pl-5 text-sm text-text-secondary">
+            {failedFiles.map((name) => (
+              <li key={name} className="break-words">
+                {name}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-sm text-text-secondary">
+            You can re-upload the missing file
+            {failedFiles.length !== 1 ? "s" : ""} from the dispute&apos;s
+            evidence panel.
+          </p>
+          <div className="mt-3">
+            <Button
+              size="sm"
+              onClick={() => {
+                if (createdDisputeId) {
+                  router.push(`/disputes/${createdDisputeId}`);
+                }
+              }}
+            >
+              Continue to dispute
+            </Button>
+          </div>
         </div>
       )}
     </div>

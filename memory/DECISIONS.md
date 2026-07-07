@@ -720,3 +720,18 @@ Removed all five subscription handlers. Added three new handlers, all idempotent
 3. Multi-respondent disputes (§4.4) — current schema has a single `responding_party_id`. Out of scope for this rewrite; tracked as a follow-up.
 4. Statement descriptor `KESTREL DISPUTE FEE` is referenced in code (`STRIPE_STATEMENT_DESCRIPTOR` constant) but must also be configured in the Stripe Dashboard before going live.
 5. Admin app does not yet have a `stripe` SDK dependency. Add it when uncommenting the deferred refund Stripe calls.
+
+## [2026-07-07] Architecture — Auth reliability hardening (branch claude/cms-usability-login-4m6ke8)
+Root-caused the "nothing is working" report via a four-agent diagnostic sweep. Code fixes landed: (1) Supabase proxy middleware no longer throws sitewide 500s on missing env — logs once and passes through; (2) canonical origin resolver (request origin → NEXT_PUBLIC_SITE_URL → KESTREL_DOMAIN) used by sign-up/reset so the stale kestrel.pellar.co.uk env value can no longer break auth emails; (3) CSRF validateOrigin now does a standard same-origin check against the request host, so a stale SITE_URL cannot 403 handshake/notice/milestone submissions; (4) OAuth errors surfaced via whitelisted codes + calm banners instead of silent bounces; (5) /mfa/verify creates its browser client lazily so no-env builds prerender; (6) accessible password reveal toggle in the shared Input.
+
+## [2026-07-07] Product — Platform dead-ends closed
+Saved documents now have a detail route re-rendered through the original deterministic assemblers (view/copy/PDF/edit-in-tool). Dispute filing wizard actually uploads collected evidence with partial-failure recovery (was silently discarding files). Handshakes/notices/milestone projects stamp created_by and surface on the documents page (migration 20260707120000, degrades gracefully pre-application). Billing distinguishes errors from empty. Dead GDPR export button replaced with a working RLS-scoped SAR JSON export. Greeting splash first-login-only and under 1s. Tutorial no longer promises the switched-off mediation marketplace.
+
+## [2026-07-07] Product — Tool form UX standard
+Contracts and T&C generators restructured into step wizards (progress, per-step validation, review step). New shared FormWizard + useFormDraft (sessionStorage draft persistence with restore notice) across contract/terms/notice/milestone/handshake forms. Focus-to-first-error everywhere. All raw textareas/selects/checkboxes replaced with shared accessible primitives. Factual helper text (statutory interest, payment terms, liability caps) — descriptive, not legal advice.
+
+## [2026-07-07] Architecture — Branded firm-specific login pages (in progress)
+Decision: multi-tenant branding via organisations + organisation_members tables, anon-readable branding through a security-definer RPC only (no anon table SELECT), path-based /f/{slug}/sign-in first with subdomain rewrite groundwork in proxy.ts, CSS-custom-property overrides validated as hex (no arbitrary CSS/JS injection), org-logos public bucket with owner-scoped upload policies. Default Kestrel branding is the fallback for unknown slugs and pre-migration state.
+
+## [2026-07-07] Database — Migrations pending application
+Supabase MCP is permission-denied in this session, so migrations are committed as SQL files in supabase/migrations/ and all dependent code degrades gracefully until applied: 20260707120000_add_created_by_to_tool_tables.sql, plus the organisations/branding migration. Apply via Supabase MCP or Studio, then regenerate TypeScript types.
